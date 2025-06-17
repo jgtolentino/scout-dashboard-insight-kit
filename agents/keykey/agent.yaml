@@ -1,0 +1,29 @@
+id: keykey
+description: Secret grantor for Scout Dashboard Azure integration
+modules:
+  - grant_env
+env_map:
+  database_url:
+    vault: kv-projectscout-prod
+    secret_name: sql-password
+    format: >
+      postgresql://scout_admin:{SECRET}@sqltbwaprojectscoutserver.postgres.database.azure.com:5432/scout?sslmode=require
+  azure_client_id:
+    vault: kv-projectscout-prod
+    secret_name: sp-client-id
+  azure_client_secret:
+    vault: kv-projectscout-prod
+    secret_name: sp-secret
+  azure_tenant_id:
+    vault: kv-projectscout-prod
+    secret_name: sp-tenant
+  storage_key:
+    vault: kv-projectscout-prod
+    secret_name: storage-key
+  aoai_key:
+    vault: kv-projectscout-prod
+    secret_name: aoai-key
+  aoai_endpoint:
+    vault: kv-projectscout-prod
+    secret_name: aoai-endpoint
+permissions: [azure_keyvault:read]

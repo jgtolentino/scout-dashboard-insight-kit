@@ -1,0 +1,22 @@
+mcp:
+  enabled: true
+  servers:
+    - path: pulser/mcp/mcp_server.yaml
+  auto_register: true
+  registry_url: https://mcp.insightpulseai.com/register
+  auth_token_env: MCP_AUTH_TOKEN
+
+agents:
+  claude: { path: agents/claude, cwd_lock: true }
+  keykey: { path: agents/keykey, roles: [grant] }
+  percy: { path: packages/agents/percy, type: visual_qa }
+
+locks:
+  cross_repo_allowed: [repo, keykey]
+  wander_watchlist: [claude]
+  # PercyAgent hash will be added by lock script
+  percy: sha256:67b6711ff6b44bbda471fe48b5390b28c38a91ade1873099a117221c66e8b76a
+
+aliases:
+  vergelio: scripts/vergelio_scan_and_fix.sh
+  profiler: node ci/audit_deploy.js

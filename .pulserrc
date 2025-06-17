@@ -9,13 +9,13 @@ mcp:
 agents:
   claude: { path: agents/claude, cwd_lock: true }
   keykey: { path: agents/keykey, roles: [grant] }
-  percy: { path: packages/agents/percy, type: visual_qa }
+  visual-diff: { path: packages/agents/visual-diff, type: visual_qa }
 
 locks:
   cross_repo_allowed: [repo, keykey]
   wander_watchlist: [claude]
-  # PercyAgent hash will be added by lock script
-  percy: sha256:67b6711ff6b44bbda471fe48b5390b28c38a91ade1873099a117221c66e8b76a
+  # VisualDiffAgent hash will be added by lock script
+  visual-diff: sha256:5ffd08df245f456b430bd6aad6021867715c43565defbc5e0a264046d89d328a
 
 aliases:
   vergelio: scripts/vergelio_scan_and_fix.sh

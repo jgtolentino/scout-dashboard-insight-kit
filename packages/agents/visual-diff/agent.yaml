@@ -1,0 +1,20 @@
+id: visual-diff
+name: VisualDiffAgent
+description: >
+  Captures full-page screenshots via Playwright and diffs them
+  pixel-by-pixel against checked-in baselines using pixelmatch.
+  Fails CI on too many mismatches.
+permissions:
+  - fs:project
+  - bash:execute
+  - test:execute
+triggers:
+  - "/visual-diff baseline"
+  - "/visual-diff test"
+outputs:
+  - report_markdown
+  - exit_code
+memory_tags:
+  - visual
+  - regression
+  - qa

@@ -18,8 +18,8 @@ fi
 echo "🔒 Locking agent: $AGENT_NAME"
 
 # Check if agent exists
-if [ "$AGENT_NAME" = "percy" ]; then
-    AGENT_PATH="packages/agents/percy"
+if [ "$AGENT_NAME" = "visual-diff" ]; then
+    AGENT_PATH="packages/agents/visual-diff"
 elif [ "$AGENT_NAME" = "keykey" ]; then
     AGENT_PATH="agents/keykey"
 elif [ "$AGENT_NAME" = "claude" ]; then

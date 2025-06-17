@@ -37,8 +37,6 @@ OPENAI_API_KEY=your-openai-key
 DATABRICKS_HOST=your-databricks-host
 DATABRICKS_TOKEN=your-databricks-token
 
-# Testing
-PERCY_TOKEN=your-percy-token
 
 # Application
 NEXT_PUBLIC_SITE_NAME=Scout Analytics Dashboard v4.0

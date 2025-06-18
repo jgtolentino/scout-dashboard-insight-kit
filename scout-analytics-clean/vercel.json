@@ -2,6 +2,15 @@
   "name": "scout-analytics-platform",
   "version": 2,
   "public": true,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "framework": "vite"
+      }
+    }
+  ],
   "build": {
     "env": {
       "NODE_ENV": "production"

@@ -1,0 +1,24 @@
+# Vercel ignore file for Scout Analytics Platform
+
+# Next.js files (we're NOT using Next.js)
+.next/
+next.config.js
+next-env.d.ts
+
+# Development files
+.env.local
+.env.development
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Build cache
+.vercel/

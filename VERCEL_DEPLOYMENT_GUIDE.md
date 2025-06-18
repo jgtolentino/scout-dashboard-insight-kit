@@ -18,7 +18,7 @@ In **Vercel Project → Settings → Environment Variables**, add these exact ke
 
 ```bash
 # Database Connection (KeyKey will inject at build time)
-DATABASE_URL=postgresql://scout_admin:R@nd0mPA$$2025!@sqltbwaprojectscoutserver.postgres.database.azure.com:5432/scout?sslmode=require
+DATABASE_URL=postgresql://TBWA:R@nd0mPA$$2025!@sqltbwaprojectscoutserver.database.windows.net:1433/SQL-TBWA-ProjectScout-Reporting-Prod?sslmode=require
 
 # Azure Configuration
 AZURE_RESOURCE_GROUP=RG-TBWA-ProjectScout-Data

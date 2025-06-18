@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  scout-analytics:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - scout-network
+
+  # Optional: Add a reverse proxy
+  nginx-proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxy.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - scout-analytics
+    restart: unless-stopped
+    networks:
+      - scout-network
+
+networks:
+  scout-network:
+    driver: bridge
+
+volumes:
+  nginx_logs:

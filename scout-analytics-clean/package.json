@@ -1,0 +1,78 @@
+{
+  "name": "scout-analytics-platform",
+  "version": "1.0.0",
+  "description": "Scout Analytics - AI-Powered Philippine FMCG Intelligence Platform",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "vitest",
+    "test:ui": "vitest --ui"
+  },
+  "keywords": [
+    "analytics",
+    "dashboard",
+    "fmcg",
+    "philippines",
+    "retail",
+    "intelligence",
+    "powerbi",
+    "ai",
+    "visualization",
+    "cruip"
+  ],
+  "author": "TBWA Philippines",
+  "license": "MIT",
+  "dependencies": {
+    "@headlessui/react": "^2.2.4",
+    "@tailwindcss/postcss": "^4.1.10",
+    "clsx": "^2.0.0",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.515.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.6.2",
+    "recharts": "^2.15.3",
+    "tailwindcss": "^4.1.10",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "@rollup/plugin-inject": "^5.0.5",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "@vitejs/plugin-react": "^4.5.2",
+    "autoprefixer": "^10.4.21",
+    "buffer": "^6.0.3",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.12",
+    "events": "^3.3.0",
+    "postcss": "^8.5.0",
+    "process": "^0.11.10",
+    "rollup-plugin-polyfill-node": "^0.13.0",
+    "stream-browserify": "^3.0.0",
+    "typescript": "^5.6.3",
+    "util": "^0.12.5",
+    "vite": "^6.3.5",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tbwa-philippines/scout-analytics-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tbwa-philippines/scout-analytics-platform/issues"
+  },
+  "homepage": "https://github.com/tbwa-philippines/scout-analytics-platform#readme"
+}

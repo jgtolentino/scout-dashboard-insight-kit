@@ -1,0 +1,16 @@
+{
+  "name": "adsbot-deployment",
+  "version": "1.0.0",
+  "description": "AI-powered marketing intelligence dashboard that analyzes campaign performance, creative effectiveness, and forecast accuracy for TBWA Project Scout.",
+  "main": "test-connection.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "mssql": "^11.0.1"
+  }
+}

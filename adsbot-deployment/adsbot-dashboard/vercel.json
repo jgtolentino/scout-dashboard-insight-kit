@@ -1,0 +1,15 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "regions": ["sin1"],
+  "env": {
+    "AZURE_SQL_SERVER": "@azure-sql-server",
+    "AZURE_SQL_DATABASE": "@azure-sql-database",
+    "AZURE_SQL_USERNAME": "@azure-sql-username",
+    "AZURE_SQL_PASSWORD": "@azure-sql-password",
+    "OPENAI_API_KEY": "@openai-api-key"
+  }
+}

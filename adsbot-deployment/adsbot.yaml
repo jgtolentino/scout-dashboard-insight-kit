@@ -1,0 +1,215 @@
+name: AdsBot-TBWA-ProjectScout
+version: 1.0.0
+description: AI-powered marketing intelligence dashboard for TBWA Project Scout
+
+# Data Source Configuration
+source:
+  type: azure-sql
+  server: sql-tbwa-projectscout-prod.database.windows.net
+  database: SQL-TBWA-ProjectScout-Reporting-Prod
+  schema: ces
+  auth:
+    method: azure-cli  # Uses current Azure CLI credentials
+
+# Tables to analyze
+tables:
+  - name: tbwa_campaigns
+    primary_key: campaign_id
+    metrics:
+      - total_campaigns
+      - active_campaigns
+      - campaign_duration_avg
+      - campaigns_by_status
+  
+  - name: tbwa_creative_analysis
+    primary_key: analysis_id
+    foreign_keys:
+      - campaign_id -> tbwa_campaigns.campaign_id
+    metrics:
+      - creative_performance_score
+      - engagement_rate
+      - ctr_by_creative
+      - top_performing_assets
+  
+  - name: tbwa_business_predictions
+    primary_key: prediction_id
+    foreign_keys:
+      - campaign_id -> tbwa_campaigns.campaign_id
+    metrics:
+      - forecast_accuracy
+      - predicted_vs_actual_roi
+      - confidence_scores
+      - prediction_trends
+  
+  - name: tbwa_campaign_documents
+    primary_key: document_id
+    foreign_keys:
+      - campaign_id -> tbwa_campaigns.campaign_id
+    metrics:
+      - documents_per_campaign
+      - document_types
+      - document_usage_stats
+  
+  - name: tbwa_data_metadata
+    primary_key: metadata_id
+    metrics:
+      - data_quality_score
+      - completeness_percentage
+      - validation_status
+
+# Dashboard Configuration
+dashboard:
+  framework: react
+  styling: tailwind
+  charts: 
+    - chartjs
+    - recharts
+  
+  pages:
+    - id: overview
+      name: Performance Overview
+      route: /
+      components:
+        - type: kpi-grid
+          metrics:
+            - total_campaigns
+            - active_campaigns
+            - avg_roi
+            - forecast_accuracy
+        - type: time-series
+          title: Campaign Performance Timeline
+          data: campaigns_by_month
+        - type: pie-chart
+          title: Campaign Status Distribution
+          data: campaign_status_breakdown
+    
+    - id: forecast
+      name: Forecast vs Actual
+      route: /forecast
+      components:
+        - type: forecast-chart
+          title: Business Predictions Accuracy
+          metrics:
+            - predicted_values
+            - actual_values
+            - confidence_bands
+        - type: accuracy-table
+          title: Prediction Performance by Campaign
+        - type: variance-analysis
+          title: Forecast Variance Analysis
+    
+    - id: creatives
+      name: Creative Performance
+      route: /creatives
+      components:
+        - type: ranking-table
+          title: Top Performing Creatives
+          sort_by: engagement_rate
+        - type: heatmap
+          title: Creative Performance Matrix
+          dimensions: [creative_type, campaign_type]
+        - type: gallery
+          title: Creative Assets
+          filter_by: performance_score
+    
+    - id: data-quality
+      name: Data Quality
+      route: /quality
+      components:
+        - type: quality-dashboard
+          metrics:
+            - completeness_score
+            - validation_errors
+            - data_freshness
+        - type: metadata-table
+          title: Metadata Status
+    
+    - id: ai-assistant
+      name: AI Assistant
+      route: /ai
+      components:
+        - type: scoutbot
+          config:
+            name: ScoutBot
+            avatar: /assets/scoutbot.png
+            welcome_message: "Hi! I'm ScoutBot. Ask me anything about your campaigns, forecasts, or creative performance."
+
+# ScoutBot AI Configuration
+scoutbot:
+  enabled: true
+  model: gpt-4
+  context:
+    tables: 
+      - tbwa_campaigns
+      - tbwa_creative_analysis
+      - tbwa_business_predictions
+    
+  capabilities:
+    - natural_language_sql
+    - insight_generation
+    - anomaly_detection
+    - recommendation_engine
+    
+  sample_queries:
+    - "Which campaign had the highest ROI last quarter?"
+    - "Show me underperforming creatives in the NCR region"
+    - "What's the forecast accuracy for Q4 2024 campaigns?"
+    - "Compare creative engagement across different campaign types"
+    - "Identify campaigns that exceeded their predicted performance"
+
+# API Endpoints
+api:
+  base_url: /api/v1
+  endpoints:
+    - GET /campaigns
+    - GET /campaigns/{id}
+    - GET /creatives
+    - GET /predictions
+    - GET /metrics/{metric_name}
+    - POST /scoutbot/query
+    - GET /dashboard/export
+
+# Deployment Configuration
+deployment:
+  platform: vercel
+  env_vars:
+    - AZURE_SQL_CONNECTION_STRING
+    - OPENAI_API_KEY
+    - NEXT_PUBLIC_API_URL
+  
+  build:
+    command: npm run build
+    output: .next
+  
+  preview_branch: develop
+  production_branch: main
+
+# Monitoring & Analytics
+monitoring:
+  enabled: true
+  providers:
+    - vercel-analytics
+    - custom-telemetry
+  
+  track_events:
+    - query_execution
+    - dashboard_view
+    - scoutbot_interaction
+    - export_action
+
+# Security
+security:
+  authentication: 
+    provider: azure-ad
+    tenant_id: ${AZURE_TENANT_ID}
+  
+  authorization:
+    roles:
+      - admin: full_access
+      - analyst: read_write
+      - viewer: read_only
+  
+  data_access:
+    row_level_security: true
+    column_masking: 
+      - sensitive_fields

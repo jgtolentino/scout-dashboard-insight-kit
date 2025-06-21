@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import RegionalMap from "@/components/overview/RegionalMap";
 import RevenueChart from "@/components/overview/RevenueChart";
-import CategoryTreemap from "@/components/overview/CategoryTreemap";
+import CategoryTreemapLive from "@/components/CategoryTreemapLive";
 import AIInsightsPreview from "@/components/overview/AIInsightsPreview";
 
 const Overview = () => {
@@ -132,7 +132,22 @@ const Overview = () => {
       {/* Secondary Visualizations */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Category Performance */}
-        <CategoryTreemap />
+        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Package className="h-5 w-5 text-green-600" />
+              Top Product Categories
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CategoryTreemapLive />
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+              <p className="text-sm text-blue-700">
+                📦 <strong>Category Leader:</strong> Snacks dominates with 32.5% of total revenue
+              </p>
+            </div>
+          </CardContent>
+        </Card>
         
         {/* AI Insights Preview */}
         <div className="lg:col-span-2">

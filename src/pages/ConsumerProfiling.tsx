@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Users, UserCheck, TrendingUp, MapPin } from "lucide-react";
+import GeoHeatmap from "@/components/GeoHeatmap";
 
 const ConsumerProfiling = () => {
   const [barangay, setBarangay] = useState(true);
@@ -113,8 +114,8 @@ const ConsumerProfiling = () => {
         </CardHeader>
         <CardContent>
           <div className="bg-gray-100 p-8 rounded-lg text-center">
-            <p className="text-gray-600">Geographic Heatmap showing customer distribution</p>
-            <div className="mt-4 h-40 bg-gradient-to-r from-orange-500 to-red-600 rounded opacity-20"></div>
+            <p className="text-gray-600 mb-4">Geographic Heatmap showing customer distribution</p>
+            <GeoHeatmap />
           </div>
           <div className="mt-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
             <p className="text-sm text-red-700">

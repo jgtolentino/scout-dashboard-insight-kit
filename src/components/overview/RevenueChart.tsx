@@ -1,109 +1,75 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 
 const RevenueChart = () => {
-  // Sample data for the last 30 days
   const data = [
-    { date: "Day 1", revenue: 65000, transactions: 420 },
-    { date: "Day 5", revenue: 72000, transactions: 485 },
-    { date: "Day 10", revenue: 68000, transactions: 450 },
-    { date: "Day 15", revenue: 85000, transactions: 560 },
-    { date: "Day 20", revenue: 78000, transactions: 520 },
-    { date: "Day 25", revenue: 92000, transactions: 610 },
-    { date: "Day 30", revenue: 98000, transactions: 650 },
+    { date: '1/1', revenue: 45000, transactions: 234 },
+    { date: '1/8', revenue: 52000, transactions: 267 },
+    { date: '1/15', revenue: 48000, transactions: 245 },
+    { date: '1/22', revenue: 61000, transactions: 312 },
+    { date: '1/29', revenue: 55000, transactions: 289 },
+    { date: '2/5', revenue: 67000, transactions: 334 },
+    { date: '2/12', revenue: 71000, transactions: 367 },
+    { date: '2/19', revenue: 64000, transactions: 324 },
+    { date: '2/26', revenue: 78000, transactions: 401 },
+    { date: '3/5', revenue: 82000, transactions: 423 },
+    { date: '3/12', revenue: 75000, transactions: 387 },
+    { date: '3/19', revenue: 89000, transactions: 456 },
+    { date: '3/26', revenue: 94000, transactions: 482 },
   ];
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
 
   return (
     <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-blue-600" />
-          Revenue & Transaction Trends
+          Revenue Trend (Last 30 Days)
         </CardTitle>
-        <p className="text-sm text-gray-600">Last 30 days overview</p>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis 
                 dataKey="date" 
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
+                stroke="#6b7280"
+                fontSize={12}
               />
               <YAxis 
-                yAxisId="revenue"
-                orientation="left"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
-                tickFormatter={formatCurrency}
-              />
-              <YAxis 
-                yAxisId="transactions"
-                orientation="right"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
+                stroke="#6b7280"
+                fontSize={12}
+                tickFormatter={(value) => `₱${(value / 1000).toFixed(0)}K`}
               />
               <Tooltip 
-                contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  fontSize: '14px'
-                }}
                 formatter={(value, name) => [
-                  name === 'revenue' ? formatCurrency(value as number) : value,
+                  name === 'revenue' ? `₱${value.toLocaleString()}` : value,
                   name === 'revenue' ? 'Revenue' : 'Transactions'
                 ]}
-                labelStyle={{ color: '#374151', fontWeight: 'medium' }}
+                labelStyle={{ color: '#374151' }}
+                contentStyle={{ 
+                  backgroundColor: '#f9fafb', 
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '6px'
+                }}
               />
               <Line 
-                yAxisId="revenue"
                 type="monotone" 
                 dataKey="revenue" 
                 stroke="#3b82f6" 
                 strokeWidth={3}
                 dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2 }}
-              />
-              <Line 
-                yAxisId="transactions"
-                type="monotone" 
-                dataKey="transactions" 
-                stroke="#10b981" 
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                dot={{ fill: '#10b981', strokeWidth: 2, r: 3 }}
-                activeDot={{ r: 5, stroke: '#10b981', strokeWidth: 2 }}
+                activeDot={{ r: 6, fill: '#1d4ed8' }}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
-        
-        {/* Legend */}
-        <div className="flex items-center justify-center gap-6 mt-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-0.5 bg-blue-500"></div>
-            <span className="text-gray-600">Revenue</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-0.5 bg-green-500 border-dashed"></div>
-            <span className="text-gray-600">Transactions</span>
-          </div>
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            Average daily revenue: <span className="font-semibold text-gray-900">₱67,384</span>
+          </p>
         </div>
       </CardContent>
     </Card>

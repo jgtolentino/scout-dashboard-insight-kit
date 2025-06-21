@@ -13,12 +13,14 @@ export interface FilterState {
   gender?: string;
 }
 
-interface FilterStore extends FilterState {
+interface FilterActions {
   setFilter: (key: keyof FilterState, value: any) => void;
   resetFilters: () => void;
   getQueryString: () => string;
   setFromQueryString: (queryString: string) => void;
 }
+
+interface FilterStore extends FilterState, FilterActions {}
 
 const defaultFilters: FilterState = {
   from: '',

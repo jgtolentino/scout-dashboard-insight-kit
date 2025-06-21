@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { BarChart3, Users, ShoppingCart, DollarSign, TrendingUp, Package } from "lucide-react";
 import CategoryTreemapLive from "@/components/CategoryTreemapLive";
+import ChoroplethMap from "@/components/ChoroplethMap";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
 
 const Overview = () => {
@@ -11,6 +12,15 @@ const Overview = () => {
     { title: "Total Transactions", value: "15,847", change: "+8.2%", icon: ShoppingCart, positive: true },
     { title: "Active Customers", value: "8,429", change: "+15.4%", icon: Users, positive: true },
     { title: "Avg Order Value", value: "₱186", change: "-2.1%", icon: TrendingUp, positive: false },
+  ];
+
+  // Sample regional data for the choropleth map
+  const regionalData = [
+    { name: 'NCR', value: 1200000, color: '#1e40af' },
+    { name: 'Cebu', value: 680000, color: '#3b82f6' },
+    { name: 'Davao', value: 520000, color: '#60a5fa' },
+    { name: 'Iloilo', value: 350000, color: '#93c5fd' },
+    { name: 'Baguio', value: 200000, color: '#dbeafe' },
   ];
 
   return (
@@ -54,18 +64,34 @@ const Overview = () => {
         })}
       </div>
 
-      {/* Category Mix Treemap */}
-      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5 text-blue-600" />
-            Category Mix Distribution
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CategoryTreemapLive />
-        </CardContent>
-      </Card>
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Category Mix Treemap */}
+        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Package className="h-5 w-5 text-blue-600" />
+              Category Mix Distribution
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CategoryTreemapLive />
+          </CardContent>
+        </Card>
+
+        {/* Regional Performance Map */}
+        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-purple-600" />
+              Regional Performance
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChoroplethMap data={regionalData} width={400} height={300} />
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Quick Insights */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

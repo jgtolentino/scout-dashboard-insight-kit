@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import AppSidebar from "./components/AppSidebar";
 import Overview from "./pages/Overview";
@@ -26,7 +26,8 @@ const App = () => (
             <AppSidebar />
             <SidebarInset>
               <Routes>
-                <Route path="/" element={<Overview />} />
+                <Route path="/" element={<Navigate to="/overview" replace />} />
+                <Route path="/overview" element={<Overview />} />
                 <Route path="/transaction-trends" element={<Index />} />
                 <Route path="/product-mix" element={<ProductMix />} />
                 <Route path="/consumer-behavior" element={<ConsumerBehavior />} />

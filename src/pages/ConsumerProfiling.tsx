@@ -1,17 +1,10 @@
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Users, UserCheck, TrendingUp, MapPin } from "lucide-react";
 import GeoHeatmap from "@/components/GeoHeatmap";
 
 const ConsumerProfiling = () => {
-  const [barangay, setBarangay] = useState(true);
-  const [productCategory, setProductCategory] = useState(false);
-  const [brand, setBrand] = useState(true);
-
   const metrics = [
     { title: "Total Profiles", value: "15,847", change: "+12.3%", icon: Users, positive: true },
     { title: "Active Profiles", value: "8,429", change: "+8.2%", icon: UserCheck, positive: true },
@@ -79,26 +72,26 @@ const ConsumerProfiling = () => {
         </CardContent>
       </Card>
 
-      {/* Toggles */}
+      {/* Active Filters Display */}
       <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="text-white bg-black rounded-lg p-4">
-            Toggles:
+            Active Filters:
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex items-center justify-between">
-              <Label htmlFor="barangay">Barangay</Label>
-              <Switch id="barangay" checked={barangay} onCheckedChange={setBarangay} />
+              <span className="text-sm font-medium">Barangay</span>
+              <span className="text-sm text-green-600 font-medium">✓ Active</span>
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="product-category">Product category</Label>
-              <Switch id="product-category" checked={productCategory} onCheckedChange={setProductCategory} />
+              <span className="text-sm font-medium">Product category</span>
+              <span className="text-sm text-green-600 font-medium">✓ Active</span>
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="brand">Brand</Label>
-              <Switch id="brand" checked={brand} onCheckedChange={setBrand} />
+              <span className="text-sm font-medium">Brand</span>
+              <span className="text-sm text-green-600 font-medium">✓ Active</span>
             </div>
           </div>
         </CardContent>

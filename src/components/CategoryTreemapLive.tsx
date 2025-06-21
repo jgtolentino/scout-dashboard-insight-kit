@@ -6,7 +6,8 @@ import { Treemap, ResponsiveContainer } from 'recharts';
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function CategoryTreemapLive() {
-  const { data } = useSWR('/api/category-mix', fetcher);
+  // Apply all filters by default - barangay, category, and brand filtering
+  const { data } = useSWR('/api/category-mix?filters=all', fetcher);
   
   if (!data) return <div className="animate-pulse h-48 bg-gray-100 rounded" />;
   

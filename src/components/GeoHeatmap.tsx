@@ -8,7 +8,8 @@ const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function GeoHeatmap() {
   const ref = useRef<HTMLDivElement>(null);
-  const { data } = useSWR('/api/demographics?agg=barangay', fetcher);
+  // Apply all filters by default - barangay, category, and brand filtering
+  const { data } = useSWR('/api/demographics?agg=barangay&filters=all', fetcher);
 
   useEffect(() => {
     if (!ref.current || !data) return;

@@ -8,14 +8,16 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    proxy: {
-      // Proxy API requests to the mock service
-      '/api': {
-        target: 'https://5000-icbji9l1k5o6jqrefi14i-7ba1830f.manusvm.computer',
-        changeOrigin: true,
-        secure: false,
+    // Remove proxy when using MSW - let MSW handle all API calls
+    ...(process.env.VITE_USE_MOCKS !== 'true' && {
+      proxy: {
+        '/api': {
+          target: process.env.VITE_API_URL || 'http://localhost:3001',
+          changeOrigin: true,
+          secure: false,
+        }
       }
-    }
+    })
   },
   plugins: [
     react(),

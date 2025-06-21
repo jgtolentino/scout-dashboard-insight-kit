@@ -1,14 +1,12 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { TrendingUp, BarChart3, Clock, MapPin, Package } from "lucide-react";
+import { TrendingUp, BarChart3, Clock, MapPin } from "lucide-react";
 
 const Index = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState("30d");
   const [timeOfDay, setTimeOfDay] = useState(true);
   const [barangayRegion, setBarangayRegion] = useState(true);
   const [category, setCategory] = useState(true);
@@ -23,8 +21,8 @@ const Index = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
-      <div className="flex items-center gap-3 mb-6">
+    <div className="p-8 space-y-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+      <div className="flex items-center gap-4">
         <SidebarTrigger />
         <div className="p-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl text-white">
           <TrendingUp className="h-6 w-6" />
@@ -46,8 +44,8 @@ const Index = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">{metric.title}</p>
-                    <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
+                    <p className="text-sm text-gray-600 mb-1">{metric.title}</p>
+                    <p className="text-2xl font-bold text-gray-900 mb-1">{metric.value}</p>
                     <p className={`text-sm ${metric.positive ? 'text-green-600' : 'text-red-600'}`}>
                       {metric.change} vs last month
                     </p>
@@ -62,22 +60,22 @@ const Index = () => {
 
       {/* What it includes */}
       <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-white bg-black rounded-lg p-4">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-white bg-black rounded-lg p-4 text-lg">
             What it includes:
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm">• Volume of transactions by time of day & location</p>
-              <p className="text-sm">• Peso value distribution</p>
-              <p className="text-sm">• Duration of transaction</p>
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-700">• Volume of transactions by time of day & location</p>
+              <p className="text-sm text-gray-700">• Peso value distribution</p>
+              <p className="text-sm text-gray-700">• Duration of transaction</p>
             </div>
-            <div>
-              <p className="text-sm">• Units per transaction</p>
-              <p className="text-sm">• Brand and category</p>
-              <p className="text-sm">• Average value per transaction</p>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-700">• Units per transaction</p>
+              <p className="text-sm text-gray-700">• Brand and category</p>
+              <p className="text-sm text-gray-700">• Average value per transaction</p>
             </div>
           </div>
         </CardContent>
@@ -85,34 +83,34 @@ const Index = () => {
 
       {/* Toggles */}
       <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-white bg-black rounded-lg p-4">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-white bg-black rounded-lg p-4 text-lg">
             Toggles (User can toggle to see different permutations)
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <Label htmlFor="time-toggle">Time of day</Label>
+                <Label htmlFor="time-toggle" className="text-sm font-medium">Time of day</Label>
                 <Switch id="time-toggle" checked={timeOfDay} onCheckedChange={setTimeOfDay} />
               </div>
               <div className="flex items-center justify-between">
-                <Label htmlFor="location-toggle">Barangay / Region</Label>
+                <Label htmlFor="location-toggle" className="text-sm font-medium">Barangay / Region</Label>
                 <Switch id="location-toggle" checked={barangayRegion} onCheckedChange={setBarangayRegion} />
               </div>
               <div className="flex items-center justify-between">
-                <Label htmlFor="category-toggle">Category</Label>
+                <Label htmlFor="category-toggle" className="text-sm font-medium">Category</Label>
                 <Switch id="category-toggle" checked={category} onCheckedChange={setCategory} />
               </div>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <Label htmlFor="week-toggle">Week vs weekend</Label>
+                <Label htmlFor="week-toggle" className="text-sm font-medium">Week vs weekend</Label>
                 <Switch id="week-toggle" checked={weekVsWeekend} onCheckedChange={setWeekVsWeekend} />
               </div>
               <div className="flex items-center justify-between">
-                <Label htmlFor="location-main-toggle">Location</Label>
+                <Label htmlFor="location-main-toggle" className="text-sm font-medium">Location</Label>
                 <Switch id="location-main-toggle" checked={location} onCheckedChange={setLocation} />
               </div>
             </div>
@@ -122,18 +120,18 @@ const Index = () => {
 
       {/* Visuals */}
       <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
             <BarChart3 className="h-5 w-5 text-blue-600" />
             📊 Visuals: Time series chart, box plot, heatmap
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="bg-gray-100 p-8 rounded-lg text-center">
-            <p className="text-gray-600">Time Series Chart showing transaction patterns</p>
-            <div className="mt-4 h-40 bg-gradient-to-r from-blue-500 to-purple-600 rounded opacity-20"></div>
+        <CardContent className="pt-0">
+          <div className="bg-gray-100 p-8 rounded-lg text-center mb-4">
+            <p className="text-gray-600 mb-4">Time Series Chart showing transaction patterns</p>
+            <div className="h-40 bg-gradient-to-r from-blue-500 to-purple-600 rounded opacity-20"></div>
           </div>
-          <div className="mt-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
+          <div className="p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
             <p className="text-sm text-red-700">
               🎯 <strong>Goal:</strong> Understand transaction dynamics and patterns by dimension.
             </p>

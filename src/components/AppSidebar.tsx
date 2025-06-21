@@ -1,4 +1,3 @@
-
 import { NavLink, useLocation } from "react-router-dom";
 import { 
   BarChart3, 
@@ -22,11 +21,11 @@ import {
 } from "@/components/ui/sidebar";
 
 const navItems = [
-  { path: "/overview", label: "Overview", icon: Home, description: "Executive summary and key insights" },
-  { path: "/transaction-trends", label: "Transaction Trends", icon: TrendingUp, description: "Track transaction patterns and trends" },
-  { path: "/product-mix", label: "Product Mix & SKU Info", icon: Package, description: "Product analytics and SKU insights" },
-  { path: "/consumer-behavior", label: "Consumer Behavior & Preference Signals", icon: Brain, description: "Behavioral analysis and preferences" },
-  { path: "/consumer-profiling", label: "Consumer Profiling", icon: Users, description: "Customer demographics and profiling" },
+  { path: "/overview", label: "Overview", icon: Home, description: "Executive summary" },
+  { path: "/transaction-trends", label: "Transaction Trends", icon: TrendingUp, description: "Track patterns" },
+  { path: "/product-mix", label: "Product Mix", icon: Package, description: "Product analytics" },
+  { path: "/consumer-behavior", label: "Consumer Behavior", icon: Brain, description: "Behavioral analysis" },
+  { path: "/consumer-profiling", label: "Consumer Profiling", icon: Users, description: "Demographics" },
 ];
 
 const AppSidebar = () => {
@@ -37,15 +36,15 @@ const AppSidebar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <Sidebar className="border-r">
+    <Sidebar className="border-r" collapsible="icon">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-white">
+          <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-white flex-shrink-0">
             <BarChart3 className="h-5 w-5" />
           </div>
           {!isCollapsed && (
-            <div>
-              <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+            <div className="min-w-0">
+              <span className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent truncate block">
                 Scout Analytics
               </span>
             </div>
@@ -67,22 +66,17 @@ const AppSidebar = () => {
                       asChild 
                       isActive={active}
                       className="w-full"
+                      tooltip={isCollapsed ? item.label : undefined}
                     >
                       <NavLink 
                         to={item.path} 
-                        className={({ isActive }) => 
-                          `flex items-center gap-3 px-3 py-2 transition-colors ${
-                            isActive 
-                              ? "bg-primary text-primary-foreground font-medium" 
-                              : "hover:bg-accent hover:text-accent-foreground"
-                          }`
-                        }
+                        className="flex items-center gap-3 px-3 py-2 transition-colors"
                       >
                         <Icon className="h-4 w-4 flex-shrink-0" />
                         {!isCollapsed && (
-                          <div className="flex flex-col">
-                            <span className="font-medium text-sm leading-tight">{item.label}</span>
-                            <span className="text-xs text-muted-foreground">{item.description}</span>
+                          <div className="flex flex-col min-w-0">
+                            <span className="font-medium text-sm leading-tight truncate">{item.label}</span>
+                            <span className="text-xs text-muted-foreground truncate">{item.description}</span>
                           </div>
                         )}
                       </NavLink>

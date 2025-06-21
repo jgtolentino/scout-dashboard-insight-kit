@@ -5,7 +5,8 @@ import {
   Package, 
   Users, 
   Brain,
-  Home
+  Home,
+  MessageSquare
 } from "lucide-react";
 import {
   Sidebar,
@@ -26,6 +27,8 @@ const navItems = [
   { path: "/product-mix", label: "Product Mix", icon: Package, description: "Product analytics" },
   { path: "/consumer-behavior", label: "Consumer Behavior", icon: Brain, description: "Behavioral analysis" },
   { path: "/consumer-profiling", label: "Consumer Profiling", icon: Users, description: "Demographics" },
+  { path: "/retailbot", label: "RetailBot", icon: Brain, description: "AI assistant" },
+  { path: "/ai-chat", label: "AI Chat", icon: MessageSquare, description: "Chat with AI" }
 ];
 
 const AppSidebar = () => {

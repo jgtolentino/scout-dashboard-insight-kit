@@ -4,6 +4,7 @@ import { BarChart3, Users, ShoppingCart, DollarSign, TrendingUp, Package, Eye } 
 import CategoryTreemapLive from "@/components/CategoryTreemapLive";
 import ChoroplethMap from "@/components/ChoroplethMap";
 import { AIInsightsPanel } from "@/components/ai/AIInsightsPanel";
+import AIRecommendationPanel from "@/components/ai/AIRecommendationPanel";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
 import BreadcrumbNav from "@/components/BreadcrumbNav";
 import TimeIntelligenceBar from "@/components/time/TimeIntelligenceBar";
@@ -12,6 +13,7 @@ import { useTransactionData } from "@/hooks/useTransactionData";
 import { useVolumeData } from "@/hooks/useVolumeData";
 import { useCategoryMixData } from "@/hooks/useCategoryMixData";
 import { useFilterStore } from "@/stores/filterStore";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { KpiMetric, RegionalData } from "@/types/api";
 
 interface OverviewProps {
@@ -170,8 +172,23 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
           </Card>
         </div>
 
-        {/* Quick Insights and AI Preview */}
+        {/* AI Insights and Recommendations */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Tabs defaultValue="insights">
+            <TabsList className="mb-4">
+              <TabsTrigger value="insights">AI Insights</TabsTrigger>
+              <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="insights" className="mt-0">
+              <AIInsightsPanel />
+            </TabsContent>
+            
+            <TabsContent value="recommendations" className="mt-0">
+              <AIRecommendationPanel />
+            </TabsContent>
+          </Tabs>
+
           <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
             <CardHeader>
               <CardTitle>Top Categories</CardTitle>
@@ -198,8 +215,6 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
               )}
             </CardContent>
           </Card>
-
-          <AIInsightsPanel />
         </div>
       </div>
     </div>

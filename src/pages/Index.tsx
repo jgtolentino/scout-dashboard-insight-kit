@@ -6,6 +6,7 @@ import { GlobalFilterBar } from "@/components/GlobalFilterBar";
 import BreadcrumbNav from "@/components/BreadcrumbNav";
 import TimeIntelligenceBar from "@/components/time/TimeIntelligenceBar";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import AIAgent from "@/components/ai/AIAgent";
 
 const Index = () => {
   // Hourly transaction volume data
@@ -127,79 +128,97 @@ const Index = () => {
           </Card>
         </div>
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Hourly Transaction Volume</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={hourlyData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="hour" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [value, 'Transactions']} />
-                    <Area 
-                      type="monotone" 
-                      dataKey="transactions" 
-                      stroke="#8884d8" 
-                      fill="#8884d8"
-                      fillOpacity={0.3}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Regional Distribution</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={regionalData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="region" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [value, 'Transactions']} />
-                    <Bar 
-                      dataKey="transactions" 
-                      fill="#82ca9d"
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Peak Hours Analysis */}
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle>Peak Hours Analysis</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {peakHoursData.map((peak) => (
-                <div key={peak.period} className="bg-muted/20 p-4 rounded-lg">
-                  <h3 className="font-medium text-lg mb-2">{peak.period}</h3>
-                  <p className="text-2xl font-bold">{peak.transactions.toLocaleString()}</p>
-                  <p className="text-sm text-muted-foreground">transactions</p>
-                  <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full" 
-                      style={{ width: `${(peak.transactions / 5000) * 100}%` }}
-                    ></div>
+        {/* Charts and AI Assistant */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle>Hourly Transaction Volume</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={hourlyData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="hour" />
+                        <YAxis />
+                        <Tooltip formatter={(value) => [value, 'Transactions']} />
+                        <Area 
+                          type="monotone" 
+                          dataKey="transactions" 
+                          stroke="#8884d8" 
+                          fill="#8884d8"
+                          fillOpacity={0.3}
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
                   </div>
-                </div>
-              ))}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle>Regional Distribution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={regionalData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="region" />
+                        <YAxis />
+                        <Tooltip formatter={(value) => [value, 'Transactions']} />
+                        <Bar 
+                          dataKey="transactions" 
+                          fill="#82ca9d"
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Peak Hours Analysis */}
+            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle>Peak Hours Analysis</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {peakHoursData.map((peak) => (
+                    <div key={peak.period} className="bg-muted/20 p-4 rounded-lg">
+                      <h3 className="font-medium text-lg mb-2">{peak.period}</h3>
+                      <p className="text-2xl font-bold">{peak.transactions.toLocaleString()}</p>
+                      <p className="text-sm text-muted-foreground">transactions</p>
+                      <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full" 
+                          style={{ width: `${(peak.transactions / 5000) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* AI Trends Analyst */}
+          <div className="lg:col-span-1">
+            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg h-full">
+              <CardContent className="p-0 h-full">
+                <AIAgent 
+                  initialPrompt="I'm your Transaction Trends Analyst. I can help you understand patterns in your transaction data, identify peak hours, and analyze regional performance. What would you like to know about your transaction trends?"
+                  title="Trends Analyst AI"
+                  description="Specialized in transaction pattern analysis"
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

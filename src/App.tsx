@@ -12,6 +12,7 @@ import ProductMix from "./pages/ProductMix";
 import ConsumerBehavior from "./pages/ConsumerBehavior";
 import ConsumerProfiling from "./pages/ConsumerProfiling";
 import RetailBotInsights from "./pages/RetailBotInsights";
+import AIChat from "./pages/AIChat";
 import NotFound from "./pages/NotFound";
 import HeatMapOverlay from "./components/heatmap/HeatMapOverlay";
 import OperationsMonitor from "./components/monitor/OperationsMonitor";
@@ -41,6 +42,7 @@ const App = () => {
                     <Route path="/consumer-behavior" element={<ConsumerBehavior />} />
                     <Route path="/consumer-profiling" element={<ConsumerProfiling />} />
                     <Route path="/retailbot" element={<RetailBotInsights />} />
+                    <Route path="/ai-chat" element={<AIChat />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </SidebarInset>

@@ -1,0 +1,12 @@
+﻿NAME,TYPE,LOCATION,RESOURCE GROUP,SUBSCRIPTION,LAST ACCESSED
+"ces-openai-20250609","Azure OpenAI","East US","RG-TBWA-ProjectScout-Data","TBWA-ProjectScout-Prod","8 minutes ago"
+"projectscoutdata","Storage account","","RG-TBWA-ProjectScout-Data","TBWA-ProjectScout-Prod","21 hours ago"
+"SQL-TBWA-ProjectScout-Reporting-Prod","SQL database","Australia East","RG-TBWA-ProjectScout-Compute","TBWA-ProjectScout-Prod","1 day ago"
+"sqltbwaprojectscoutserver","SQL server","Australia East","RG-TBWA-ProjectScout-Compute","TBWA-ProjectScout-Prod","1 day ago"
+"scout-analytics-dashboard","App Service","West US 2","scout-dashboard-rg","TBWA-ProjectScout-Prod","2 days ago"
+"TBWA-ProjectScout-Prod","Subscription","","","TBWA-ProjectScout-Prod","29 days ago"
+"RG-Scout-BrandDetect-Prod-AUE","Resource group","Australia East","RG-Scout-BrandDetect-Prod-AUE","TBWA-ProjectScout-Prod","1 month ago"
+"RG-TBWA-ProjectScout-Data","Resource group","East US","RG-TBWA-ProjectScout-Data","TBWA-ProjectScout-Prod","2 months ago"
+"NetworkWatcherRG","Resource group","East US","NetworkWatcherRG","TBWA-ProjectScout-Prod","3 months ago"
+"kv-projectscout-prod","Key vault","East US","RG-TBWA-ProjectScout-Data","TBWA-ProjectScout-Prod","3 months ago"
+"RG-TBWA-ProjectScout-Compute","Resource group","East US","RG-TBWA-ProjectScout-Compute","TBWA-ProjectScout-Prod","3 months ago"

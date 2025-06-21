@@ -1,0 +1,11 @@
+name,category,is_tbwa,created_at
+Brand 1,Beverages,False,2025-02-25 13:51:32
+Brand 2,Snacks,False,2025-06-02 08:54:03
+Brand 3,Snacks,False,2025-01-26 10:13:33
+Brand 4,Beverages,False,2025-03-09 05:50:52
+Brand 5,Toiletries,True,2025-05-31 01:06:54
+Brand 6,Snacks,False,2025-04-25 12:33:13
+Brand 7,Beverages,False,2025-02-24 05:12:43
+Brand 8,Beverages,True,2025-04-28 10:44:56
+Brand 9,Snacks,True,2025-01-06 07:49:23
+Brand 10,Toiletries,False,2025-04-29 09:50:04

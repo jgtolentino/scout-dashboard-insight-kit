@@ -1,0 +1,29 @@
+name: Scout CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm ci
+      - run: npm run test -- --coverage
+      - run: npm run build
+  seed-db:
+    needs: test-build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install faker psycopg2-binary
+      - run: python scripts/gen_tx_seed.py --rows 15000 --out seed/transactions.csv
+      - uses: supabase/cli-action@v1
+        with:
+          command: db seed --file seed/transactions.csv

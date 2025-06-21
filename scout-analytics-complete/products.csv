@@ -1,0 +1,26 @@
+name,brand_id,category,created_at
+Product 1,6,Beverages,2025-01-17 21:53:47
+Product 2,8,Beverages,2025-02-14 09:21:10
+Product 3,3,Snacks,2025-06-02 10:33:11
+Product 4,8,Beverages,2025-04-08 14:02:51
+Product 5,5,Snacks,2025-02-16 02:18:09
+Product 6,10,Toiletries,2025-06-02 16:50:21
+Product 7,5,Beverages,2025-05-01 19:23:40
+Product 8,1,Snacks,2025-05-22 20:08:25
+Product 9,3,Toiletries,2025-01-04 02:16:57
+Product 10,5,Beverages,2025-01-04 08:43:52
+Product 11,6,Toiletries,2025-06-11 11:49:51
+Product 12,3,Beverages,2025-01-24 20:30:46
+Product 13,10,Toiletries,2025-05-15 21:25:15
+Product 14,4,Snacks,2025-03-27 02:58:09
+Product 15,7,Snacks,2025-05-28 01:41:59
+Product 16,9,Beverages,2025-03-26 17:47:11
+Product 17,5,Toiletries,2025-04-27 11:16:33
+Product 18,1,Toiletries,2025-04-29 19:51:37
+Product 19,5,Snacks,2025-01-31 16:56:49
+Product 20,1,Snacks,2025-05-13 10:27:02
+Product 21,2,Beverages,2025-05-28 02:19:35
+Product 22,7,Toiletries,2025-04-23 11:39:29
+Product 23,4,Beverages,2025-03-31 08:31:08
+Product 24,5,Beverages,2025-04-17 16:25:31
+Product 25,6,Toiletries,2025-01-28 21:04:56

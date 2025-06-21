@@ -1,0 +1,153 @@
+To fully integrate **OpenAI via Azure** into your mock Scout Analytics environment and **mimic Databricks’ AI BI Genie (e.g., StockBot on Groq)**, you’ll need:
+
+---
+
+## 🎯 GOAL
+
+An **AI-augmented BI system** where your mock dashboard:
+
+* Accepts natural language queries
+* Runs semantic search or SQL synthesis
+* Calls OpenAI (via Azure OpenAI)
+* Returns chart-ready responses
+
+This will **mimic**:
+✅ Databricks’ Genie
+✅ Groq-powered Stockbot
+✅ LangChain/AutoSQL BI agents
+
+---
+
+## ✅ SYSTEM COMPONENTS
+
+| Layer             | Tool / Stack                                       |
+| ----------------- | -------------------------------------------------- |
+| **Frontend**      | Vite + React (already in ZIP)                      |
+| **API Gateway**   | FastAPI or Express.js                              |
+| **Model Access**  | Azure OpenAI (GPT-4 or GPT-4o via REST API)        |
+| **Database**      | SQLite or Azure SQL (seeded from your CSVs)        |
+| **Orchestration** | Custom: mimic StockBot’s natural-to-SQL agent      |
+| **Prompt Layer**  | System prompt to structure questions + SQL intents |
+
+---
+
+## 🧠 SYSTEM PROMPT (Databricks Genie–style)
+
+```txt
+You are ScoutBot, a retail BI assistant. Translate user questions into optimized SQL queries for Azure SQL. 
+
+- Database has tables: transactions, transaction_items, products, stores, customers
+- Return JSON response or SQL with annotations
+- Handle filters like: "last 7 days", "Region 4", "Oishi SKUs", "top brands by revenue"
+
+ALWAYS output:
+1. Interpreted intent
+2. SQL
+3. Chart recommendation (bar, line, pie)
+```
+
+---
+
+## 🔧 IMPLEMENTATION GUIDE
+
+### ✅ 1. Azure OpenAI Key Setup
+
+In your `.env`:
+
+```env
+AZURE_OPENAI_API_KEY=sk-...
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_DEPLOYMENT_NAME=gpt-4
+```
+
+---
+
+### ✅ 2. Create `ask.py` (FastAPI Route)
+
+```python
+from fastapi import FastAPI, Request
+import openai
+import os
+
+openai.api_key = os.getenv("AZURE_OPENAI_API_KEY")
+openai.api_base = os.getenv("AZURE_OPENAI_ENDPOINT")
+openai.api_type = 'azure'
+openai.api_version = '2023-07-01-preview'
+
+app = FastAPI()
+
+@app.post("/api/ask")
+async def ask(request: Request):
+    body = await request.json()
+    user_query = body.get("query")
+
+    response = openai.ChatCompletion.create(
+        engine=os.getenv("AZURE_DEPLOYMENT_NAME"),
+        messages=[
+            {"role": "system", "content": "You are ScoutBot, a SQL assistant..."},
+            {"role": "user", "content": user_query}
+        ]
+    )
+
+    return response.choices[0].message["content"]
+```
+
+---
+
+### ✅ 3. Frontend (React) Integration
+
+```js
+const askQuestion = async (query) => {
+  const res = await fetch("/api/ask", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query })
+  });
+  const data = await res.text();
+  setResponse(data);
+};
+```
+
+---
+
+### ✅ 4. Execute SQL Against Your Local DB (Optional)
+
+You can add a second API:
+
+```python
+@app.post("/api/sql")
+async def run_sql(request: Request):
+    sql = (await request.json()).get("sql")
+    conn = sqlite3.connect("mock.db")
+    cursor = conn.cursor()
+    result = cursor.execute(sql).fetchall()
+    return {"rows": result}
+```
+
+---
+
+### 📁 Final Structure
+
+```
+/mock_ai_bi_genie/
+├── app/
+│   ├── ask.py
+│   ├── sql.py
+│   └── db_init.py (optional)
+├── .env
+├── frontend/
+│   └── App.jsx (with /api/ask)
+├── seed/
+│   └── transactions.csv, etc.
+```
+
+---
+
+## 🧰 Want Me To Generate This For You?
+
+* ✅ `ask.py` Azure OpenAI connector
+* ✅ System prompt (ScoutBot style)
+* ✅ React → `/api/ask` integration
+* ✅ Optional: SQLite backend with `run_sql`
+
+Just say `generate full AI BI Genie mock bundle` and I’ll drop the code and scripts in one go.

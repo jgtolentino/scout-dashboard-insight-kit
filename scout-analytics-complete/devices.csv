@@ -1,0 +1,21 @@
+id,device_id,device_type,firmware_version,store_id,status,registration_time,last_seen,metadata,location,network_info,created_at,updated_at
+14d958aa-7102-4af3-a393-2a7b972ab231,DEV-986,RaspberryPi5,1.0.0,5,inactive,2025-04-12 09:52:12,2025-06-11 05:53:46,{},"45698 Erin Turnpike Apt. 003
+Gabriellachester, AR 09271",{},2025-04-18 03:21:59,2025-01-23 01:30:14
+98322e24-c49a-4fab-917c-1f997e2f9c5f,DEV-613,RaspberryPi5,1.0.0,5,maintenance,2025-01-06 15:47:16,2025-03-15 11:19:56,{},"42553 Wendy Gardens Suite 615
+Juliemouth, OH 33838",{},2025-01-30 08:04:01,2025-03-05 00:04:27
+daaed5b8-abbc-459a-80ce-6f8eb27a2114,DEV-896,RaspberryPi5,1.0.0,1,maintenance,2025-06-11 21:41:04,2025-01-10 16:41:14,{},"10602 Robinson Summit
+Brendabury, WV 12137",{},2025-02-23 06:33:12,2025-05-29 22:26:49
+a743b12c-2ada-4d55-ab72-ecac6f4b4503,DEV-459,RaspberryPi5,1.0.0,2,inactive,2025-02-19 16:39:47,2025-03-30 02:50:11,{},"15439 Mills Hill
+East Jeanette, OH 63508",{},2025-02-22 05:06:32,2025-03-08 23:52:21
+54fc4a34-56a2-4aec-9fb0-1277943f73cd,DEV-486,RaspberryPi5,1.0.0,3,maintenance,2025-05-14 03:19:00,2025-03-09 13:37:12,{},"17716 Heidi Brook Apt. 513
+Vincentberg, NJ 34432",{},2025-01-21 06:30:30,2025-01-16 23:44:08
+d01c6672-757d-446b-b068-0992ec5dacef,DEV-273,RaspberryPi5,1.0.0,5,active,2025-01-27 14:01:25,2025-05-29 14:22:41,{},"03975 Jacob Islands Apt. 662
+Lopezbury, FL 89398",{},2025-02-22 19:20:48,2025-06-08 10:30:00
+99b3dd0c-6aa8-4d4f-9ba5-84c84ae32e80,DEV-692,RaspberryPi5,1.0.0,5,active,2025-01-18 14:28:06,2025-05-15 08:14:57,{},"1232 Ronald Square Suite 885
+Guerreromouth, MI 85764",{},2025-02-27 18:04:05,2025-04-09 10:13:44
+2feb9cb4-fa65-44f5-9be4-62a97f9720a4,DEV-925,RaspberryPi5,1.0.0,3,inactive,2025-01-14 18:53:20,2025-03-10 21:12:30,{},"Unit 4359 Box 9756
+DPO AP 99220",{},2025-01-08 01:39:12,2025-06-07 11:29:53
+802e4ee3-f2b0-46f1-aa7c-96894497dc80,DEV-485,RaspberryPi5,1.0.0,3,inactive,2025-04-06 23:31:04,2025-02-10 11:23:45,{},"4695 Theresa Drive Apt. 641
+New Virginiabury, FL 32918",{},2025-01-27 21:39:22,2025-01-22 21:14:56
+d1747cdc-bfcb-4335-ba3d-813b7e50c016,DEV-679,RaspberryPi5,1.0.0,4,active,2025-03-02 05:33:50,2025-03-25 15:43:15,{},"9249 Jeffrey Hills Apt. 484
+Lake Emily, TN 87703",{},2025-03-02 15:21:00,2025-04-29 20:35:03

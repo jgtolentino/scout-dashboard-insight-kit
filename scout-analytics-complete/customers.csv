@@ -1,0 +1,51 @@
+customer_id,name,age,gender,region,city,barangay,loyalty_tier,total_spent,visit_count,created_at
+CUST-0001,James Moyer,36,Female,Montana,South Emilyview,Justin Run,regular,3490.68,30,2025-01-12 12:28:51
+CUST-0002,Anthony Nixon,56,Female,Rhode Island,Harrisbury,Crystal Rue,regular,1545.73,10,2025-02-16 01:19:05
+CUST-0003,Spencer Stein,20,Female,Alabama,Port Tonystad,Vazquez Centers,silver,2616.99,12,2025-02-27 08:27:51
+CUST-0004,Jake Booker,40,Other,South Carolina,Paultown,David Bypass,regular,2202.36,29,2025-03-11 03:33:30
+CUST-0005,Steven Jordan Jr.,46,Other,Louisiana,Lake Robert,Scott Trafficway,regular,1226.58,22,2025-04-13 10:49:32
+CUST-0006,Kimberly Moore,38,Female,Minnesota,Lake Amanda,Samantha Fort,regular,4237.11,16,2025-01-01 01:50:36
+CUST-0007,Eddie Taylor,61,Other,Washington,South Annborough,Jennifer Extensions,silver,3549.81,25,2025-01-05 17:41:59
+CUST-0008,Craig Luna,39,Male,Kansas,Ginafurt,Robert Cliffs,regular,1435.1,19,2025-05-09 02:14:17
+CUST-0009,Debra Smith,48,Female,Oregon,Smithview,Michael Circles,silver,3082.07,20,2025-01-11 05:55:05
+CUST-0010,Elizabeth Weiss,51,Other,Virginia,Lake Theresaville,Peters Street,regular,1266.28,28,2025-02-10 22:47:42
+CUST-0011,Rebecca Stevenson,43,Male,Minnesota,West Audreyburgh,Walker Well,silver,585.34,11,2025-05-26 02:53:07
+CUST-0012,Ashley Martinez,25,Female,Kentucky,Andreafurt,Cobb Manors,gold,3799.87,26,2025-05-19 17:09:16
+CUST-0013,David Morris,28,Other,Texas,Oliviahaven,Butler Parks,regular,2591.65,11,2025-05-04 14:36:26
+CUST-0014,Alexander Taylor,39,Female,Alaska,East Anthonyland,Ruiz Squares,regular,2421.8,2,2025-01-21 15:57:42
+CUST-0015,Lori Burns,42,Male,Arizona,Yorkburgh,Crystal Avenue,regular,3178.55,28,2025-05-19 12:25:35
+CUST-0016,Christina Hill,30,Male,Tennessee,New Brandonfurt,Miller Knoll,regular,3352.33,12,2025-03-18 00:51:43
+CUST-0017,Candice Brown,24,Male,Louisiana,West Mary,Nathan Ford,silver,4153.92,7,2025-03-26 09:14:11
+CUST-0018,Kathryn Andrews,31,Male,Georgia,Sanchezmouth,Lisa Mews,regular,1741.24,1,2025-01-16 14:49:44
+CUST-0019,Keith Mccullough,19,Male,Arkansas,Rodriguezton,Nicole Shoal,gold,1793.76,9,2025-01-17 21:42:33
+CUST-0020,Johnathan Herrera,50,Other,California,West Feliciashire,Jones Forges,silver,2205.7,26,2025-03-20 02:58:41
+CUST-0021,Bobby Barr,21,Other,Hawaii,Lake Robert,Richard Extension,gold,1712.83,19,2025-02-19 14:38:26
+CUST-0022,Gregory Welch,40,Other,Wisconsin,East Shannonstad,Thomas Flat,regular,2573.69,28,2025-03-25 19:56:59
+CUST-0023,Grace Smith,55,Female,Alabama,Sandyberg,Michelle Drive,silver,2533.69,25,2025-01-11 04:29:33
+CUST-0024,Mr. John Mcdonald MD,26,Other,Washington,South Sharonland,Jerry Flat,gold,781.83,24,2025-05-28 09:16:46
+CUST-0025,Bridget Huerta,61,Female,Florida,West Peterside,Frederick Radial,silver,733.95,24,2025-01-30 19:38:11
+CUST-0026,Abigail Jones,57,Female,California,North Nicolemouth,Ramirez Harbor,gold,3001.05,16,2025-02-17 03:58:17
+CUST-0027,Adam Townsend,31,Female,South Carolina,West Jason,Lisa Highway,gold,1575.98,8,2025-03-20 19:51:24
+CUST-0028,Amber Brandt,28,Other,Connecticut,South Derrick,Jill Burgs,silver,919.71,10,2025-05-11 14:43:28
+CUST-0029,Tim Fisher DDS,37,Male,Missouri,Haneyville,Christopher Shores,silver,3854.05,14,2025-01-08 00:34:48
+CUST-0030,Rebecca Chan,47,Other,Tennessee,East William,Megan Extensions,gold,4006.18,3,2025-06-19 08:54:28
+CUST-0031,Mark Jones,54,Female,Maryland,East Kevin,Bradford Spring,silver,1819.16,27,2025-04-27 10:59:40
+CUST-0032,Mary Brooks,34,Male,Florida,Port Charlesmouth,Diaz Lakes,silver,4683.86,18,2025-05-24 11:35:55
+CUST-0033,Leslie Christian,24,Male,Tennessee,Timothymouth,Barnes Loop,gold,2054.81,3,2025-05-29 09:19:43
+CUST-0034,Christopher Carpenter,54,Female,Virginia,Huntchester,Gonzalez Square,regular,981.01,1,2025-05-05 23:17:36
+CUST-0035,Sheri Curtis,65,Male,Maine,New Vanessaton,Nelson Rest,silver,3686.9,17,2025-01-19 11:42:59
+CUST-0036,Michael Brown,23,Male,Colorado,New Jasmin,Stewart Trail,gold,2229.49,2,2025-01-01 09:57:08
+CUST-0037,Amy Powell,42,Other,Colorado,Scottshire,Dana Expressway,silver,933.18,14,2025-02-02 17:07:42
+CUST-0038,Brady Jones,30,Female,Virginia,North Seantown,Lee Unions,regular,2089.25,2,2025-04-16 21:29:43
+CUST-0039,Dr. Timothy Klein,56,Other,Colorado,North Lisa,Patricia Oval,silver,568.28,15,2025-05-04 19:32:29
+CUST-0040,Makayla Williams,48,Female,Alabama,Kimport,Zachary Via,regular,2095.74,28,2025-01-21 02:22:14
+CUST-0041,Brooke Wallace,36,Other,South Dakota,Kellyburgh,Henderson Rue,silver,4929.48,1,2025-04-02 13:56:44
+CUST-0042,Mark Noble,21,Male,Indiana,Bakerville,Christopher Cove,gold,1950.29,13,2025-06-09 19:12:32
+CUST-0043,Timothy Powers,48,Female,Kansas,Kellyfurt,Sanders Terrace,silver,4434.06,24,2025-04-19 09:37:43
+CUST-0044,Caroline Acosta,51,Female,Arizona,East Eric,Karina Inlet,gold,1007.22,16,2025-01-11 17:43:23
+CUST-0045,David Espinoza,48,Other,Wisconsin,Rachelville,Hines Oval,regular,2412.48,23,2025-01-04 22:29:20
+CUST-0046,Harry Francis,31,Female,Rhode Island,West Jamesberg,Cook Flats,regular,516.44,5,2025-02-06 19:46:53
+CUST-0047,Kristine Harris,33,Male,Iowa,Sanchezstad,Kristin Brook,regular,4526.24,9,2025-06-07 20:06:34
+CUST-0048,Jeremy Middleton,63,Male,Texas,Garnerstad,Kristie Walks,gold,2839.11,26,2025-04-29 07:02:47
+CUST-0049,Meghan Winters,54,Male,New York,Thomasberg,Julie Freeway,silver,4377.08,30,2025-06-13 22:29:52
+CUST-0050,Peggy Sandoval,33,Other,Tennessee,South Jesus,Christina Crossing,gold,2038.54,16,2025-03-09 04:45:52

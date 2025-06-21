@@ -1,0 +1,27 @@
+version: "1.2"
+pages:
+  - overview
+  - transaction_trends
+  - product_mix
+  - consumer_insights
+  - retailbot_insights
+api:
+  endpoints:
+    - GET /api/...
+    - POST /api/retailbot
+backend:
+  tables:
+    - transactions
+    - adbot_logs
+features:
+  retailbot_insights:
+    route: /retailbot
+    components:
+      - chat_input
+      - model_selector
+      - action_cards
+      - diagnostics_panel
+    callbacks:
+      send_query: POST /api/retailbot
+      apply_action: setFilter + navigate
+

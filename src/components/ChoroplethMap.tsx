@@ -1,5 +1,7 @@
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface RegionData {
   name: string;
@@ -18,59 +20,8 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
   width = 600, 
   height = 400 
 }) => {
-  // Complete Philippine regions with realistic polygon shapes
-  const allRegions = [
-    { 
-      name: 'NCR', 
-      path: 'M280,180 L320,175 L325,185 L330,195 L325,205 L315,210 L305,215 L290,210 L275,200 L275,185 Z', 
-      center: { x: 300, y: 195 }
-    },
-    { 
-      name: 'Cebu', 
-      path: 'M350,260 L365,255 L375,265 L380,275 L385,285 L380,295 L370,300 L360,305 L350,300 L345,290 L340,280 L345,270 Z', 
-      center: { x: 365, y: 280 }
-    },
-    { 
-      name: 'Davao', 
-      path: 'M400,320 L420,315 L435,325 L445,335 L450,350 L445,365 L435,375 L420,380 L405,375 L395,365 L390,350 L395,335 Z', 
-      center: { x: 420, y: 350 }
-    },
-    { 
-      name: 'Iloilo', 
-      path: 'M300,280 L315,275 L325,285 L330,295 L325,305 L315,315 L305,320 L295,315 L285,305 L280,295 L285,285 Z', 
-      center: { x: 305, y: 295 }
-    },
-    { 
-      name: 'Baguio', 
-      path: 'M260,140 L280,135 L290,145 L295,155 L290,165 L280,175 L270,180 L260,175 L250,165 L245,155 L250,145 Z', 
-      center: { x: 270, y: 155 }
-    },
-    { 
-      name: 'Palawan', 
-      path: 'M180,300 L200,295 L210,305 L215,320 L220,340 L215,360 L205,375 L195,380 L185,375 L175,360 L170,340 L175,320 L180,305 Z', 
-      center: { x: 195, y: 340 }
-    },
-    { 
-      name: 'Zamboanga', 
-      path: 'M320,380 L340,375 L350,385 L355,400 L350,415 L340,425 L330,430 L320,425 L310,415 L305,400 L310,385 Z', 
-      center: { x: 330, y: 405 }
-    },
-    { 
-      name: 'Cagayan', 
-      path: 'M380,120 L400,115 L415,125 L420,140 L415,155 L400,165 L385,170 L375,165 L365,155 L360,140 L365,125 Z', 
-      center: { x: 390, y: 145 }
-    },
-    { 
-      name: 'Leyte', 
-      path: 'M390,240 L405,235 L415,245 L420,260 L415,275 L405,285 L395,290 L385,285 L375,275 L370,260 L375,245 Z', 
-      center: { x: 395, y: 260 }
-    },
-    { 
-      name: 'Bicol', 
-      path: 'M320,220 L340,215 L350,225 L355,240 L350,255 L340,265 L330,270 L320,265 L310,255 L305,240 L310,225 Z', 
-      center: { x: 330, y: 245 }
-    }
-  ];
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
 
   // Color scale function for data-driven coloring
   const getColorFromValue = (value: number, maxValue: number) => {
@@ -84,21 +35,6 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
     return '#1e40af'; // Dark blue
   };
 
-  const maxValue = Math.max(...data.map(d => d.value), 1);
-
-  const getRegionColor = (regionName: string) => {
-    const regionData = data.find(d => d.name === regionName);
-    if (regionData) {
-      return regionData.color || getColorFromValue(regionData.value, maxValue);
-    }
-    return '#e2e8f0'; // Default light gray for regions without data
-  };
-
-  const getRegionValue = (regionName: string) => {
-    const regionData = data.find(d => d.name === regionName);
-    return regionData ? regionData.value : 0;
-  };
-
   const formatValue = (value: number) => {
     if (value === 0) return 'No data';
     if (value >= 1000000) {
@@ -109,63 +45,202 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
     return `₱${value.toLocaleString()}`;
   };
 
+  useEffect(() => {
+    if (!mapContainer.current) return;
+
+    // Initialize map
+    mapboxgl.accessToken = 'pk.eyJ1Ijoiamd0b2xlbnRpbm8iLCJhIjoiY21jMmNycWRiMDc0ajJqcHZoaDYyeTJ1NiJ9.Dns6WOql16BUQ4l7otaeww';
+    
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [122.5, 12.5], // Philippines center
+      zoom: 5.5,
+      pitch: 0,
+    });
+
+    // Add navigation controls
+    map.current.addControl(
+      new mapboxgl.NavigationControl({
+        visualizePitch: true,
+      }),
+      'top-right'
+    );
+
+    map.current.on('load', () => {
+      if (!map.current) return;
+
+      // Sample Philippine regions GeoJSON data
+      const philippineRegions = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: { name: 'NCR', region: 'National Capital Region' },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[
+                [121.0, 14.6], [121.1, 14.6], [121.1, 14.7], [121.0, 14.7], [121.0, 14.6]
+              ]]
+            }
+          },
+          {
+            type: 'Feature',
+            properties: { name: 'Cebu', region: 'Central Visayas' },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[
+                [123.8, 10.2], [124.0, 10.2], [124.0, 10.4], [123.8, 10.4], [123.8, 10.2]
+              ]]
+            }
+          },
+          {
+            type: 'Feature',
+            properties: { name: 'Davao', region: 'Davao Region' },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[
+                [125.5, 7.0], [125.7, 7.0], [125.7, 7.2], [125.5, 7.2], [125.5, 7.0]
+              ]]
+            }
+          },
+          {
+            type: 'Feature',
+            properties: { name: 'Iloilo', region: 'Western Visayas' },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[
+                [122.5, 10.7], [122.7, 10.7], [122.7, 10.9], [122.5, 10.9], [122.5, 10.7]
+              ]]
+            }
+          },
+          {
+            type: 'Feature',
+            properties: { name: 'Baguio', region: 'Cordillera Administrative Region' },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[
+                [120.5, 16.3], [120.7, 16.3], [120.7, 16.5], [120.5, 16.5], [120.5, 16.3]
+              ]]
+            }
+          }
+        ]
+      };
+
+      // Add source
+      map.current.addSource('regions', {
+        type: 'geojson',
+        data: philippineRegions
+      });
+
+      // Calculate max value for color scaling
+      const maxValue = Math.max(...data.map(d => d.value), 1);
+
+      // Get region color function
+      const getRegionColor = (regionName: string) => {
+        const regionData = data.find(d => d.name === regionName);
+        if (regionData) {
+          return regionData.color || getColorFromValue(regionData.value, maxValue);
+        }
+        return '#e2e8f0'; // Default light gray for regions without data
+      };
+
+      // Add fill layer with data-driven styling
+      map.current.addLayer({
+        id: 'regions-fill',
+        type: 'fill',
+        source: 'regions',
+        paint: {
+          'fill-color': [
+            'case',
+            ['==', ['get', 'name'], 'NCR'], getRegionColor('NCR'),
+            ['==', ['get', 'name'], 'Cebu'], getRegionColor('Cebu'),
+            ['==', ['get', 'name'], 'Davao'], getRegionColor('Davao'),
+            ['==', ['get', 'name'], 'Iloilo'], getRegionColor('Iloilo'),
+            ['==', ['get', 'name'], 'Baguio'], getRegionColor('Baguio'),
+            '#e2e8f0' // fallback color
+          ],
+          'fill-opacity': 0.8
+        }
+      });
+
+      // Add border layer
+      map.current.addLayer({
+        id: 'regions-border',
+        type: 'line',
+        source: 'regions',
+        paint: {
+          'line-color': '#1e293b',
+          'line-width': 2
+        }
+      });
+
+      // Add labels
+      map.current.addLayer({
+        id: 'regions-labels',
+        type: 'symbol',
+        source: 'regions',
+        layout: {
+          'text-field': ['get', 'name'],
+          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+          'text-size': 12,
+          'text-anchor': 'center'
+        },
+        paint: {
+          'text-color': '#1e293b',
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 1
+        }
+      });
+
+      // Add click event for regions
+      map.current.on('click', 'regions-fill', (e) => {
+        if (e.features && e.features[0]) {
+          const regionName = e.features[0].properties?.name;
+          const regionData = data.find(d => d.name === regionName);
+          const value = regionData ? regionData.value : 0;
+          
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <div class="p-2">
+                <h3 class="font-bold">${regionName}</h3>
+                <p class="text-sm">Sales: ${formatValue(value)}</p>
+              </div>
+            `)
+            .addTo(map.current!);
+        }
+      });
+
+      // Change cursor on hover
+      map.current.on('mouseenter', 'regions-fill', () => {
+        if (map.current) {
+          map.current.getCanvas().style.cursor = 'pointer';
+        }
+      });
+
+      map.current.on('mouseleave', 'regions-fill', () => {
+        if (map.current) {
+          map.current.getCanvas().style.cursor = '';
+        }
+      });
+    });
+
+    // Cleanup
+    return () => {
+      map.current?.remove();
+    };
+  }, [data]);
+
+  const maxValue = Math.max(...data.map(d => d.value), 1);
+
   return (
     <div className="w-full">
-      <svg 
-        width={width} 
-        height={height} 
-        viewBox={`0 0 ${width} ${height}`}
-        className="w-full h-auto border rounded-lg bg-gradient-to-br from-blue-50 to-slate-100"
-      >
-        {/* Background ocean/water */}
-        <rect width={width} height={height} fill="#e0f2fe" />
-        
-        {/* All region polygons - show every region */}
-        {allRegions.map((region) => {
-          const regionValue = getRegionValue(region.name);
-          const regionColor = getRegionColor(region.name);
-          const hasData = regionValue > 0;
-          
-          return (
-            <g key={region.name}>
-              {/* Main region polygon */}
-              <path
-                d={region.path}
-                fill={regionColor}
-                stroke="#1e293b"
-                strokeWidth="1.5"
-                className={`hover:opacity-80 hover:stroke-blue-600 transition-all duration-200 cursor-pointer filter drop-shadow-sm ${
-                  hasData ? 'hover:stroke-width-3' : ''
-                }`}
-              />
-              
-              {/* Region name label - always show */}
-              <text
-                x={region.center.x}
-                y={region.center.y - 5}
-                textAnchor="middle"
-                className="text-xs font-semibold fill-slate-700 pointer-events-none"
-                style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.8)' }}
-              >
-                {region.name}
-              </text>
-              
-              {/* Value label - show for all regions */}
-              <text
-                x={region.center.x}
-                y={region.center.y + 10}
-                textAnchor="middle"
-                className={`text-xs pointer-events-none ${
-                  hasData ? 'font-bold fill-slate-800' : 'font-medium fill-slate-500'
-                }`}
-                style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.8)' }}
-              >
-                {formatValue(regionValue)}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
+      <div 
+        ref={mapContainer} 
+        className="w-full rounded-lg shadow-lg border"
+        style={{ height: `${height}px` }}
+      />
       
       {/* Enhanced Legend */}
       <div className="mt-4 space-y-2">

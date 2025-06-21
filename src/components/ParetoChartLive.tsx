@@ -51,7 +51,9 @@ export default function ParetoChartLive() {
         <YAxis yAxisId="right" orientation="right" />
         <Tooltip 
           formatter={(value, name) => [
-            name === 'revenue' ? `₱${value.toLocaleString()}` : `${value.toFixed(1)}%`,
+            name === 'revenue' 
+              ? `₱${typeof value === 'number' ? value.toLocaleString() : value}` 
+              : `${typeof value === 'number' ? value.toFixed(1) : value}%`,
             name === 'revenue' ? 'Revenue' : name === 'cumulative' ? 'Cumulative %' : 'Share %'
           ]}
         />

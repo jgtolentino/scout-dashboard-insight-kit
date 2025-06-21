@@ -5,7 +5,8 @@ import {
   TrendingUp, 
   Package, 
   Users, 
-  Brain
+  Brain,
+  Home
 } from "lucide-react";
 import {
   Sidebar,
@@ -21,7 +22,8 @@ import {
 } from "@/components/ui/sidebar";
 
 const navItems = [
-  { path: "/", label: "Transaction Trends", icon: TrendingUp, description: "Track transaction patterns and trends" },
+  { path: "/", label: "Overview", icon: Home, description: "Executive summary and key insights" },
+  { path: "/transaction-trends", label: "Transaction Trends", icon: TrendingUp, description: "Track transaction patterns and trends" },
   { path: "/product-mix", label: "Product Mix & SKU Info", icon: Package, description: "Product analytics and SKU insights" },
   { path: "/consumer-behavior", label: "Consumer Behavior & Preference Signals", icon: Brain, description: "Behavioral analysis and preferences" },
   { path: "/consumer-profiling", label: "Consumer Profiling", icon: Users, description: "Customer demographics and profiling" },

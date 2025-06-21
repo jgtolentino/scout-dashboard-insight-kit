@@ -4,7 +4,7 @@ import React from 'react';
 interface RegionData {
   name: string;
   value: number;
-  color: string;
+  color?: string;
 }
 
 interface ChoroplethMapProps {
@@ -18,8 +18,8 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
   width = 600, 
   height = 400 
 }) => {
-  // More realistic Philippine regions with better polygon shapes
-  const regions = [
+  // Complete Philippine regions with realistic polygon shapes
+  const allRegions = [
     { 
       name: 'NCR', 
       path: 'M280,180 L320,175 L325,185 L330,195 L325,205 L315,210 L305,215 L290,210 L275,200 L275,185 Z', 
@@ -45,6 +45,31 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
       path: 'M260,140 L280,135 L290,145 L295,155 L290,165 L280,175 L270,180 L260,175 L250,165 L245,155 L250,145 Z', 
       center: { x: 270, y: 155 }
     },
+    { 
+      name: 'Palawan', 
+      path: 'M180,300 L200,295 L210,305 L215,320 L220,340 L215,360 L205,375 L195,380 L185,375 L175,360 L170,340 L175,320 L180,305 Z', 
+      center: { x: 195, y: 340 }
+    },
+    { 
+      name: 'Zamboanga', 
+      path: 'M320,380 L340,375 L350,385 L355,400 L350,415 L340,425 L330,430 L320,425 L310,415 L305,400 L310,385 Z', 
+      center: { x: 330, y: 405 }
+    },
+    { 
+      name: 'Cagayan', 
+      path: 'M380,120 L400,115 L415,125 L420,140 L415,155 L400,165 L385,170 L375,165 L365,155 L360,140 L365,125 Z', 
+      center: { x: 390, y: 145 }
+    },
+    { 
+      name: 'Leyte', 
+      path: 'M390,240 L405,235 L415,245 L420,260 L415,275 L405,285 L395,290 L385,285 L375,275 L370,260 L375,245 Z', 
+      center: { x: 395, y: 260 }
+    },
+    { 
+      name: 'Bicol', 
+      path: 'M320,220 L340,215 L350,225 L355,240 L350,255 L340,265 L330,270 L320,265 L310,255 L305,240 L310,225 Z', 
+      center: { x: 330, y: 245 }
+    }
   ];
 
   // Color scale function for data-driven coloring
@@ -66,7 +91,7 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
     if (regionData) {
       return regionData.color || getColorFromValue(regionData.value, maxValue);
     }
-    return '#f1f5f9'; // Default light gray
+    return '#e2e8f0'; // Default light gray for regions without data
   };
 
   const getRegionValue = (regionName: string) => {
@@ -75,6 +100,7 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
   };
 
   const formatValue = (value: number) => {
+    if (value === 0) return 'No data';
     if (value >= 1000000) {
       return `₱${(value / 1000000).toFixed(1)}M`;
     } else if (value >= 1000) {
@@ -94,10 +120,11 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
         {/* Background ocean/water */}
         <rect width={width} height={height} fill="#e0f2fe" />
         
-        {/* Region polygons */}
-        {regions.map((region) => {
+        {/* All region polygons - show every region */}
+        {allRegions.map((region) => {
           const regionValue = getRegionValue(region.name);
           const regionColor = getRegionColor(region.name);
+          const hasData = regionValue > 0;
           
           return (
             <g key={region.name}>
@@ -106,11 +133,13 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
                 d={region.path}
                 fill={regionColor}
                 stroke="#1e293b"
-                strokeWidth="2"
-                className="hover:opacity-80 hover:stroke-blue-600 transition-all duration-200 cursor-pointer filter drop-shadow-sm"
+                strokeWidth="1.5"
+                className={`hover:opacity-80 hover:stroke-blue-600 transition-all duration-200 cursor-pointer filter drop-shadow-sm ${
+                  hasData ? 'hover:stroke-width-3' : ''
+                }`}
               />
               
-              {/* Region name label */}
+              {/* Region name label - always show */}
               <text
                 x={region.center.x}
                 y={region.center.y - 5}
@@ -121,18 +150,18 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
                 {region.name}
               </text>
               
-              {/* Value label */}
-              {regionValue > 0 && (
-                <text
-                  x={region.center.x}
-                  y={region.center.y + 10}
-                  textAnchor="middle"
-                  className="text-xs font-bold fill-slate-800 pointer-events-none"
-                  style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.8)' }}
-                >
-                  {formatValue(regionValue)}
-                </text>
-              )}
+              {/* Value label - show for all regions */}
+              <text
+                x={region.center.x}
+                y={region.center.y + 10}
+                textAnchor="middle"
+                className={`text-xs pointer-events-none ${
+                  hasData ? 'font-bold fill-slate-800' : 'font-medium fill-slate-500'
+                }`}
+                style={{ textShadow: '1px 1px 2px rgba(255,255,255,0.8)' }}
+              >
+                {formatValue(regionValue)}
+              </text>
             </g>
           );
         })}
@@ -141,10 +170,14 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
       {/* Enhanced Legend */}
       <div className="mt-4 space-y-2">
         <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
-          <span>Sales Performance</span>
-          <span>₱{formatValue(maxValue)} max</span>
+          <span>Regional Sales Performance</span>
+          <span>{data.length > 0 ? `₱${formatValue(maxValue)} max` : 'All regions shown'}</span>
         </div>
         <div className="flex items-center justify-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <div className="w-4 h-4 bg-slate-200 border rounded"></div>
+            <span className="text-xs text-gray-600">No Data</span>
+          </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 bg-blue-100 border rounded"></div>
             <span className="text-xs text-gray-600">Low</span>

@@ -11,12 +11,39 @@ interface AIRecommendationPanelProps {
   query?: string;
 }
 
-export function AIRecommendationPanel({
+export default function AIRecommendationPanel({
   title = "AI Recommendations",
   query = "Generate recommendations based on current data"
 }: AIRecommendationPanelProps) {
   const filters = useFilterStore();
-  const { data, isLoading, error, refetch } = useRetailBot(query, filters);
+  
+  // Mock data for recommendations
+  const recommendations = [
+    {
+      id: '1',
+      title: 'Optimize Pricing for Beverages',
+      description: 'Analysis shows 15% price elasticity in beverages. Recommend 8% price increase on premium SKUs during peak hours (6-8 PM) to maximize revenue without significant volume loss.',
+      confidence: 89,
+      category: 'pricing',
+      filters: { categories: ['Beverages'], hour: '18-20' }
+    },
+    {
+      id: '2',
+      title: 'Restock Alert: Coca-Cola 500ml',
+      description: 'Current stock levels at 23% capacity. Based on historical demand patterns, recommend immediate restock of 2,500 units to prevent stockouts during weekend rush.',
+      confidence: 94,
+      category: 'inventory',
+      filters: { brands: ['Coca-Cola'] }
+    },
+    {
+      id: '3',
+      title: 'Cross-Category Bundle Promotion',
+      description: 'Data indicates 67% of beverage buyers also purchase snacks. Launch "Combo Deal" promotion: Buy 2 beverages + 1 snack for 15% discount to increase basket size.',
+      confidence: 82,
+      category: 'promotion',
+      filters: { categories: ['Beverages', 'Food & Snacks'] }
+    }
+  ];
   
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -47,84 +74,41 @@ export function AIRecommendationPanel({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {isLoading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse border rounded-lg p-4 space-y-3">
+        <div className="space-y-4">
+          {recommendations.map((action, index) => {
+            const IconComponent = getCategoryIcon(action.category);
+            return (
+              <div key={index} className="border rounded-lg p-4 space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 bg-gray-200 rounded"></div>
+                  <div className={`p-2 rounded-lg ${getCategoryColor(action.category)}`}>
+                    <IconComponent className="h-4 w-4 text-white" />
+                  </div>
                   <div className="flex-1">
-                    <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-full mb-1"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium text-sm">{action.title}</h4>
+                      <Badge variant="outline">
+                        {action.confidence}% confidence
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {action.description}
+                    </p>
+                    <Button variant="outline" size="sm" className="text-xs">
+                      Apply Action <ArrowRight className="h-3 w-3 ml-1" />
+                    </Button>
                   </div>
                 </div>
               </div>
-            ))}
+            );
+          })}
+          
+          <div className="pt-4 border-t text-xs text-muted-foreground">
+            <div className="flex justify-between">
+              <span>Data Quality: good</span>
+              <span>Response Time: 842ms</span>
+            </div>
           </div>
-        ) : error ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>Error loading recommendations</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="mt-4"
-              onClick={() => refetch()}
-            >
-              Try Again
-            </Button>
-          </div>
-        ) : data?.actions && data.actions.length > 0 ? (
-          <div className="space-y-4">
-            {data.actions.map((action, index) => {
-              const IconComponent = getCategoryIcon(action.category);
-              return (
-                <div key={index} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg ${getCategoryColor(action.category)}`}>
-                      <IconComponent className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-sm">{action.title}</h4>
-                        <Badge variant="outline">
-                          {action.confidence}% confidence
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        {action.description}
-                      </p>
-                      <Button variant="outline" size="sm" className="text-xs">
-                        Apply Action <ArrowRight className="h-3 w-3 ml-1" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            
-            {data.diagnostics && (
-              <div className="pt-4 border-t text-xs text-muted-foreground">
-                <div className="flex justify-between">
-                  <span>Data Quality: {data.diagnostics.data_quality}</span>
-                  <span>Response Time: {data.diagnostics.response_time_ms}ms</span>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>No recommendations available for current filters</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="mt-4"
-              onClick={() => refetch()}
-            >
-              Generate Recommendations
-            </Button>
-          </div>
-        )}
+        </div>
       </CardContent>
     </Card>
   );

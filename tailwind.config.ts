@@ -89,8 +89,34 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
-			}
+			},
+			typography: {
+				DEFAULT: {
+					css: {
+						maxWidth: '100%',
+						code: {
+							color: 'var(--tw-prose-code)',
+							fontWeight: '600',
+							backgroundColor: 'var(--tw-prose-code-bg)',
+							borderRadius: '0.25rem',
+							paddingLeft: '0.25rem',
+							paddingRight: '0.25rem',
+							paddingTop: '0.125rem',
+							paddingBottom: '0.125rem',
+						},
+						'code::before': {
+							content: '""',
+						},
+						'code::after': {
+							content: '""',
+						},
+					},
+				},
+			},
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		require('@tailwindcss/typography'),
+	],
 } satisfies Config;

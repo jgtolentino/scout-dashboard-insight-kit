@@ -1,15 +1,20 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { BarChart3, Users, ShoppingCart, DollarSign, TrendingUp, Package } from "lucide-react";
+import { BarChart3, Users, ShoppingCart, DollarSign, TrendingUp, Package, Eye } from "lucide-react";
 import CategoryTreemapLive from "@/components/CategoryTreemapLive";
 import ChoroplethMap from "@/components/ChoroplethMap";
-import AIInsightsPreview from "@/components/AIInsightsPreview";
+import { AIInsightsPanel } from "@/components/ai/AIInsightsPanel";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
-import BreadcrumbNav from "@/components/BreadcrumbNav";
+import BreadcrumbNav from "@/components/navigation/BreadcrumbNav";
+import TimeIntelligenceBar from "@/components/time/TimeIntelligenceBar";
+import { Button } from "@/components/ui/button";
 import type { KpiMetric, RegionalData } from "@/types/api";
 
-const Overview = () => {
+interface OverviewProps {
+  setHeatMapVisible: (visible: boolean) => void;
+}
+
+const Overview = ({ setHeatMapVisible }: OverviewProps) => {
   const metrics: KpiMetric[] = [
     { title: "Total Revenue", value: "₱2.4M", change: "+12.3%", positive: true },
     { title: "Total Transactions", value: "15,847", change: "+8.2%", positive: true },
@@ -26,9 +31,9 @@ const Overview = () => {
   ];
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full">
       {/* Header */}
-      <header className="flex items-center gap-4 border-b px-6 py-4">
+      <header className="flex items-center gap-4 border-b px-6 py-4 bg-background">
         <SidebarTrigger />
         <div className="flex items-center gap-3">
           <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-white">
@@ -41,13 +46,25 @@ const Overview = () => {
             <p className="text-gray-600 mt-1">Real-time insights into your retail analytics</p>
           </div>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-2"
+            onClick={() => setHeatMapVisible(prev => !prev)}
+          >
+            <Eye className="h-4 w-4" />
+            <span>Heat Map</span>
+          </Button>
           <BreadcrumbNav />
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 space-y-6 bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="flex-1 p-6 space-y-6 bg-gradient-to-br from-slate-50 to-blue-50 overflow-auto">
+        {/* Time Intelligence Bar */}
+        <TimeIntelligenceBar />
+        
         {/* Global Filter Bar */}
         <GlobalFilterBar />
 
@@ -132,7 +149,7 @@ const Overview = () => {
             </CardContent>
           </Card>
 
-          <AIInsightsPreview />
+          <AIInsightsPanel />
         </div>
       </div>
     </div>

@@ -3,13 +3,19 @@ import React, { useRef, useEffect } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import useSWR from 'swr';
+import { useFilterStore } from '@/stores/filterStore';
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function GeoHeatmap() {
   const ref = useRef<HTMLDivElement>(null);
-  // Apply all filters by default - barangay, category, and brand filtering
-  const { data } = useSWR('/api/demographics?agg=barangay&filters=all', fetcher);
+  const { getQueryString } = useFilterStore();
+  
+  // Use the global filter store to build the query string
+  const queryString = getQueryString();
+  const apiUrl = `/api/demographics?agg=barangay${queryString ? '&' + queryString : ''}`;
+  
+  const { data } = useSWR(apiUrl, fetcher);
 
   useEffect(() => {
     if (!ref.current || !data) return;

@@ -2,12 +2,18 @@
 import React from 'react';
 import useSWR from 'swr';
 import { Treemap, ResponsiveContainer } from 'recharts';
+import { useFilterStore } from '@/stores/filterStore';
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function CategoryTreemapLive() {
-  // Apply all filters by default - barangay, category, and brand filtering
-  const { data } = useSWR('/api/category-mix?filters=all', fetcher);
+  const { getQueryString } = useFilterStore();
+  
+  // Use the global filter store to build the query string
+  const queryString = getQueryString();
+  const apiUrl = `/api/category-mix${queryString ? '?' + queryString : ''}`;
+  
+  const { data } = useSWR(apiUrl, fetcher);
   
   if (!data) return <div className="animate-pulse h-48 bg-gray-100 rounded" />;
   

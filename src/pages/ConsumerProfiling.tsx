@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Users, UserCheck, TrendingUp, MapPin } from "lucide-react";
 import GeoHeatmap from "@/components/GeoHeatmap";
+import { GlobalFilterBar } from "@/components/GlobalFilterBar";
 
 const ConsumerProfiling = () => {
   const metrics = [
@@ -26,6 +27,9 @@ const ConsumerProfiling = () => {
           <p className="text-gray-600 mt-1">Customer demographics and profiling</p>
         </div>
       </div>
+
+      {/* Global Filter Bar */}
+      <GlobalFilterBar />
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -67,31 +71,6 @@ const ConsumerProfiling = () => {
             </div>
             <div>
               <p className="text-sm">• Location mapping</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Active Filters Display */}
-      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-white bg-black rounded-lg p-4">
-            Active Filters:
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Barangay</span>
-              <span className="text-sm text-green-600 font-medium">✓ Active</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Product category</span>
-              <span className="text-sm text-green-600 font-medium">✓ Active</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Brand</span>
-              <span className="text-sm text-green-600 font-medium">✓ Active</span>
             </div>
           </div>
         </CardContent>

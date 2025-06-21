@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Package, TrendingUp, BarChart3, DollarSign } from "lucide-react";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
+import ParetoChartLive from "@/components/ParetoChartLive";
+import SubstitutionFlowChart from "@/components/SubstitutionFlowChart";
 
 const ProductMix = () => {
   const [categoryFilter, setCategoryFilter] = useState(true);
@@ -115,26 +117,40 @@ const ProductMix = () => {
         </CardContent>
       </Card>
 
-      {/* Visuals */}
-      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-green-600" />
-            📊 Visuals: Stacked bar, Pareto chart, Sankey/flow chart
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="bg-gray-100 p-8 rounded-lg text-center">
-            <p className="text-gray-600">Pareto Chart showing product performance distribution</p>
-            <div className="mt-4 h-40 bg-gradient-to-r from-green-500 to-emerald-600 rounded opacity-20"></div>
-          </div>
-          <div className="mt-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
-            <p className="text-sm text-red-700">
-              🎯 <strong>Goal:</strong> See what's being bought, in what combos, and what gets swapped.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Live Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Pareto Chart */}
+        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-green-600" />
+              Product Performance (Pareto)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ParetoChartLive />
+          </CardContent>
+        </Card>
+
+        {/* Substitution Flow Chart */}
+        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-green-600" />
+              Brand Substitution Flow
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SubstitutionFlowChart />
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
+        <p className="text-sm text-red-700">
+          🎯 <strong>Goal:</strong> See what's being bought, in what combos, and what gets swapped.
+        </p>
+      </div>
     </div>
   );
 };

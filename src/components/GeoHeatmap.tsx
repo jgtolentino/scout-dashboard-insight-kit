@@ -1,29 +1,37 @@
 
 import React, { useRef, useEffect } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import mapboxgl from 'mapbox-gl';
 import useSWR from 'swr';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { useFilterStore } from '@/stores/filterStore';
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
-export default function GeoHeatmap() {
+interface GeoHeatmapProps {
+  dataUrl?: string;
+  className?: string;
+}
+
+export default function GeoHeatmap({ dataUrl, className }: GeoHeatmapProps) {
   const ref = useRef<HTMLDivElement>(null);
   const { getQueryString } = useFilterStore();
   
-  // Use the global filter store to build the query string
+  // Use the global filter store to build the query string or use provided dataUrl
   const queryString = getQueryString();
-  const apiUrl = `/api/demographics?agg=barangay${queryString ? '&' + queryString : ''}`;
+  const apiUrl = dataUrl || `/api/demographics?agg=barangay${queryString ? '&' + queryString : ''}`;
   
   const { data } = useSWR(apiUrl, fetcher);
 
   useEffect(() => {
     if (!ref.current || !data) return;
     
-    const map = new maplibregl.Map({
+    // Set Mapbox access token
+    mapboxgl.accessToken = 'pk.eyJ1Ijoiamd0b2xlbnRpbm8iLCJhIjoiY21jMmNycWRiMDc0ajJqcHZoaDYyeTJ1NiJ9.Dns6WOql16BUQ4l7otaeww';
+    
+    const map = new mapboxgl.Map({
       container: ref.current,
-      style: "https://demotiles.maplibre.org/style.json",
-      center: [121, 14],
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [121, 14], // Philippines centroid
       zoom: 5.5,
       interactive: false
     });
@@ -34,12 +42,30 @@ export default function GeoHeatmap() {
         id: 'sales-heat',
         type: 'heatmap',
         source: 'sales',
-        paint: { 'heatmap-weight': ['/', ['get', 'count'], 5000] }
+        paint: {
+          'heatmap-weight': [
+            'interpolate',
+            ['linear'],
+            ['get', 'count'],
+            0, 0,
+            1000, 1
+          ],
+          'heatmap-intensity': 1,
+          'heatmap-color': [
+            'interpolate',
+            ['linear'],
+            ['heatmap-density'],
+            0, 'rgba(0, 0, 255, 0)',
+            0.5, 'royalblue',
+            1, 'red'
+          ],
+          'heatmap-radius': 20
+        }
       });
     });
     
     return () => map.remove();
   }, [data]);
 
-  return <div ref={ref} className="w-full h-56 rounded" />;
+  return <div ref={ref} className={className ?? 'w-full h-56 rounded'} />;
 }

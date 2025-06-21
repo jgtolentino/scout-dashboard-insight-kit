@@ -87,7 +87,7 @@ const ConsumerProfiling = () => {
         <CardContent>
           <div className="bg-gray-100 p-8 rounded-lg text-center">
             <p className="text-gray-600 mb-4">Geographic Heatmap showing customer distribution</p>
-            <GeoHeatmap />
+            <GeoHeatmap dataUrl="/api/demographics?agg=barangay" className="w-full h-56 rounded" />
           </div>
           <div className="mt-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
             <p className="text-sm text-red-700">

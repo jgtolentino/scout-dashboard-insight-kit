@@ -4,6 +4,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { BarChart3, Users, ShoppingCart, DollarSign, TrendingUp, Package } from "lucide-react";
 import CategoryTreemapLive from "@/components/CategoryTreemapLive";
 import ChoroplethMap from "@/components/ChoroplethMap";
+import AIInsightsPreview from "@/components/AIInsightsPreview";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
 
 const Overview = () => {
@@ -93,7 +94,7 @@ const Overview = () => {
         </Card>
       </div>
 
-      {/* Quick Insights */}
+      {/* Quick Insights and AI Preview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader>
@@ -121,27 +122,7 @@ const Overview = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle>Regional Performance</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Metro Manila</span>
-                <span className="text-sm font-medium">₱1.2M</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Cebu</span>
-                <span className="text-sm font-medium">₱680K</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Davao</span>
-                <span className="text-sm font-medium">₱520K</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <AIInsightsPreview />
       </div>
     </div>
   );

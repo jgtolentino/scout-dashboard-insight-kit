@@ -1,9 +1,16 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, TrendingUp, Clock, Heart } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Brain, TrendingUp, Clock, Heart } from "lucide-react";
 
 const ConsumerBehavior = () => {
+  const [brandCategory, setBrandCategory] = useState(true);
+  const [ageGroup, setAgeGroup] = useState(false);
+  const [gender, setGender] = useState(true);
+
   const metrics = [
     { title: "Avg Session Time", value: "8.5 min", change: "+12.3%", icon: Clock, positive: true },
     { title: "Conversion Rate", value: "3.24%", change: "+8.2%", icon: TrendingUp, positive: true },
@@ -49,101 +56,71 @@ const ConsumerBehavior = () => {
         })}
       </div>
 
-      {/* Behavior Analysis Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-blue-600" />
-              Browsing Patterns
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Peak Hours</span>
-                <span className="font-medium">2-4 PM</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Most Active Day</span>
-                <span className="font-medium">Saturday</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Mobile vs Desktop</span>
-                <span className="font-medium">68% / 32%</span>
-              </div>
-              <div className="pt-2">
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{width: '68%'}}></div>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Mobile traffic dominance</p>
-              </div>
+      {/* What it includes */}
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-white bg-black rounded-lg p-4">
+            What it includes:
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm">• How the product was requested (branded, unbranded, unsure)</p>
+              <p className="text-sm">• Pointing vs verbal vs indirect request</p>
             </div>
-          </CardContent>
-        </Card>
+            <div>
+              <p className="text-sm">• Acceptance of storeowner suggestion</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Heart className="h-5 w-5 text-red-600" />
-              Preference Signals
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Favorite Categories</span>
-                <span className="font-medium">Electronics</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Price Sensitivity</span>
-                <span className="font-medium">Medium</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Brand Loyalty</span>
-                <span className="font-medium">High (73%)</span>
-              </div>
-              <div className="pt-2">
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-red-600 h-2 rounded-full" style={{width: '73%'}}></div>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Strong brand preference</p>
-              </div>
+      {/* Toggles */}
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-white bg-black rounded-lg p-4">
+            Toggles:
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="brand-category">Brand/category</Label>
+              <Switch id="brand-category" checked={brandCategory} onCheckedChange={setBrandCategory} />
             </div>
-          </CardContent>
-        </Card>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="age-group">Age group</Label>
+              <Switch id="age-group" checked={ageGroup} onCheckedChange={setAgeGroup} />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="gender">Gender</Label>
+              <Switch id="gender" checked={gender} onCheckedChange={setGender} />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-purple-600" />
-              Behavioral Insights
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Cart Abandonment</span>
-                <span className="font-medium text-red-600">28%</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Cross-sell Success</span>
-                <span className="font-medium text-green-600">18%</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Repeat Purchase Rate</span>
-                <span className="font-medium">45%</span>
-              </div>
-              <div className="pt-2">
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-purple-600 h-2 rounded-full" style={{width: '45%'}}></div>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Customer retention strength</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Visuals */}
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Brain className="h-5 w-5 text-purple-600" />
+            📊 Visuals: Pie charts, stacked bar, funnel chart
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-gray-100 p-8 rounded-lg text-center">
+            <p className="text-gray-600">Funnel Chart showing consumer decision process</p>
+            <div className="mt-4 h-40 bg-gradient-to-r from-purple-500 to-pink-600 rounded opacity-20"></div>
+          </div>
+          <div className="mt-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
+            <p className="text-sm text-red-700">
+              🎯 <strong>Goal:</strong> Decode how people decide and buy at the counter.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

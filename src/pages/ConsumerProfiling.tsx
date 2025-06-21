@@ -1,14 +1,21 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, UserCheck, TrendingUp, MapPin } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Users, UserCheck, TrendingUp, MapPin } from "lucide-react";
 
 const ConsumerProfiling = () => {
+  const [barangay, setBarangay] = useState(true);
+  const [productCategory, setProductCategory] = useState(false);
+  const [brand, setBrand] = useState(true);
+
   const metrics = [
     { title: "Total Profiles", value: "15,847", change: "+12.3%", icon: Users, positive: true },
     { title: "Active Profiles", value: "8,429", change: "+8.2%", icon: UserCheck, positive: true },
     { title: "Profile Completeness", value: "87.5%", change: "+15.4%", icon: TrendingUp, positive: true },
-    { title: "Geographic Reach", value: "47 States", change: "+2.1%", icon: MapPin, positive: true },
+    { title: "Geographic Reach", value: "47 Barangays", change: "+2.1%", icon: MapPin, positive: true },
   ];
 
   return (
@@ -49,120 +56,73 @@ const ConsumerProfiling = () => {
         })}
       </div>
 
-      {/* Consumer Profiling Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <UserCheck className="h-5 w-5 text-blue-600" />
-              Demographics
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Average Age</span>
-                <span className="font-medium">34.2 years</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Gender Split</span>
-                <span className="font-medium">52% F / 48% M</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Education Level</span>
-                <span className="font-medium">College+ 68%</span>
-              </div>
-              <div className="pt-2">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs">
-                    <span>25-34 years (Primary)</span>
-                    <span>42%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{width: '42%'}}></div>
-                  </div>
-                </div>
-              </div>
+      {/* What it includes */}
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-white bg-black rounded-lg p-4">
+            What it includes:
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <p className="text-sm">• Gender (inferred)</p>
             </div>
-          </CardContent>
-        </Card>
+            <div>
+              <p className="text-sm">• Age bracket (estimated from audio/video)</p>
+            </div>
+            <div>
+              <p className="text-sm">• Location mapping</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-              Income & Spending
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Avg Household Income</span>
-                <span className="font-medium">$75,500</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Spending Power</span>
-                <span className="font-medium">High (73%)</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Purchase Frequency</span>
-                <span className="font-medium">2.8/month</span>
-              </div>
-              <div className="pt-2">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs">
-                    <span>High Spenders ($1000+)</span>
-                    <span>28%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-green-600 h-2 rounded-full" style={{width: '28%'}}></div>
-                  </div>
-                </div>
-              </div>
+      {/* Toggles */}
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-white bg-black rounded-lg p-4">
+            Toggles:
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="barangay">Barangay</Label>
+              <Switch id="barangay" checked={barangay} onCheckedChange={setBarangay} />
             </div>
-          </CardContent>
-        </Card>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="product-category">Product category</Label>
+              <Switch id="product-category" checked={productCategory} onCheckedChange={setProductCategory} />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="brand">Brand</Label>
+              <Switch id="brand" checked={brand} onCheckedChange={setBrand} />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-purple-600" />
-              Geographic Distribution
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Top State</span>
-                <span className="font-medium">California (22%)</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Urban vs Suburban</span>
-                <span className="font-medium">65% / 35%</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">International</span>
-                <span className="font-medium">8.5%</span>
-              </div>
-              <div className="pt-2">
-                <div className="space-y-1">
-                  <div className="text-xs text-gray-500">Regional Distribution</div>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-                      <span className="text-xs">West Coast 45%</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                      <span className="text-xs">East Coast 32%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Visuals */}
+      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5 text-orange-600" />
+            📊 Visuals: Donut charts, demographic trees, geo heatmap
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-gray-100 p-8 rounded-lg text-center">
+            <p className="text-gray-600">Geographic Heatmap showing customer distribution</p>
+            <div className="mt-4 h-40 bg-gradient-to-r from-orange-500 to-red-600 rounded opacity-20"></div>
+          </div>
+          <div className="mt-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
+            <p className="text-sm text-red-700">
+              🎯 <strong>Goal:</strong> See who is buying, and where.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

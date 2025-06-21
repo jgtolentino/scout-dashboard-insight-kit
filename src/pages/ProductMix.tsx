@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Package, TrendingUp, BarChart3, DollarSign } from "lucide-react";
+import { GlobalFilterBar } from "@/components/GlobalFilterBar";
 
 const ProductMix = () => {
   const [categoryFilter, setCategoryFilter] = useState(true);
@@ -33,6 +34,9 @@ const ProductMix = () => {
           <p className="text-gray-600 mt-1">Product analytics and SKU insights</p>
         </div>
       </div>
+
+      {/* Global Filter Bar */}
+      <GlobalFilterBar />
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

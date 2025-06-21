@@ -29,7 +29,7 @@ const defaultFilters: FilterState = {
   brands: [],
 };
 
-export const useFilterStore = create<FilterStore>(
+export const useFilterStore = create<FilterStore>()(
   persist(
     (set, get) => ({
       ...defaultFilters,

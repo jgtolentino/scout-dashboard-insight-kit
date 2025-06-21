@@ -1,9 +1,11 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Users, UserCheck, TrendingUp, MapPin } from "lucide-react";
 import GeoHeatmap from "@/components/GeoHeatmap";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
+import BreadcrumbNav from "@/components/BreadcrumbNav";
+import TimeIntelligenceBar from "@/components/time/TimeIntelligenceBar";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
 const ConsumerProfiling = () => {
   const metrics = [
@@ -13,89 +15,149 @@ const ConsumerProfiling = () => {
     { title: "Geographic Reach", value: "47 Barangays", change: "+2.1%", icon: MapPin, positive: true },
   ];
 
+  const genderData = [
+    { name: 'Male', value: 48 },
+    { name: 'Female', value: 52 }
+  ];
+
+  const ageData = [
+    { name: '18-24', value: 22 },
+    { name: '25-34', value: 38 },
+    { name: '35-44', value: 25 },
+    { name: '45-54', value: 10 },
+    { name: '55+', value: 5 }
+  ];
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
-      <div className="flex items-center gap-3 mb-6">
+    <div className="flex flex-col h-full">
+      <header className="flex items-center gap-4 border-b px-6 py-4 bg-background">
         <SidebarTrigger />
-        <div className="p-3 bg-gradient-to-r from-orange-500 to-red-600 rounded-xl text-white">
-          <Users className="h-6 w-6" />
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-gradient-to-r from-orange-500 to-red-600 rounded-xl text-white">
+            <Users className="h-6 w-6" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Consumer Profiling
+            </h1>
+            <p className="text-gray-600 mt-1">Customer demographics and profiling</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Consumer Profiling
-          </h1>
-          <p className="text-gray-600 mt-1">Customer demographics and profiling</p>
+        <div className="ml-auto">
+          <BreadcrumbNav />
         </div>
-      </div>
+      </header>
 
-      {/* Global Filter Bar */}
-      <GlobalFilterBar />
+      <div className="flex-1 p-6 space-y-6 bg-gradient-to-br from-slate-50 to-blue-50 overflow-auto">
+        {/* Time Intelligence Bar */}
+        <TimeIntelligenceBar />
+        
+        {/* Global Filter Bar */}
+        <GlobalFilterBar />
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map((metric, index) => {
-          const Icon = metric.icon;
-          return (
-            <Card key={index} className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">{metric.title}</p>
-                    <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
-                    <p className={`text-sm ${metric.positive ? 'text-green-600' : 'text-red-600'}`}>
-                      {metric.change} vs last month
-                    </p>
+        {/* Key Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {metrics.map((metric, index) => {
+            const Icon = metric.icon;
+            return (
+              <Card key={index} className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">{metric.title}</p>
+                      <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
+                      <p className={`text-sm ${metric.positive ? 'text-green-600' : 'text-red-600'}`}>
+                        {metric.change} vs last month
+                      </p>
+                    </div>
+                    <Icon className="h-8 w-8 text-gray-400" />
                   </div>
-                  <Icon className="h-8 w-8 text-gray-400" />
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Demographics Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Gender Distribution</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={genderData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      paddingAngle={5}
+                      dataKey="value"
+                      label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {genderData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => `${value}%`} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Age Distribution</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={ageData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {ageData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => `${value}%`} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Geographic Heatmap */}
+        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-orange-600" />
+              Geographic Distribution
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-96">
+              <GeoHeatmap dataUrl="/api/demographics?agg=barangay" className="w-full h-full rounded" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      {/* What it includes */}
-      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-white bg-black rounded-lg p-4">
-            What it includes:
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <p className="text-sm">• Gender (inferred)</p>
-            </div>
-            <div>
-              <p className="text-sm">• Age bracket (estimated from audio/video)</p>
-            </div>
-            <div>
-              <p className="text-sm">• Location mapping</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Visuals */}
-      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-orange-600" />
-            📊 Visuals: Donut charts, demographic trees, geo heatmap
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="bg-gray-100 p-8 rounded-lg text-center">
-            <p className="text-gray-600 mb-4">Geographic Heatmap showing customer distribution</p>
-            <GeoHeatmap dataUrl="/api/demographics?agg=barangay" className="w-full h-56 rounded" />
-          </div>
-          <div className="mt-4 p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
-            <p className="text-sm text-red-700">
-              🎯 <strong>Goal:</strong> See who is buying, and where.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };

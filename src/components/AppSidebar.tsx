@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const navItems = [
-  { path: "/", label: "Overview", icon: Home, description: "Executive summary and key insights" },
+  { path: "/overview", label: "Overview", icon: Home, description: "Executive summary and key insights" },
   { path: "/transaction-trends", label: "Transaction Trends", icon: TrendingUp, description: "Track transaction patterns and trends" },
   { path: "/product-mix", label: "Product Mix & SKU Info", icon: Package, description: "Product analytics and SKU insights" },
   { path: "/consumer-behavior", label: "Consumer Behavior & Preference Signals", icon: Brain, description: "Behavioral analysis and preferences" },
@@ -60,14 +60,24 @@ const AppSidebar = () => {
             <SidebarMenu>
               {navItems.map((item) => {
                 const Icon = item.icon;
+                const active = isActive(item.path);
                 return (
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton 
                       asChild 
-                      isActive={isActive(item.path)}
+                      isActive={active}
                       className="w-full"
                     >
-                      <NavLink to={item.path} className="flex items-center gap-3 px-3 py-2">
+                      <NavLink 
+                        to={item.path} 
+                        className={({ isActive }) => 
+                          `flex items-center gap-3 px-3 py-2 transition-colors ${
+                            isActive 
+                              ? "bg-primary text-primary-foreground font-medium" 
+                              : "hover:bg-accent hover:text-accent-foreground"
+                          }`
+                        }
+                      >
                         <Icon className="h-4 w-4 flex-shrink-0" />
                         {!isCollapsed && (
                           <div className="flex flex-col">

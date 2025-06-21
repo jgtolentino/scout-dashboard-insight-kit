@@ -8,6 +8,9 @@ async function enableMsw() {
     await worker.start({
       serviceWorker: {
         url: '/mockServiceWorker.js',
+        options: {
+          type: 'classic'
+        }
       },
       onUnhandledRequest: ['bypass']
     });

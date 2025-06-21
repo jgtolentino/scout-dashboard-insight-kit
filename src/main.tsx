@@ -9,7 +9,7 @@ async function enableMsw() {
       serviceWorker: {
         url: '/mockServiceWorker.js',
       },
-      onUnhandledRequest: 'bypass'
+      onUnhandledRequest: ['bypass']
     });
     console.log('%c[MSW] mock server active', 'color:green');
   }

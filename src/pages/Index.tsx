@@ -6,6 +6,7 @@ import InsightsPanel from "../components/InsightsPanel";
 import ChartSection from "../components/ChartSection";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const Index = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("30d");
@@ -13,12 +14,15 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="container mx-auto px-4 py-6 space-y-6">
-        {/* Period Selector */}
+        {/* Header with Sidebar Trigger */}
         <Card className="p-4 bg-white/70 backdrop-blur-sm border-0 shadow-lg">
           <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
-              <p className="text-gray-600 mt-1">Monitor your key metrics and insights</p>
+            <div className="flex items-center gap-3">
+              <SidebarTrigger />
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
+                <p className="text-gray-600 mt-1">Monitor your key metrics and insights</p>
+              </div>
             </div>
             <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
               <SelectTrigger className="w-32 bg-white/80">

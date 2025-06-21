@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, UserCheck, TrendingUp, MapPin, Heart, Star } from "lucide-react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import CustomerSegments from "@/components/customers/CustomerSegments";
 import CustomersAIPanel from "@/components/customers/CustomersAIPanel";
 
@@ -13,8 +14,9 @@ const Customers = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
       <div className="flex items-center gap-3 mb-6">
+        <SidebarTrigger />
         <div className="p-3 bg-gradient-to-r from-orange-500 to-red-600 rounded-xl text-white">
           <Users className="h-6 w-6" />
         </div>

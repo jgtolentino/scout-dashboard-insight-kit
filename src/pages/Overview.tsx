@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { BarChart3, Users, ShoppingCart, DollarSign, TrendingUp, Package } from "lucide-react";
@@ -6,17 +5,18 @@ import CategoryTreemapLive from "@/components/CategoryTreemapLive";
 import ChoroplethMap from "@/components/ChoroplethMap";
 import AIInsightsPreview from "@/components/AIInsightsPreview";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
+import type { KpiMetric, RegionalData } from "@/types/api";
 
 const Overview = () => {
-  const metrics = [
-    { title: "Total Revenue", value: "₱2.4M", change: "+12.3%", icon: DollarSign, positive: true },
-    { title: "Total Transactions", value: "15,847", change: "+8.2%", icon: ShoppingCart, positive: true },
-    { title: "Active Customers", value: "8,429", change: "+15.4%", icon: Users, positive: true },
-    { title: "Avg Order Value", value: "₱186", change: "-2.1%", icon: TrendingUp, positive: false },
+  const metrics: KpiMetric[] = [
+    { title: "Total Revenue", value: "₱2.4M", change: "+12.3%", positive: true },
+    { title: "Total Transactions", value: "15,847", change: "+8.2%", positive: true },
+    { title: "Active Customers", value: "8,429", change: "+15.4%", positive: true },
+    { title: "Avg Order Value", value: "₱186", change: "-2.1%", positive: false },
   ];
 
   // Sample regional data for the choropleth map
-  const regionalData = [
+  const regionalData: RegionalData[] = [
     { name: 'NCR', value: 1200000, color: '#1e40af' },
     { name: 'Cebu', value: 680000, color: '#3b82f6' },
     { name: 'Davao', value: 520000, color: '#60a5fa' },
@@ -45,7 +45,8 @@ const Overview = () => {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric, index) => {
-          const Icon = metric.icon;
+          const icons = [DollarSign, ShoppingCart, Users, TrendingUp];
+          const Icon = icons[index];
           return (
             <Card key={index} className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
               <CardContent className="p-6">

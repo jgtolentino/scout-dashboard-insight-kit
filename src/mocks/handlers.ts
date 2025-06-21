@@ -31,4 +31,29 @@ export const handlers = [
   http.post('/api/ai-insights', () => {
     return HttpResponse.json({ insights: ['Mock insight 1', 'Mock insight 2', 'Mock insight 3'] });
   }),
+  http.post('/api/ask', () => {
+    return HttpResponse.json({ 
+      response: "Based on your transaction data, I've identified several optimization opportunities. Peak sales occur between 6-8 PM, representing 23% of daily volume. Consider adjusting staffing and inventory during these hours."
+    });
+  }),
+  http.post('/api/retailbot', () => {
+    return HttpResponse.json({
+      actions: [
+        {
+          id: 'pricing-optimization',
+          title: 'Optimize Pricing for Beverages Category',
+          description: 'Analysis shows 15% price elasticity in beverages. Recommend 8% price increase on premium SKUs during peak hours (6-8 PM) to maximize revenue without significant volume loss.',
+          confidence: 89,
+          category: 'pricing',
+          filters: { categories: ['Beverages'], hour: '18-20' }
+        }
+      ],
+      diagnostics: {
+        data_quality: 'good',
+        response_time_ms: 842,
+        model_used: 'gpt-4',
+        filters_applied: 2
+      }
+    });
+  }),
 ];

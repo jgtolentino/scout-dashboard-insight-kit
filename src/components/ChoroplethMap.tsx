@@ -70,55 +70,55 @@ const ChoroplethMap: React.FC<ChoroplethMapProps> = ({
     map.current.on('load', () => {
       if (!map.current) return;
 
-      // Sample Philippine regions GeoJSON data
-      const philippineRegions = {
-        type: 'FeatureCollection',
+      // Sample Philippine regions GeoJSON data with proper typing
+      const philippineRegions: GeoJSON.FeatureCollection = {
+        type: 'FeatureCollection' as const,
         features: [
           {
-            type: 'Feature',
+            type: 'Feature' as const,
             properties: { name: 'NCR', region: 'National Capital Region' },
             geometry: {
-              type: 'Polygon',
+              type: 'Polygon' as const,
               coordinates: [[
                 [121.0, 14.6], [121.1, 14.6], [121.1, 14.7], [121.0, 14.7], [121.0, 14.6]
               ]]
             }
           },
           {
-            type: 'Feature',
+            type: 'Feature' as const,
             properties: { name: 'Cebu', region: 'Central Visayas' },
             geometry: {
-              type: 'Polygon',
+              type: 'Polygon' as const,
               coordinates: [[
                 [123.8, 10.2], [124.0, 10.2], [124.0, 10.4], [123.8, 10.4], [123.8, 10.2]
               ]]
             }
           },
           {
-            type: 'Feature',
+            type: 'Feature' as const,
             properties: { name: 'Davao', region: 'Davao Region' },
             geometry: {
-              type: 'Polygon',
+              type: 'Polygon' as const,
               coordinates: [[
                 [125.5, 7.0], [125.7, 7.0], [125.7, 7.2], [125.5, 7.2], [125.5, 7.0]
               ]]
             }
           },
           {
-            type: 'Feature',
+            type: 'Feature' as const,
             properties: { name: 'Iloilo', region: 'Western Visayas' },
             geometry: {
-              type: 'Polygon',
+              type: 'Polygon' as const,
               coordinates: [[
                 [122.5, 10.7], [122.7, 10.7], [122.7, 10.9], [122.5, 10.9], [122.5, 10.7]
               ]]
             }
           },
           {
-            type: 'Feature',
+            type: 'Feature' as const,
             properties: { name: 'Baguio', region: 'Cordillera Administrative Region' },
             geometry: {
-              type: 'Polygon',
+              type: 'Polygon' as const,
               coordinates: [[
                 [120.5, 16.3], [120.7, 16.3], [120.7, 16.5], [120.5, 16.5], [120.5, 16.3]
               ]]

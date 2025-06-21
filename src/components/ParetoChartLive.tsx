@@ -1,36 +1,27 @@
-
 import React from 'react';
-import useSWR from 'swr';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from 'recharts';
 import { useFilterStore } from '@/stores/filterStore';
-
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+import { useCategoryMixData } from '@/hooks/useCategoryMixData';
 
 export default function ParetoChartLive() {
-  const { getQueryString } = useFilterStore();
-  
-  // Use the global filter store to build the query string
-  const queryString = getQueryString();
-  const apiUrl = `/api/products?sort=revenue&limit=10${queryString ? '&' + queryString : ''}`;
-  
-  const { data, error, isLoading } = useSWR(apiUrl, fetcher);
+  const filters = useFilterStore();
+  const { data, error, isLoading } = useCategoryMixData(filters);
   
   if (isLoading) return <div className="animate-pulse h-48 bg-gray-100 rounded" />;
-  if (error || !data) return <div className="h-48 flex items-center justify-center text-gray-500">Unable to load data</div>;
+  if (error) return <div className="h-48 flex items-center justify-center text-gray-500">Unable to load data</div>;
   
   // Transform data for Pareto chart (80/20 rule visualization)
-  const products = data.data || [];
-  const totalRevenue = products.reduce((sum: number, product: any) => sum + (product.revenue || product.price * 50), 0);
+  const categories = data?.data || [];
+  const totalShare = categories.reduce((sum, category) => sum + category.share, 0);
   
   let cumulativePercentage = 0;
-  const paretoData = products.map((product: any, index: number) => {
-    const revenue = product.revenue || product.price * (50 - index * 5);
-    const percentage = (revenue / totalRevenue) * 100;
+  const paretoData = categories.map((category) => {
+    const percentage = (category.share / totalShare) * 100;
     cumulativePercentage += percentage;
     
     return {
-      name: product.name || `Product ${index + 1}`,
-      revenue: revenue,
+      name: category.category,
+      share: category.share,
       percentage: percentage,
       cumulative: cumulativePercentage
     };
@@ -51,13 +42,13 @@ export default function ParetoChartLive() {
         <YAxis yAxisId="right" orientation="right" />
         <Tooltip 
           formatter={(value, name) => [
-            name === 'revenue' 
-              ? `₱${typeof value === 'number' ? value.toLocaleString() : value}` 
+            name === 'share' 
+              ? value.toLocaleString()
               : `${typeof value === 'number' ? value.toFixed(1) : value}%`,
-            name === 'revenue' ? 'Revenue' : name === 'cumulative' ? 'Cumulative %' : 'Share %'
+            name === 'share' ? 'Count' : name === 'cumulative' ? 'Cumulative %' : 'Share %'
           ]}
         />
-        <Bar yAxisId="left" dataKey="revenue" fill="#3b82f6" />
+        <Bar yAxisId="left" dataKey="share" fill="#3b82f6" />
         <Line 
           yAxisId="right" 
           type="monotone" 

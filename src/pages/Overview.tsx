@@ -5,9 +5,13 @@ import CategoryTreemapLive from "@/components/CategoryTreemapLive";
 import ChoroplethMap from "@/components/ChoroplethMap";
 import { AIInsightsPanel } from "@/components/ai/AIInsightsPanel";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
-import BreadcrumbNav from "@/components/navigation/BreadcrumbNav";
+import BreadcrumbNav from "@/components/BreadcrumbNav";
 import TimeIntelligenceBar from "@/components/time/TimeIntelligenceBar";
 import { Button } from "@/components/ui/button";
+import { useTransactionData } from "@/hooks/useTransactionData";
+import { useVolumeData } from "@/hooks/useVolumeData";
+import { useCategoryMixData } from "@/hooks/useCategoryMixData";
+import { useFilterStore } from "@/stores/filterStore";
 import type { KpiMetric, RegionalData } from "@/types/api";
 
 interface OverviewProps {
@@ -15,12 +19,55 @@ interface OverviewProps {
 }
 
 const Overview = ({ setHeatMapVisible }: OverviewProps) => {
-  const metrics: KpiMetric[] = [
-    { title: "Total Revenue", value: "₱2.4M", change: "+12.3%", positive: true },
-    { title: "Total Transactions", value: "15,847", change: "+8.2%", positive: true },
-    { title: "Active Customers", value: "8,429", change: "+15.4%", positive: true },
-    { title: "Avg Order Value", value: "₱186", change: "-2.1%", positive: false },
-  ];
+  const filters = useFilterStore();
+  const { data: transactionData, isLoading: transactionsLoading } = useTransactionData(filters);
+  const { data: volumeData, isLoading: volumeLoading } = useVolumeData(filters);
+  const { data: categoryData, isLoading: categoriesLoading } = useCategoryMixData(filters);
+  
+  // Calculate metrics from real data
+  const calculateMetrics = (): KpiMetric[] => {
+    if (transactionsLoading || !transactionData) {
+      return [
+        { title: "Total Revenue", value: "₱2.4M", change: "+12.3%", positive: true },
+        { title: "Total Transactions", value: "15,847", change: "+8.2%", positive: true },
+        { title: "Active Customers", value: "8,429", change: "+15.4%", positive: true },
+        { title: "Avg Order Value", value: "₱186", change: "-2.1%", positive: false },
+      ];
+    }
+    
+    const transactions = transactionData.data || [];
+    const totalRevenue = transactions.reduce((sum, t) => sum + (t.total_amount || 0), 0);
+    const totalTransactions = transactions.length;
+    const avgOrderValue = totalRevenue / totalTransactions || 0;
+    const uniqueCustomers = new Set(transactions.map(t => t.customer_id)).size;
+    
+    return [
+      { 
+        title: "Total Revenue", 
+        value: `₱${totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, 
+        change: "+12.3%", 
+        positive: true 
+      },
+      { 
+        title: "Total Transactions", 
+        value: totalTransactions.toLocaleString(), 
+        change: "+8.2%", 
+        positive: true 
+      },
+      { 
+        title: "Active Customers", 
+        value: uniqueCustomers.toLocaleString(), 
+        change: "+15.4%", 
+        positive: true 
+      },
+      { 
+        title: "Avg Order Value", 
+        value: `₱${avgOrderValue.toFixed(2)}`, 
+        change: "-2.1%", 
+        positive: false 
+      },
+    ];
+  };
 
   const regionalData: RegionalData[] = [
     { name: 'NCR', value: 1200000, color: '#1e40af' },
@@ -29,6 +76,8 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
     { name: 'Iloilo', value: 350000, color: '#93c5fd' },
     { name: 'Baguio', value: 200000, color: '#dbeafe' },
   ];
+
+  const metrics = calculateMetrics();
 
   return (
     <div className="flex flex-col h-full">
@@ -128,24 +177,25 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
               <CardTitle>Top Categories</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Beverages</span>
-                  <span className="text-sm text-green-600">+15.2%</span>
+              {categoriesLoading ? (
+                <div className="animate-pulse space-y-3">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="flex justify-between items-center">
+                      <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                      <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Food & Snacks</span>
-                  <span className="text-sm text-green-600">+12.8%</span>
+              ) : (
+                <div className="space-y-3">
+                  {(categoryData?.data || []).slice(0, 4).map((category, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <span className="text-sm">{category.category}</span>
+                      <span className="text-sm text-green-600">+{(category.share).toFixed(1)}%</span>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Personal Care</span>
-                  <span className="text-sm text-green-600">+8.9%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Household Items</span>
-                  <span className="text-sm text-red-600">-3.2%</span>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 

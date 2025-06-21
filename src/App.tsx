@@ -7,10 +7,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import AppSidebar from "./components/AppSidebar";
 import Index from "./pages/Index";
-import Analytics from "./pages/Analytics";
-import AIChat from "./pages/AIChat";
-import Customers from "./pages/Customers";
-import Settings from "./pages/Settings";
+import ProductMix from "./pages/ProductMix";
+import ConsumerBehavior from "./pages/ConsumerBehavior";
+import ConsumerProfiling from "./pages/ConsumerProfiling";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,10 +26,9 @@ const App = () => (
             <SidebarInset>
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/ai-chat" element={<AIChat />} />
-                <Route path="/customers" element={<Customers />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/product-mix" element={<ProductMix />} />
+                <Route path="/consumer-behavior" element={<ConsumerBehavior />} />
+                <Route path="/consumer-profiling" element={<ConsumerProfiling />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </SidebarInset>

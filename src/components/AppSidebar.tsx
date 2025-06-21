@@ -2,10 +2,10 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { 
   BarChart3, 
-  MessageSquare, 
   TrendingUp, 
+  Package, 
   Users, 
-  Settings
+  Brain
 } from "lucide-react";
 import {
   Sidebar,
@@ -21,11 +21,10 @@ import {
 } from "@/components/ui/sidebar";
 
 const navItems = [
-  { path: "/", label: "Dashboard", icon: BarChart3, description: "Overview and key metrics" },
-  { path: "/analytics", label: "Analytics", icon: TrendingUp, description: "Deep insights and trend analysis" },
-  { path: "/customers", label: "Customer Insights", icon: Users, description: "Consumer profiling and demographics" },
-  { path: "/ai-chat", label: "AI Chat", icon: MessageSquare, description: "Intelligent assistance" },
-  { path: "/settings", label: "Settings", icon: Settings, description: "Configuration and preferences" },
+  { path: "/", label: "Transaction Trends", icon: TrendingUp, description: "Track transaction patterns and trends" },
+  { path: "/product-mix", label: "Product Mix & SKU Info", icon: Package, description: "Product analytics and SKU insights" },
+  { path: "/consumer-behavior", label: "Consumer Behavior & Preference Signals", icon: Brain, description: "Behavioral analysis and preferences" },
+  { path: "/consumer-profiling", label: "Consumer Profiling", icon: Users, description: "Customer demographics and profiling" },
 ];
 
 const AppSidebar = () => {
@@ -54,7 +53,7 @@ const AppSidebar = () => {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Analytics Dashboard</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => {
@@ -70,7 +69,7 @@ const AppSidebar = () => {
                         <Icon className="h-4 w-4 flex-shrink-0" />
                         {!isCollapsed && (
                           <div className="flex flex-col">
-                            <span className="font-medium">{item.label}</span>
+                            <span className="font-medium text-sm leading-tight">{item.label}</span>
                             <span className="text-xs text-muted-foreground">{item.description}</span>
                           </div>
                         )}

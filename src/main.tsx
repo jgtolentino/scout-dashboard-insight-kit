@@ -12,7 +12,7 @@ async function enableMsw() {
           type: 'classic'
         }
       },
-      onUnhandledRequest: ['bypass']
+      onUnhandledRequest: 'bypass'
     });
     console.log('%c[MSW] mock server active', 'color:green');
   }

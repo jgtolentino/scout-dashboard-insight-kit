@@ -15,7 +15,7 @@ export interface FilterState {
 }
 
 interface FilterActions {
-  setFilter: (key: keyof FilterState, value: any) => void;
+  setFilter: (key: keyof FilterState, value: string | number | null) => void;
   resetFilters: () => void;
   resetSubCategory: () => void;
   getQueryString: () => string;

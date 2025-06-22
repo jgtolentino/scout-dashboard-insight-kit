@@ -328,7 +328,7 @@ export const initializePerformanceMonitoring = () => {
   monitor.startCoreWebVitalsMonitoring();
   
   // Report metrics periodically in development
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.MODE === 'development') {
     setInterval(() => {
       const metrics = monitor.exportMetrics();
       console.group('📊 Performance Metrics');

@@ -1,3 +1,4 @@
+// WARNING: This file is for server-side use only. Do NOT import in browser code. Uses process.env for Azure credentials.
 // Azure Credential Service - "One-and-Done" Authentication
 // Uses DefaultAzureCredential for seamless local dev and cloud authentication
 

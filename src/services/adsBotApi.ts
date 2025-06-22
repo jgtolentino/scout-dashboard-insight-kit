@@ -3,6 +3,7 @@
 // Uses DefaultAzureCredential for seamless authentication
 
 import { azureCredentialService } from './azureCredentialService';
+import type { Metadata, ChartDataPoint } from '../types/api';
 
 export interface AdsBotInsight {
   id: string;
@@ -28,14 +29,14 @@ export interface AdsBotChatMessage {
   metadata?: {
     confidence?: number;
     sources?: string[];
-    chartData?: any;
+    chartData?: ChartDataPoint[];
   };
 }
 
 export interface AdsBotChatResponse {
   message: AdsBotChatMessage;
   suggestedQuestions?: string[];
-  chartData?: any;
+  chartData?: ChartDataPoint[];
 }
 
 class AdsBotApiClient {
@@ -81,7 +82,7 @@ class AdsBotApiClient {
     }
   }
 
-  async getInsights(dataContext?: any): Promise<AdsBotInsight[]> {
+  async getInsights(dataContext?: Metadata): Promise<AdsBotInsight[]> {
     await this.ensureConfigInitialized();
     
     if (!this.azureOpenAIKey) {
@@ -99,7 +100,7 @@ class AdsBotApiClient {
     }
   }
 
-  async sendChatMessage(message: string, context?: any): Promise<AdsBotChatResponse> {
+  async sendChatMessage(message: string, context?: Metadata): Promise<AdsBotChatResponse> {
     await this.ensureConfigInitialized();
     
     if (!this.azureOpenAIKey) {
@@ -196,7 +197,7 @@ Keep responses concise but informative. Use retail industry terminology appropri
 Always maintain a professional, helpful tone.`;
   }
 
-  private buildInsightsPrompt(dataContext?: any): string {
+  private buildInsightsPrompt(dataContext?: Metadata): string {
     const contextStr = dataContext ? JSON.stringify(dataContext, null, 2) : 'No specific data context provided';
     
     return `Analyze the following retail analytics data and generate 3-4 key insights:
@@ -210,7 +211,7 @@ Include confidence scores and impact assessments.
 Provide specific metrics and percentage changes where relevant.`;
   }
 
-  private buildChatPrompt(message: string, context?: any): string {
+  private buildChatPrompt(message: string, context?: Metadata): string {
     const contextStr = context ? `\n\nCurrent Data Context:\n${JSON.stringify(context, null, 2)}` : '';
     
     return `User Question: ${message}${contextStr}
@@ -222,7 +223,7 @@ Provide a helpful response about retail analytics. Include specific suggestions 
     try {
       const parsed = JSON.parse(response);
       if (parsed.insights && Array.isArray(parsed.insights)) {
-        return parsed.insights.map((insight: any) => ({
+        return parsed.insights.map((insight: Partial<AdsBotInsight>) => ({
           ...insight,
           id: insight.id || `insight-${Date.now()}-${Math.random()}`,
           timestamp: new Date().toISOString()
@@ -260,7 +261,7 @@ Provide a helpful response about retail analytics. Include specific suggestions 
     const questionPatterns = [
       /Would you like me to (.*?)\?/gi,
       /You might also want to (.*?)\?/gi,
-      /Consider asking about (.*?)[\.\?]/gi
+      /Consider asking about (.*?)[.?]/gi
     ];
     
     const questions: string[] = [];

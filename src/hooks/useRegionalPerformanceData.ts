@@ -82,7 +82,7 @@ export const useRegionalPerformanceData = (
             case 'transactions':
               value = item.transactions || 0;
               break;
-            case 'growth':
+            case 'growth': {
               // Calculate actual growth rate from historical data
               // This would require time-series analysis of the data
               // For now, calculate based on recent vs older transactions
@@ -112,6 +112,7 @@ export const useRegionalPerformanceData = (
                 value = 0;
               }
               break;
+            }
           }
           
           const percentage = totalValue > 0 ? ((value / totalValue) * 100).toFixed(1) + '%' : '0%';

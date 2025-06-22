@@ -51,7 +51,7 @@ interface Message {
   content: string;
   timestamp: Date;
   actions?: ActionItem[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean>;
 }
 
 interface ActionItem {
@@ -60,7 +60,7 @@ interface ActionItem {
   description: string;
   confidence: number;
   category: 'pricing' | 'promotion' | 'inventory' | 'ops';
-  filters?: Record<string, any>;
+  filters?: Record<string, string | number | boolean>;
   impact?: 'high' | 'medium' | 'low';
   status?: 'pending' | 'applied' | 'rejected';
 }
@@ -273,7 +273,7 @@ const EnhancedRetailBot = () => {
     // Apply filters from the action
     if (action.filters) {
       Object.entries(action.filters).forEach(([key, value]) => {
-        setFilter(key as any, value);
+        setFilter(key as keyof typeof filters, value);
       });
     }
     

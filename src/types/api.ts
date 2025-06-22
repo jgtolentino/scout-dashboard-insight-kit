@@ -137,3 +137,32 @@ export interface DemographicData {
 export interface DemographicTreeMapProps extends BaseVisualizationProps {
   data: DemographicData[];
 }
+
+// Common chart data types
+export interface ChartDataPoint {
+  [key: string]: string | number | boolean | null;
+}
+
+export interface TimeSeriesData {
+  timestamp: string | Date;
+  value: number;
+  category?: string;
+  metadata?: Record<string, string | number | boolean>;
+}
+
+// Generic metadata and filter types
+export interface Metadata {
+  [key: string]: string | number | boolean | null;
+}
+
+export interface GenericFilters {
+  [key: string]: string | number | boolean | null | undefined;
+}
+
+// Hook return types
+export interface ApiHookResponse<T> {
+  data: T | null;
+  isLoading: boolean;
+  error: Error | null;
+  refetch: () => void;
+}

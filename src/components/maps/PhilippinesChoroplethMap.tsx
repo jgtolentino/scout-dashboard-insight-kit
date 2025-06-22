@@ -1,64 +1,20 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MAPBOX_ACCESS_TOKEN } from '@/config/api';
 import { scaleLinear } from 'd3-scale';
+import { PHILIPPINES_REGIONS_ENHANCED, COLOR_SCALES } from '@/data/philippinesRegions';
 
 // Set Mapbox access token
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
-
-// GeoJSON for simplified Philippine regions
-const PHILIPPINES_REGIONS = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": { "name": "NCR", "value": 0 },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[120.9, 14.4], [121.1, 14.4], [121.1, 14.8], [120.9, 14.8], [120.9, 14.4]]]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": { "name": "Cebu", "value": 0 },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[123.8, 10.2], [124.0, 10.2], [124.0, 10.4], [123.8, 10.4], [123.8, 10.2]]]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": { "name": "Davao", "value": 0 },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[125.3, 7.0], [125.6, 7.0], [125.6, 7.3], [125.3, 7.3], [125.3, 7.0]]]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": { "name": "Iloilo", "value": 0 },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[122.4, 10.6], [122.7, 10.6], [122.7, 10.9], [122.4, 10.9], [122.4, 10.6]]]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": { "name": "Baguio", "value": 0 },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[120.5, 16.3], [120.7, 16.3], [120.7, 16.5], [120.5, 16.5], [120.5, 16.3]]]
-      }
-    }
-  ]
-};
 
 interface RegionalData {
   name: string;
   value: number;
   color?: string;
   percentage?: string;
+  fullName?: string;
+  population?: number;
 }
 
 interface PhilippinesChoroplethMapProps {
@@ -66,12 +22,23 @@ interface PhilippinesChoroplethMapProps {
   className?: string;
   height?: number;
   width?: number;
+  colorScale?: 'revenue' | 'transactions' | 'growth';
+  metric?: string;
   onRegionClick?: (region: string) => void;
+  onRegionHover?: (region: string | null) => void;
+  showLegend?: boolean;
 }
 
 const PhilippinesChoroplethMap: React.FC<PhilippinesChoroplethMapProps> = ({
   data,
   className = '',
+  height = 600,
+  width = 800,
+  colorScale = 'revenue',
+  metric = 'Revenue',
+  onRegionClick,
+  onRegionHover,
+  showLegend = true,
   height = 400,
   width = '100%',
   onRegionClick

@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { BarChart3, Users, ShoppingCart, DollarSign, TrendingUp, Package, Eye } from "lucide-react";
 import CategoryTreemapLive from "@/components/CategoryTreemapLive";
-import RegionalPerformanceMap from "@/components/maps/RegionalPerformanceMap";
+import EnhancedPhilippinesChoroplethMap from "@/components/maps/EnhancedPhilippinesChoroplethMap";
+import { useRegionalPerformanceData } from "@/hooks/useRegionalPerformanceData";
 import { AIInsightsPanel } from "@/components/ai/AIInsightsPanel";
 import AIRecommendationPanel from "@/components/ai/AIRecommendationPanel";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
@@ -34,40 +35,9 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
   const { data: categoryData, isLoading: categoriesLoading } = useCategoryMixData(filters);
   const [showAOVModal, setShowAOVModal] = useState(false);
   
-  // Fetch regional data
-  const { data: regionalData, isLoading: regionsLoading } = useQuery({
-    queryKey: ['regions', filters],
-    queryFn: async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/regions`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch regional data');
-        }
-        const data = await response.json();
-        
-        // Transform API data to expected format
-        return data.data.map((region: any) => ({
-          name: region.name,
-          value: region.revenue || region.count || 0,
-          color: getRegionColor(region.revenue || region.count || 0),
-          percentage: region.growth ? `${region.growth > 0 ? '+' : ''}${region.growth}%` : undefined
-        }));
-      } catch (error) {
-        console.error('Error fetching regional data:', error);
-        return [];
-      }
-    },
-    staleTime: 5 * 60 * 1000 // 5 minutes
-  });
-  
-  // Function to get color based on value
-  function getRegionColor(value: number): string {
-    if (value > 1000000) return '#1e40af'; // dark blue
-    if (value > 750000) return '#3b82f6'; // medium blue
-    if (value > 500000) return '#60a5fa'; // light blue
-    if (value > 250000) return '#93c5fd'; // lighter blue
-    return '#dbeafe'; // very light blue
-  }
+  // Fetch regional performance data using enhanced hook
+  const { data: regionalPerformanceData, isLoading: regionsLoading } = useRegionalPerformanceData(filters, 'revenue');
+  const regionalData = regionalPerformanceData?.data || [];
   
   // Calculate metrics from real data
   const calculateMetrics = (): KpiMetric[] => {
@@ -237,18 +207,18 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
             </CardContent>
           </Card>
 
-          {/* Regional Performance Map */}
-          {regionsLoading ? (
-            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-blue-600" />
-                  Regional Performance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+          {/* Enhanced Regional Performance Map */}
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5 text-blue-600" />
+                Regional Performance Map
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {regionsLoading ? (
                 <div className="animate-pulse space-y-4">
-                  <div className="h-64 bg-gray-200 rounded"></div>
+                  <div className="h-96 bg-gray-200 rounded"></div>
                   <div className="space-y-2">
                     {[1, 2, 3, 4].map(i => (
                       <div key={i} className="flex justify-between">
@@ -258,11 +228,25 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
                     ))}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <RegionalPerformanceMap data={regionalData} />
-          )}
+              ) : (
+                <EnhancedPhilippinesChoroplethMap
+                  data={regionalData}
+                  height={500}
+                  colorScale="revenue"
+                  metric={regionalPerformanceData?.metric || 'Revenue'}
+                  onRegionClick={(region) => {
+                    setFilter('region', region);
+                    navigate('/analytics');
+                  }}
+                  onRegionHover={(region) => {
+                    console.log('Hovering over region:', region);
+                  }}
+                  showLegend={true}
+                  className="rounded-lg"
+                />
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* AI Insights and Recommendations */}

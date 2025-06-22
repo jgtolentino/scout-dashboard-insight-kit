@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { BarChart3, Users, ShoppingCart, DollarSign, TrendingUp, Package, Eye } from "lucide-react";
 import CategoryTreemapLive from "@/components/CategoryTreemapLive";
-import ChoroplethMap from "@/components/ChoroplethMap";
+import RegionalPerformanceMap from "@/components/maps/RegionalPerformanceMap";
 import { AIInsightsPanel } from "@/components/ai/AIInsightsPanel";
 import AIRecommendationPanel from "@/components/ai/AIRecommendationPanel";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
@@ -72,11 +72,11 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
   };
 
   const regionalData: RegionalData[] = [
-    { name: 'NCR', value: 1200000, color: '#1e40af' },
-    { name: 'Cebu', value: 680000, color: '#3b82f6' },
-    { name: 'Davao', value: 520000, color: '#60a5fa' },
-    { name: 'Iloilo', value: 350000, color: '#93c5fd' },
-    { name: 'Baguio', value: 200000, color: '#dbeafe' },
+    { name: 'NCR', value: 1200000, color: '#1e40af', percentage: '+12.3%' },
+    { name: 'Cebu', value: 680000, color: '#3b82f6', percentage: '+8.7%' },
+    { name: 'Davao', value: 520000, color: '#60a5fa', percentage: '+15.2%' },
+    { name: 'Iloilo', value: 350000, color: '#93c5fd', percentage: '+5.4%' },
+    { name: 'Baguio', value: 200000, color: '#dbeafe', percentage: '-2.1%' },
   ];
 
   const metrics = calculateMetrics();
@@ -159,17 +159,7 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
           </Card>
 
           {/* Regional Performance Map */}
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-purple-600" />
-                Regional Performance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ChoroplethMap data={regionalData} width={400} height={300} />
-            </CardContent>
-          </Card>
+          <RegionalPerformanceMap data={regionalData} />
         </div>
 
         {/* AI Insights and Recommendations */}

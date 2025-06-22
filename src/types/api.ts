@@ -9,6 +9,7 @@ export interface RegionalData {
   name: string;
   value: number;
   color: string;
+  percentage?: string;
 }
 
 export interface CategoryData {

@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    fs: { strict: false },           // WebContainer noise reduction
     proxy: {
       '/api': {
         target: process.env.VITE_API_URL || 'http://localhost:5000',
@@ -16,6 +17,7 @@ export default defineConfig(({ mode }) => ({
       }
     }
   },
+  define: { 'process.emitWarning': '() => {}' },
   plugins: [
     react(),
     mode === 'development' && componentTagger(),

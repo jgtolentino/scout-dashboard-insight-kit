@@ -121,6 +121,8 @@ const PhilippinesChoroplethMap: React.FC<PhilippinesChoroplethMapProps> = ({
         style: 'mapbox://styles/mapbox/light-v11',
         center: [122, 12], // Center of Philippines
         zoom: 5,
+        minZoom: 4,  // Prevent excessive zoom out
+        maxZoom: 10, // Prevent excessive zoom in
         interactive: true,
         attributionControl: true
       });
@@ -165,18 +167,26 @@ const PhilippinesChoroplethMap: React.FC<PhilippinesChoroplethMapProps> = ({
             }
           });
           
-          // Add outline layer
+          // Add outline layer with zoom-responsive width
           map.current.addLayer({
             id: 'regions-outline',
             type: 'line',
             source: 'regions',
             paint: {
               'line-color': '#ffffff',
-              'line-width': 1
+              'line-width': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                4, 0.5,  // zoom 4: 0.5px line
+                6, 1,    // zoom 6: 1px line
+                8, 1.5,  // zoom 8: 1.5px line
+                10, 2    // zoom 10: 2px line
+              ]
             }
           });
           
-          // Add region labels
+          // Add region labels with zoom-responsive sizing
           map.current.addLayer({
             id: 'regions-label',
             type: 'symbol',
@@ -188,14 +198,30 @@ const PhilippinesChoroplethMap: React.FC<PhilippinesChoroplethMapProps> = ({
                 ['number-format', ['get', 'value'], { 'min-fraction-digits': 0, 'max-fraction-digits': 0 }], { 'font-scale': 0.8 }
               ],
               'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-              'text-size': 12,
+              'text-size': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                4, 10,   // zoom 4: 10px text
+                6, 12,   // zoom 6: 12px text
+                8, 14,   // zoom 8: 14px text
+                10, 16   // zoom 10: 16px text
+              ],
               'text-anchor': 'center',
               'text-justify': 'center'
             },
             paint: {
               'text-color': '#333',
               'text-halo-color': '#fff',
-              'text-halo-width': 1
+              'text-halo-width': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                4, 0.5,  // zoom 4: 0.5px halo
+                6, 1,    // zoom 6: 1px halo
+                8, 1.5,  // zoom 8: 1.5px halo
+                10, 2    // zoom 10: 2px halo
+              ]
             }
           });
           

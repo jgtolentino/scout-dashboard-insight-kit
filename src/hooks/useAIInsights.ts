@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { API_BASE_URL } from '@/config/api';
+import { scoutApi } from '@/config/scoutApi';
 
 export interface AIInsight {
   id?: string;
@@ -23,70 +23,43 @@ export const useAIInsights = (filters: Record<string, any> = {}, query: string =
     queryKey: ['ai-insights', filters, query],
     queryFn: async () => {
       try {
-        // Call the real API
-        const response = await fetch(`${API_BASE_URL}/ask`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query,
-            filters
-          }),
-        });
+        // Get real data from Scout Analytics API
+        const data = await scoutApi.getAnalytics(filters);
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch AI insights');
+        // Generate insights based on real data
+        const insights: AIInsight[] = [
+          {
+            title: "Real Data Analysis",
+            description: `Based on current data: ${data.data?.summary?.totalTransactions || 0} transactions with total revenue of ₱${(data.data?.summary?.totalRevenue || 0).toLocaleString()}`,
+            confidence: 95,
+            type: "Data Summary",
+            impact: "High",
+            action_items: ["Review performance metrics", "Analyze trends"]
+          }
+        ];
+        
+        // Add category insights if available
+        if (data.data?.categories?.length > 0) {
+          const topCategory = data.data.categories[0];
+          insights.push({
+            title: `Top Category Performance`,
+            description: `${topCategory.category || topCategory.brand} leads with ${topCategory.transactions || 0} transactions generating ₱${(topCategory.revenue || topCategory.amount || 0).toLocaleString()}`,
+            confidence: 88,
+            type: "Category Analysis",
+            impact: "Medium",
+            action_items: ["Focus on top performers", "Optimize inventory for leading categories"]
+          });
         }
         
-        return response.json() as Promise<AIInsightsResponse>;
+        return {
+          insights,
+          query,
+          model: "scout-analytics",
+          timestamp: new Date().toISOString()
+        };
       } catch (error) {
         console.error('Error fetching AI insights:', error);
-        // Return mock insights as fallback
-        return {
-          insights: [
-            {
-              title: "Peak Transaction Hours",
-              description: "Peak transaction hours are between 6-8 PM, representing 23% of daily volume. Consider extending staff hours during this period.",
-              type: "Operations",
-              confidence: 92,
-              impact: "High",
-              action_items: ["Adjust staffing schedule", "Monitor inventory levels during peak hours"]
-            },
-            {
-              title: "Beverages Category Performance",
-              description: "Beverages category shows 15% higher conversion rate in Metro Manila compared to other regions. Expand beverage promotions in this area.",
-              type: "Marketing",
-              confidence: 87,
-              impact: "Medium",
-              action_items: ["Launch targeted beverage campaigns", "Increase beverage shelf space in Metro Manila stores"]
-            },
-            {
-              title: "Customer Age Group Analysis",
-              description: "Customer age group 26-35 has the highest average order value (₱189) but represents only 31% of transactions. Target this segment for upselling.",
-              type: "Customer Insights",
-              confidence: 84,
-              impact: "High",
-              action_items: ["Create premium product bundles", "Implement loyalty program for this age group"]
-            },
-            {
-              title: "Brand Substitution Patterns",
-              description: "Brand substitution analysis shows 234 switches from Coca-Cola to Pepsi. Stock optimization needed to prevent lost sales.",
-              type: "Inventory",
-              confidence: 79,
-              impact: "Medium",
-              action_items: ["Review Coca-Cola stock levels", "Negotiate better terms with suppliers"]
-            },
-            {
-              title: "Weekend Transaction Analysis",
-              description: "Weekend transactions are 18% higher than weekdays, but average order value is 12% lower. Focus on increasing basket size during weekends.",
-              type: "Sales Strategy",
-              confidence: 88,
-              impact: "Medium",
-              action_items: ["Implement weekend bundle offers", "Train staff on upselling techniques"]
-            }
-          ]
-        };
+        throw error;
       }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes

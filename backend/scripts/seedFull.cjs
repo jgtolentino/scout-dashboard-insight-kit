@@ -8,7 +8,7 @@
 
 require('dotenv').config();
 const { Pool }   = require('pg');
-const faker      = require('faker');
+const { faker }  = require('@faker-js/faker');
 const { v4: uuid } = require('uuid');
 
 const STORE_COUNT        = 90;

@@ -35,11 +35,18 @@ jobs:
 
       - name: 🔍 Run ESLint
         run: npm run lint
-        continue-on-error: true
-
+        
       - name: 🧪 Run unit tests
-        run: npm run test:run
-        continue-on-error: true
+        run: npm run test:run -- --reporter=junit --outputFile=test-results/junit.xml
+        
+      - name: 📊 Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit Tests
+          path: test-results/junit.xml
+          reporter: jest-junit
+          fail-on-error: true
 
       - name: 🏗️ Build application
         run: |
@@ -56,3 +63,119 @@ jobs:
           name: scout-analytics-dist
           path: dist/
           retention-days: 7
+
+  deploy-preview:
+    name: 🚀 Deploy Preview
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main'
+    environment: preview
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📥 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: scout-analytics-dist
+          path: dist/
+
+      - name: 🚀 Deploy to Azure App Service (Preview)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: scout-analytics-dashboard-preview
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_PREVIEW }}
+          package: dist/
+
+      - name: 📝 Preview deployment summary
+        run: |
+          echo "🎉 Preview deployment complete!"
+          echo "🌐 Preview URL: https://scout-analytics-dashboard-preview.azurewebsites.net"
+          echo "📊 API URL: ${{ env.VITE_API_URL }}"
+
+      - name: 🔍 Verify deployment
+        run: |
+          npm ci
+          node scripts/verify-deployment.js https://scout-analytics-dashboard-preview.azurewebsites.net
+
+  deploy-production:
+    name: 🚀 Deploy Production
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📥 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: scout-analytics-dist
+          path: dist/
+
+      - name: 🔐 Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: 🔐 Verify Managed Identity
+        run: |
+          echo "🔐 Checking Managed Identity configuration..."
+          
+          IDENTITY_ID=$(az webapp identity show \
+            --name scout-analytics-dashboard \
+            --resource-group scout-dashboard-rg \
+            --query principalId -o tsv 2>/dev/null || echo "")
+          
+          if [ -z "$IDENTITY_ID" ]; then
+            echo "⚠️ Managed Identity not found. Setting up..."
+            az webapp identity assign \
+              --name scout-analytics-dashboard \
+              --resource-group scout-dashboard-rg
+          else
+            echo "✅ Managed Identity configured: $IDENTITY_ID"
+          fi
+
+      - name: 🚀 Deploy to Azure App Service (Production)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: scout-analytics-dashboard
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_PROD }}
+          package: dist/
+
+      - name: ⚙️ Configure App Service Settings
+        run: |
+          az webapp config appsettings set \
+            --name scout-analytics-dashboard \
+            --resource-group scout-dashboard-rg \
+            --settings \
+              AZURE_CLIENT_ID="${{ vars.AZURE_CLIENT_ID }}" \
+              AZURE_TENANT_ID="${{ vars.AZURE_TENANT_ID }}" \
+              KEY_VAULT_NAME="${{ vars.KEY_VAULT_NAME }}" \
+              AZURE_SQL_SERVER="${{ vars.AZURE_SQL_SERVER }}" \
+              AZURE_SQL_DATABASE="${{ vars.AZURE_SQL_DATABASE }}"
+
+      - name: 📝 Production deployment summary
+        run: |
+          echo "🎉 Production deployment complete!"
+          echo "🌐 Production URL: https://scout-analytics-dashboard.azurewebsites.net"
+          echo "📊 API URL: ${{ env.VITE_API_URL }}"
+          echo "🔐 Authentication: Azure Managed Identity"
+
+      - name: 🔍 Verify deployment
+        run: |
+          npm ci
+          node scripts/verify-deployment.js https://scout-analytics-dashboard.azurewebsites.net

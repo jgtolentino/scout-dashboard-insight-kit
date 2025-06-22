@@ -74,9 +74,18 @@ stages:
 
           - script: |
               echo "🧪 Running tests..."
-              npm run test:run
+              npm run test:run -- --reporter=junit --outputFile=test-results/junit.xml
             displayName: 'Run unit tests'
-            continueOnError: true
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: 'test-results/junit.xml'
+              mergeTestResults: true
+              failTaskOnFailedTests: true
+              testRunTitle: 'Unit Tests'
+            displayName: 'Publish unit test results'
+            condition: always()
 
           - script: |
               echo "⏳ Building for $(DEPLOYMENT_ENVIRONMENT) environment..."
@@ -135,6 +144,12 @@ stages:
                     echo "🌐 Preview URL: https://scout-analytics-dashboard-preview.azurewebsites.net"
                     echo "📊 API URL: $(VITE_API_URL)"
                   displayName: 'Preview deployment summary'
+
+                - script: |
+                    npm ci
+                    node scripts/verify-deployment.js https://scout-analytics-dashboard-preview.azurewebsites.net
+                  displayName: 'Verify preview deployment'
+                  condition: succeededOrFailed()
 
   - stage: DeployProduction
     displayName: '🚀 Deploy Production'
@@ -203,6 +218,12 @@ stages:
                     echo "📊 API URL: $(VITE_API_URL)"
                     echo "🔐 Authentication: Azure Managed Identity"
                   displayName: 'Production deployment summary'
+
+                - script: |
+                    npm ci
+                    node scripts/verify-deployment.js https://scout-analytics-dashboard.azurewebsites.net
+                  displayName: 'Verify production deployment'
+                  condition: succeededOrFailed()
 
   - stage: E2ETests
     displayName: '🧪 End-to-End Tests'

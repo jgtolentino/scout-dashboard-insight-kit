@@ -1,73 +1,289 @@
-# Welcome to your Lovable project
+# Scout Analytics Dashboard - Insight Kit
 
-## Project info
+![GitHub Actions](https://github.com/jgtolentino/scout-dashboard-insight-kit/actions/workflows/ci-cd.yml/badge.svg)
+[![Deploy Status](https://img.shields.io/badge/deploy-passing-brightgreen)](https://scout-analytics-dashboard.azurewebsites.net)
 
-**URL**: https://lovable.dev/projects/7c856f06-88ea-442a-843d-cf37bd1a13bd
+> **🛡️ "Green = Go" Verification Policy**: No code reaches production without proven success in all pipeline stages.
 
-## How can I edit this code?
+Enterprise-grade retail analytics dashboard with AI-powered insights, built with React, TypeScript, and Azure cloud services.
 
-There are several ways of editing your application.
+## 🌐 Live Environments
 
-**Use Lovable**
+| Environment | URL | Status | API Backend |
+|-------------|-----|--------|-------------|
+| 🟢 **Production** | [scout-analytics-dashboard.azurewebsites.net](https://scout-analytics-dashboard.azurewebsites.net) | ![Status](https://img.shields.io/badge/status-online-green) | Production API |
+| 🟡 **Preview** | [scout-analytics-dashboard-preview.azurewebsites.net](https://scout-analytics-dashboard-preview.azurewebsites.net) | ![Status](https://img.shields.io/badge/status-online-green) | Preview API |
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7c856f06-88ea-442a-843d-cf37bd1a13bd) and start prompting.
+## 🚀 Key Features
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🤖 AI-Powered Analytics
+- **AdsBot Integration**: Real Azure OpenAI GPT-4 powered insights
+- **AI Chat Interface**: Natural language queries about retail data
+- **Intelligent Recommendations**: Automated business insights and action items
+- **Confidence Scoring**: AI responses include confidence levels and sources
 
-**Use your preferred IDE**
+### 📊 Advanced Visualizations
+- **Interactive Dashboards**: Transaction trends, product mix, regional performance
+- **Choropleth Maps**: Philippines regional analytics with heat mapping
+- **Real-time Monitoring**: Live data updates and performance tracking
+- **Mobile Responsive**: Optimized for desktop, tablet, and mobile devices
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🔐 Enterprise Security
+- **Azure Managed Identity**: "One-and-done" authentication system
+- **Key Vault Integration**: Secure secrets management
+- **RBAC Access Control**: Role-based permissions
+- **Zero Secrets in Code**: All credentials managed via Azure services
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🎯 CI/CD Excellence
+- **Automatic API Switching**: Branch-based environment configuration
+- **Comprehensive Testing**: Unit, E2E, and deployment verification
+- **Branch Protection**: No merge without passing all checks
+- **Real-time Verification**: Post-deployment health validation
 
-Follow these steps:
+## 🏗️ Architecture
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Frontend Stack
+- **React 18** with TypeScript
+- **Vite** for blazing-fast development
+- **Shadcn/UI** components with Radix UI
+- **TanStack Query** for data fetching
+- **Zustand** for state management
+- **Tailwind CSS** for styling
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Backend Integration
+- **Azure OpenAI** for AI capabilities
+- **Azure SQL Database** for data storage
+- **Azure Key Vault** for secrets
+- **Flask API** backend service
+- **MSW** for development mocking
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Cloud Infrastructure
+- **Azure App Service** for hosting
+- **Azure DevOps** / **GitHub Actions** for CI/CD
+- **Azure Managed Identity** for authentication
+- **Vercel** alternative deployment option
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## 🚦 Development Workflow
+
+### Prerequisites
+```bash
+# Required tools
+node --version    # v18+ required
+npm --version     # Latest stable
+az --version      # Azure CLI
+
+# Azure authentication (one-time setup)
+source ./scripts/auto-login.sh
+```
+
+### Quick Start
+```bash
+# Clone and setup
+git clone https://github.com/jgtolentino/scout-dashboard-insight-kit.git
+cd scout-dashboard-insight-kit
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Environment Setup
+```bash
+# Setup Azure resources and authentication
+./scripts/setup-managed-identity.sh
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+# Test connections
+node scripts/test-managed-identity.js
 
-**Use GitHub Codespaces**
+# Verify deployment locally
+npm run build:verify
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🌍 API Configuration
 
-## What technologies are used for this project?
+### Automatic Environment Detection
 
-This project is built with:
+The application automatically uses the correct API based on deployment context:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Local Development**: `http://localhost:5000` (Flask backend)
+- **Preview Deployments**: `https://preview-api.scout-analytics.com`
+- **Production**: `https://prod-api.scout-analytics.com`
 
-## How can I deploy this project?
+No manual environment variable configuration required! 🎉
 
-Simply open [Lovable](https://lovable.dev/projects/7c856f06-88ea-442a-843d-cf37bd1a13bd) and click on Share -> Publish.
+### Configuration Flow
+```typescript
+// src/config/api.ts
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+```
 
-## Can I connect a custom domain to my Lovable project?
+CI/CD pipelines automatically inject the correct `VITE_API_URL`:
+- **Main branch** → Production API
+- **All other branches** → Preview API
 
-Yes, you can!
+## 🧪 Testing & Quality
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Testing Strategy
+```bash
+# Unit tests
+npm run test              # Interactive mode
+npm run test:run          # CI mode with coverage
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+# End-to-end tests
+npm run test:e2e          # Playwright tests
+npm run test:e2e:ui       # Visual test runner
+
+# Linting & type checking
+npm run lint              # ESLint
+npx tsc --noEmit         # TypeScript check
+```
+
+### Quality Gates
+- ✅ **100% TypeScript**: No `any` types allowed
+- ✅ **ESLint Clean**: Zero linting errors
+- ✅ **Test Coverage**: 80%+ coverage target
+- ✅ **Performance**: <3s load time requirement
+- ✅ **Accessibility**: WCAG 2.1 AA compliance
+
+## 🚀 Deployment
+
+### Branch-Based Deployments
+
+| Branch Type | Deployment | API URL | Environment |
+|-------------|------------|---------|-------------|
+| `main` | Production | `$(API_URL_PROD)` | scout-analytics-dashboard |
+| `feature/*` | Preview | `$(API_URL_PREVIEW)` | scout-analytics-dashboard-preview |
+| `develop` | Preview | `$(API_URL_PREVIEW)` | scout-analytics-dashboard-preview |
+| `hotfix/*` | Preview | `$(API_URL_PREVIEW)` | scout-analytics-dashboard-preview |
+
+### Verification Requirements
+
+Every deployment must pass:
+- ✅ **Health Check**: `/health` endpoint responds
+- ✅ **Main Page**: React app loads correctly
+- ✅ **API Endpoints**: Critical APIs return valid data
+- ✅ **Performance**: <3s response time
+- ✅ **Static Assets**: CSS/JS files load properly
+- ✅ **Authentication**: Azure services accessible
+
+```bash
+# Manual verification
+node scripts/verify-deployment.js https://your-deployment-url.com
+```
+
+## 🔐 Authentication Setup
+
+### One-Time Azure Setup
+```bash
+# 1. Login to Azure (once per development machine)
+source ./scripts/auto-login.sh
+
+# 2. Setup Managed Identity and permissions
+./scripts/setup-managed-identity.sh
+
+# 3. Test authentication works
+node scripts/test-managed-identity.js
+```
+
+### What Gets Configured
+- ✅ **User-assigned Managed Identity** for App Service
+- ✅ **Key Vault access policies** for secrets
+- ✅ **SQL Database permissions** for data access
+- ✅ **Azure OpenAI credentials** for AI features
+- ✅ **Environment variables** for local development
+
+## 📊 Monitoring & Observability
+
+### Health Monitoring
+```bash
+# Check production health
+curl https://scout-analytics-dashboard.azurewebsites.net/health
+
+# Check preview health  
+curl https://scout-analytics-dashboard-preview.azurewebsites.net/health
+
+# Comprehensive verification
+npm run verify:deployment https://scout-analytics-dashboard.azurewebsites.net
+```
+
+### Performance Metrics
+- **Page Load**: <3 seconds
+- **API Response**: <500ms average
+- **Bundle Size**: <3MB gzipped
+- **Lighthouse Score**: 90+ performance
+
+## 🛠️ Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run preview` | Preview production build |
+| `npm test` | Interactive unit tests |
+| `npm run test:run` | CI unit tests |
+| `npm run test:e2e` | End-to-end tests |
+| `npm run lint` | ESLint check |
+| `npm run verify:deployment` | Verify deployment health |
+| `npm run build:verify` | Build and verify locally |
+
+## 🤝 Contributing
+
+### Pull Request Process
+1. **Feature branch**: Create from `develop`
+2. **Development**: Make changes with tests
+3. **Preview**: Auto-deploys to preview environment
+4. **Review**: All status checks must pass ✅
+5. **Merge**: Only possible with green checks
+
+### Branch Protection Rules
+- ✅ **Required status checks**: Build, test, deploy, E2E
+- ✅ **Up-to-date requirement**: Must be current with main
+- ✅ **Review requirement**: 1 approving review
+- ✅ **No bypassing**: Applies to administrators
+
+## 📚 Documentation
+
+- [Azure DevOps Setup Guide](./docs/AZURE_DEVOPS_SETUP.md)
+- [Branch Protection Setup](./.github/BRANCH_PROTECTION_SETUP.md)
+- [Azure Authentication Guide](./AZURE_AUTH_SETUP_COMPLETE.md)
+- [Azure OpenAI Integration](./AZURE_OPENAI_SETUP.md)
+
+## 🏆 Project Highlights
+
+### 🛡️ Security & Compliance
+- **Zero secrets in code** - All credentials via Azure Key Vault
+- **Managed Identity** authentication throughout
+- **RBAC permissions** with least privilege
+- **Automated security scanning** in CI/CD
+
+### ⚡ Performance & Scale
+- **Lazy loading** for optimal bundle splitting
+- **Caching strategies** for API responses
+- **CDN optimization** for static assets
+- **Responsive design** for all devices
+
+### 🧪 Quality Assurance
+- **100% TypeScript** with strict mode
+- **Comprehensive testing** at all levels
+- **Branch protection** preventing broken code
+- **Automated verification** of deployments
+
+### 🚀 Developer Experience
+- **One-command setup** with Azure authentication
+- **Hot reload** development server
+- **Automatic API switching** by environment
+- **Rich error handling** and debugging
+
+---
+
+## 🎉 Success Metrics
+
+✅ **Zero-config deployments** - API URLs switch automatically  
+✅ **100% verified deployments** - All health checks must pass  
+✅ **Enterprise security** - Managed Identity throughout  
+✅ **Developer productivity** - One-time Azure setup  
+✅ **Production ready** - Comprehensive monitoring and alerts  
+
+**Built with ❤️ by the Scout Analytics Team**

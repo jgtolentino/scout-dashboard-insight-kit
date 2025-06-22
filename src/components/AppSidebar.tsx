@@ -30,7 +30,7 @@ const navItems = [
   { path: "/consumer-behavior", label: "Consumer Behavior", icon: Brain, description: "Behavioral analysis" },
   { path: "/consumer-profiling", label: "Consumer Profiling", icon: Users, description: "Demographics" },
   { path: "/retailbot", label: "RetailBot", icon: Brain, description: "AI assistant" },
-  { path: "/ai-chat", label: "AI Chat", icon: MessageSquare, description: "Chat with AI" }
+  { path: "/ai-chat", label: "AI Chat", icon: MessageSquare, description: "Chat with AdsBot" }
 ];
 
 const AppSidebar = () => {

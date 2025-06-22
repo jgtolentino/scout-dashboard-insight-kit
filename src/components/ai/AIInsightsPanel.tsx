@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Brain, TrendingUp, AlertTriangle, CheckCircle, Lightbulb, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { Brain, TrendingUp, AlertTriangle, CheckCircle, Lightbulb, RefreshCw, ChevronDown, ChevronUp, Target, Sparkles } from 'lucide-react';
 import { useFilterStore } from '@/stores/filterStore';
 import { useAIInsights } from '@/hooks/useAIInsights';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { adsBotApi, type AdsBotInsight } from '@/services/adsBotApi';
 
 const getCategoryIcon = (category: string) => {
   switch (category) {
@@ -14,6 +15,10 @@ const getCategoryIcon = (category: string) => {
     case "Customer Insights": return CheckCircle;
     case "Inventory": return AlertTriangle;
     case "Sales Strategy": return Brain;
+    case "trend": return TrendingUp;
+    case "anomaly": return AlertTriangle;
+    case "opportunity": return Target;
+    case "recommendation": return Lightbulb;
     default: return Brain;
   }
 };
@@ -38,17 +43,50 @@ export function AIInsightsPanel() {
   const filters = useFilterStore();
   const [query, setQuery] = useState('Generate insights from current data');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [adsBotInsights, setAdsBotInsights] = useState<AdsBotInsight[]>([]);
+  const [adsBotLoading, setAdsBotLoading] = useState(false);
   
   const { data, isLoading, error, refetch } = useAIInsights(filters, query);
+
+  // Load AdsBot insights
+  useEffect(() => {
+    loadAdsBotInsights();
+  }, [filters]);
+
+  const loadAdsBotInsights = async () => {
+    setAdsBotLoading(true);
+    try {
+      const insights = await adsBotApi.getInsights(filters);
+      setAdsBotInsights(insights);
+    } catch (error) {
+      console.error('Failed to load AdsBot insights:', error);
+    } finally {
+      setAdsBotLoading(false);
+    }
+  };
   
   const handleRefresh = () => {
     refetch();
+    loadAdsBotInsights();
   };
+
+  // Combine insights from both sources
+  const combinedInsights = [
+    ...adsBotInsights.map(insight => ({
+      ...insight,
+      type: insight.type,
+      description: insight.description,
+      confidence: Math.round(insight.confidence * 100),
+      impact: insight.impact,
+      action_items: insight.actionItems
+    })),
+    ...(data?.insights || [])
+  ];
 
   // Limit insights to 2 when collapsed, show all when expanded
   const visibleInsights = isExpanded 
-    ? data?.insights || [] 
-    : (data?.insights || []).slice(0, 2);
+    ? combinedInsights 
+    : combinedInsights.slice(0, 2);
 
   return (
     <Card className="h-full">
@@ -57,19 +95,22 @@ export function AIInsightsPanel() {
           <div className="flex items-center space-x-2">
             <Brain className="h-5 w-5 text-primary" />
             <span>AI Insights</span>
+            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+              Powered by AdsBot
+            </Badge>
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={handleRefresh}
-            disabled={isLoading}
+            disabled={isLoading || adsBotLoading}
           >
             <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
           </Button>
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
+        {(isLoading || adsBotLoading) ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <div key={i} className="animate-pulse border border-border rounded-lg p-4 space-y-3">
@@ -165,7 +206,7 @@ export function AIInsightsPanel() {
                 </div>
               )}
               
-              {data?.insights && data.insights.length > 2 && (
+              {combinedInsights && combinedInsights.length > 2 && (
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="w-full">
                     {isExpanded ? (
@@ -176,7 +217,7 @@ export function AIInsightsPanel() {
                     ) : (
                       <div className="flex items-center">
                         <ChevronDown className="h-4 w-4 mr-2" />
-                        <span>Show More ({data.insights.length - 2} more insights)</span>
+                        <span>Show More ({combinedInsights.length - 2} more insights)</span>
                       </div>
                     )}
                   </Button>
@@ -184,7 +225,7 @@ export function AIInsightsPanel() {
               )}
               
               <CollapsibleContent className="space-y-4">
-                {data?.insights && data.insights.slice(2).map((insight, index) => {
+                {combinedInsights && combinedInsights.slice(2).map((insight, index) => {
                   const IconComponent = getCategoryIcon(insight.type || 'insight');
                   return (
                     <div key={index + 2} className="border border-border rounded-lg p-4 space-y-3">

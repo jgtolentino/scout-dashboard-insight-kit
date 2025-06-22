@@ -33,4 +33,3 @@ export const handlers = [
 
 // Create the server
 export const server = setupServer(...handlers);
-EOF < /dev/null

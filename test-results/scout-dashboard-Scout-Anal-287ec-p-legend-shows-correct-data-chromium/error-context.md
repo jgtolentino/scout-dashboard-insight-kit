@@ -4,9 +4,9 @@
 - region "Notifications (F8)":
   - list
 - img
-- text: Attention Required 4 Anomalies
+- text: Attention Required 3 Anomalies
 - img
-- text: 23s
+- text: 22s
 - button "Refresh":
   - img
   - text: Refresh
@@ -138,7 +138,7 @@
         - img
     - img
     - text: "Data Summary High Impact Confidence: 95%"
-    - paragraph: "Based on current data: 100 transactions with total revenue of ₱27,757"
+    - paragraph: "Based on current data: 100 transactions with total revenue of ₱28,196"
     - paragraph: "Action Items:"
     - list:
       - listitem: • Review performance metrics

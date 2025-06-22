@@ -4,9 +4,9 @@
 - region "Notifications (F8)":
   - list
 - img
-- text: Attention Required 4 Anomalies
+- text: Attention Required 1 Anomaly
 - img
-- text: 23s
+- text: 28s
 - button "Refresh":
   - img
   - text: Refresh
@@ -61,11 +61,8 @@
     - img
     - text: Toggle Sidebar
   - img
-  - heading "Scout Analytics Overview" [level=1]
-  - paragraph: Real-time insights into your retail analytics
-  - button "Heat Map":
-    - img
-    - text: Heat Map
+  - heading "Consumer Profiling" [level=1]
+  - paragraph: Customer demographics and profiling
   - navigation "breadcrumb":
     - list:
       - listitem:
@@ -74,7 +71,7 @@
           - img
           - text: Dashboard
       - listitem:
-        - link "Overview" [disabled]
+        - link "Consumer Profiling" [disabled]
   - button [disabled]:
     - img
   - button "Today"
@@ -90,68 +87,67 @@
   - button "Filters":
     - img
     - text: Filters
+  - paragraph: Total Profiles
+  - paragraph: 15,847
+  - paragraph: +12.3% vs last month
+  - img
+  - paragraph: Active Profiles
+  - paragraph: 8,429
+  - paragraph: +8.2% vs last month
+  - img
+  - paragraph: Profile Completeness
+  - paragraph: 87.5%
+  - paragraph: +15.4% vs last month
+  - img
+  - paragraph: Geographic Reach
+  - paragraph: 47 Barangays
+  - paragraph: +2.1% vs last month
+  - img
+  - heading "Advanced Demographic Analysis" [level=3]:
+    - img
+    - text: Advanced Demographic Analysis
+  - heading "Demographic TreeMap - Value" [level=3]:
+    - img
+    - text: Demographic TreeMap - Value
+  - button "Value"
+  - button "Revenue"
+  - button "Count"
+  - button "Avg Spend"
+  - paragraph: Total Value
+  - paragraph: "0"
   - paragraph: Total Revenue
   - paragraph: ₱0
-  - paragraph: 0% vs last month
-  - img
-  - paragraph: Total Transactions
+  - paragraph: Total Customers
   - paragraph: "0"
-  - paragraph: 0% vs last month
+  - paragraph: Top Segment
+  - paragraph
   - img
-  - paragraph: Active Customers
-  - paragraph: "0"
-  - paragraph: 0% vs last month
-  - img
-  - paragraph: Avg Order Value
-  - paragraph: ₱0
-  - paragraph: 0% vs last month
-  - img
-  - heading "Category Mix Distribution" [level=3]:
-    - img
-    - text: Category Mix Distribution
-  - button:
-    - img
-  - button:
-    - img
-  - button:
-    - img
-  - region:
+  - heading "How to Use" [level=4]
+  - list:
+    - listitem: • Rectangle size represents the selected metric value
+    - listitem: • Colors represent different demographic categories
+    - listitem: • Hover for detailed segment information
+    - listitem: • Click rectangles to drill down into subcategories
+  - heading "Demographic Categories" [level=4]
+  - text: age group income level location lifestyle behavior
+  - tablist:
+    - tab "Gender Distribution" [selected]
+    - tab "Age Distribution"
+  - tabpanel "Gender Distribution":
+    - heading "Gender Distribution" [level=3]
     - img:
       - img
       - img
-  - paragraph: "Top Category: beverages (0.0% of total)"
-  - heading "Regional Performance Map" [level=3]:
-    - img
-    - text: Regional Performance Map
-  - region "Map"
-  - link "Mapbox homepage":
-    - /url: https://www.mapbox.com/
-  - text: Revenue ₱800,000 ₱2,500,000 Loading map...
-  - tablist:
-    - tab "AI Insights" [selected]
-    - tab "Recommendations"
-  - tabpanel "AI Insights":
-    - heading "AI Insights" [level=3]:
-      - img
-      - text: AI Insights
-      - button:
+      - text: "Male: 48% Female: 52%"
+    - list:
+      - listitem:
         - img
+        - text: Male
+      - listitem:
+        - img
+        - text: Female
+  - heading "Geographic Distribution" [level=3]:
     - img
-    - text: "Data Summary High Impact Confidence: 95%"
-    - paragraph: "Based on current data: 100 transactions with total revenue of ₱27,757"
-    - paragraph: "Action Items:"
-    - list:
-      - listitem: • Review performance metrics
-      - listitem: • Analyze trends
-    - button "Apply Recommendation"
-    - img
-    - text: "Category Analysis Medium Impact Confidence: 88%"
-    - paragraph: beverages leads with 800 transactions generating ₱1,500,000
-    - paragraph: "Action Items:"
-    - list:
-      - listitem: • Focus on top performers
-      - listitem: • Optimize inventory for leading categories
-    - button "Apply Recommendation"
-  - heading "Top Categories" [level=3]
-  - text: beverages +0.0% snacks +0.0% personal_care +0.0% household +0.0%
+    - text: Geographic Distribution
+  - text: Unable to load geographic data
 ```

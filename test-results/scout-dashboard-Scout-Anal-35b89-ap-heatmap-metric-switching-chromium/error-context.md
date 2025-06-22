@@ -4,9 +4,9 @@
 - region "Notifications (F8)":
   - list
 - img
-- text: Attention Required 4 Anomalies
+- text: Attention Required 2 Anomalies
 - img
-- text: 23s
+- text: 6s
 - button "Refresh":
   - img
   - text: Refresh
@@ -57,15 +57,8 @@
       - img
       - text: AI Chat Chat with AI
 - main:
-  - button "Toggle Sidebar":
-    - img
-    - text: Toggle Sidebar
   - img
-  - heading "Scout Analytics Overview" [level=1]
-  - paragraph: Real-time insights into your retail analytics
-  - button "Heat Map":
-    - img
-    - text: Heat Map
+  - heading "Transaction Trends" [level=1]
   - navigation "breadcrumb":
     - list:
       - listitem:
@@ -74,7 +67,7 @@
           - img
           - text: Dashboard
       - listitem:
-        - link "Overview" [disabled]
+        - link "Transaction Trends" [disabled]
   - button [disabled]:
     - img
   - button "Today"
@@ -90,68 +83,61 @@
   - button "Filters":
     - img
     - text: Filters
+  - button "Overview":
+    - img
+    - text: Overview
+  - button "Hourly Patterns":
+    - img
+    - text: Hourly Patterns
+  - button "Trend Analysis":
+    - img
+    - text: Trend Analysis
+  - img
   - paragraph: Total Revenue
   - paragraph: ₱0
-  - paragraph: 0% vs last month
   - img
-  - paragraph: Total Transactions
+  - paragraph: Transactions
   - paragraph: "0"
-  - paragraph: 0% vs last month
-  - img
-  - paragraph: Active Customers
-  - paragraph: "0"
-  - paragraph: 0% vs last month
   - img
   - paragraph: Avg Order Value
   - paragraph: ₱0
-  - paragraph: 0% vs last month
   - img
-  - heading "Category Mix Distribution" [level=3]:
-    - img
-    - text: Category Mix Distribution
-  - button:
-    - img
-  - button:
-    - img
-  - button:
-    - img
-  - region:
-    - img:
+  - paragraph: Peak Day
+  - paragraph: N/A
+  - img
+  - paragraph: Peak Hour
+  - paragraph: N/A
+  - img
+  - paragraph: Weekend %
+  - paragraph: 0.0%
+  - tabpanel:
+    - heading "Transaction Trends Analysis" [level=3]:
       - img
+      - text: Transaction Trends Analysis
+    - button:
       - img
-  - paragraph: "Top Category: beverages (0.0% of total)"
-  - heading "Regional Performance Map" [level=3]:
-    - img
-    - text: Regional Performance Map
-  - region "Map"
-  - link "Mapbox homepage":
-    - /url: https://www.mapbox.com/
-  - text: Revenue ₱800,000 ₱2,500,000 Loading map...
-  - tablist:
-    - tab "AI Insights" [selected]
-    - tab "Recommendations"
-  - tabpanel "AI Insights":
-    - heading "AI Insights" [level=3]:
+    - button:
       - img
-      - text: AI Insights
-      - button:
+    - button:
+      - img
+    - button "All"
+    - button "Weekdays"
+    - button "Weekends"
+    - paragraph: Total Revenue
+    - paragraph: ₱0
+    - paragraph: Total Transactions
+    - paragraph: "0"
+    - paragraph: Avg Order Value
+    - paragraph: ₱0
+    - paragraph: Growth Rate
+    - paragraph: +0.0%
+    - img: 0 1 2 3 4
+    - list:
+      - listitem:
         - img
+        - text: Revenue (₱)
+      - listitem:
+        - img
+        - text: Transactions
     - img
-    - text: "Data Summary High Impact Confidence: 95%"
-    - paragraph: "Based on current data: 100 transactions with total revenue of ₱27,757"
-    - paragraph: "Action Items:"
-    - list:
-      - listitem: • Review performance metrics
-      - listitem: • Analyze trends
-    - button "Apply Recommendation"
-    - img
-    - text: "Category Analysis Medium Impact Confidence: 88%"
-    - paragraph: beverages leads with 800 transactions generating ₱1,500,000
-    - paragraph: "Action Items:"
-    - list:
-      - listitem: • Focus on top performers
-      - listitem: • Optimize inventory for leading categories
-    - button "Apply Recommendation"
-  - heading "Top Categories" [level=3]
-  - text: beverages +0.0% snacks +0.0% personal_care +0.0% household +0.0%
 ```

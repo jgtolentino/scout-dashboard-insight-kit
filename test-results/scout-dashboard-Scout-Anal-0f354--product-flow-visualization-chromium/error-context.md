@@ -1,0 +1,140 @@
+# Page snapshot
+
+```yaml
+- region "Notifications (F8)":
+  - list
+- img
+- text: Attention Required 4 Anomalies
+- img
+- text: 21s
+- button "Refresh":
+  - img
+  - text: Refresh
+- button "Close":
+  - img
+  - text: Close
+- img
+- text: Scout Analytics Analytics Dashboard
+- list:
+  - listitem:
+    - link "Overview Executive summary":
+      - /url: /overview
+      - img
+      - text: Overview Executive summary
+  - listitem:
+    - link "Transaction Trends Track patterns":
+      - /url: /transaction-trends
+      - img
+      - text: Transaction Trends Track patterns
+  - listitem:
+    - link "Product Mix Product analytics":
+      - /url: /product-mix
+      - img
+      - text: Product Mix Product analytics
+  - listitem:
+    - link "Product Substitution Substitution flows":
+      - /url: /product-substitution
+      - img
+      - text: Product Substitution Substitution flows
+  - listitem:
+    - link "Consumer Behavior Behavioral analysis":
+      - /url: /consumer-behavior
+      - img
+      - text: Consumer Behavior Behavioral analysis
+  - listitem:
+    - link "Consumer Profiling Demographics":
+      - /url: /consumer-profiling
+      - img
+      - text: Consumer Profiling Demographics
+  - listitem:
+    - link "RetailBot AI assistant":
+      - /url: /retailbot
+      - img
+      - text: RetailBot AI assistant
+  - listitem:
+    - link "AI Chat Chat with AI":
+      - /url: /ai-chat
+      - img
+      - text: AI Chat Chat with AI
+- main:
+  - img
+  - heading "Product Substitution Analysis" [level=1]
+  - navigation "breadcrumb":
+    - list:
+      - listitem:
+        - link "Dashboard":
+          - /url: /overview
+          - img
+          - text: Dashboard
+      - listitem:
+        - link "product-substitution" [disabled]
+  - button [disabled]:
+    - img
+  - button "Today"
+  - button "Week"
+  - button "Month"
+  - button "Quarter"
+  - button "Year"
+  - button [disabled]:
+    - img
+  - button "Select dates":
+    - img
+    - text: Select dates
+  - button "Filters":
+    - img
+    - text: Filters
+  - button "Overview":
+    - img
+    - text: Overview
+  - button "Substitution Flows":
+    - img
+    - text: Substitution Flows
+  - button "Category Analysis":
+    - img
+    - text: Category Analysis
+  - img
+  - paragraph: Total Substitutions
+  - paragraph: "0"
+  - img
+  - paragraph: Revenue Impact
+  - paragraph: ₱0
+  - img
+  - paragraph: Avg Substitution Rate
+  - paragraph: 0.0%
+  - img
+  - paragraph: Unique Products
+  - paragraph: "0"
+  - img
+  - paragraph: Top Flow
+  - paragraph: N/A
+  - tabpanel:
+    - heading "Product Substitution Flow - Substitution Volume" [level=3]:
+      - img
+      - text: Product Substitution Flow - Substitution Volume
+    - button "Volume"
+    - button "Frequency"
+    - button "Revenue"
+    - paragraph: Total Substitutions
+    - paragraph: "0"
+    - paragraph: Avg Substitution Rate
+    - paragraph: 0.0%
+    - paragraph: Top Flow
+    - paragraph
+    - paragraph: Revenue Impact
+    - paragraph: ₱0
+    - img
+    - heading "How to Read This Diagram" [level=4]
+    - list:
+      - listitem: • Width of flows represents substitution volume
+      - listitem: • Left side shows original products
+      - listitem: • Right side shows substitute products
+      - listitem: • Hover over flows for detailed metrics
+    - heading "Color Legend" [level=4]
+    - text: Original Products Substitute Products
+    - heading "Filter by Category" [level=3]
+    - button "beverages"
+    - button "snacks"
+    - button "personal care"
+    - button "household"
+    - button "food staples"
+```

@@ -28,59 +28,62 @@ const RetailBotInsights = () => {
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <header className="flex items-center gap-4 border-b px-6 py-4 bg-background">
-        <SidebarTrigger />
+      <header className="flex items-center justify-between border-b px-6 py-4 bg-background">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl text-white">
-            <Bot className="h-6 w-6" />
+          <SidebarTrigger />
+          <div className="p-2.5 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg text-white">
+            <Bot className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-xl font-bold text-gray-900">
               RetailBot & AI Insights
             </h1>
-            <p className="text-gray-600 mt-1">AI-powered retail intelligence assistant</p>
+            <p className="text-xs text-muted-foreground">AI-powered retail intelligence assistant</p>
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="flex items-center gap-1">
+            <Badge variant="outline" className="flex items-center gap-1 text-xs">
               <Filter className="h-3 w-3" />
               <span>{activeFilterCount} active filters</span>
             </Badge>
-            <Badge variant="outline" className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              <span>{filters.from && filters.to ? `${filters.from} to ${filters.to}` : 'All dates'}</span>
-            </Badge>
+            {filters.from && filters.to && (
+              <Badge variant="outline" className="flex items-center gap-1 text-xs">
+                <Calendar className="h-3 w-3" />
+                <span>{filters.from} to {filters.to}</span>
+              </Badge>
+            )}
           </div>
           <BreadcrumbNav />
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden">
+      <div className="flex-1 p-4 bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden">
         <Tabs defaultValue="retailbot" className="h-full">
-          <div className="flex items-center justify-between mb-4">
-            <TabsList>
-              <TabsTrigger value="retailbot" className="flex items-center gap-2">
-                <Bot className="h-4 w-4" />
+          <div className="flex items-center justify-between mb-3">
+            <TabsList className="h-8">
+              <TabsTrigger value="retailbot" className="text-xs flex items-center gap-1 h-7 px-3">
+                <Bot className="h-3 w-3" />
                 RetailBot
               </TabsTrigger>
-              <TabsTrigger value="insights" className="flex items-center gap-2">
-                <Brain className="h-4 w-4" />
+              <TabsTrigger value="insights" className="text-xs flex items-center gap-1 h-7 px-3">
+                <Brain className="h-3 w-3" />
                 AI Insights
               </TabsTrigger>
-              <TabsTrigger value="analytics" className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
+              <TabsTrigger value="analytics" className="text-xs flex items-center gap-1 h-7 px-3">
+                <BarChart3 className="h-3 w-3" />
                 Analytics
               </TabsTrigger>
             </TabsList>
             
             <div className="flex items-center gap-2">
-              <TabsList>
+              <TabsList className="h-8">
                 <TabsTrigger 
                   value="split" 
                   onClick={() => setActiveView('split')}
                   data-state={activeView === 'split' ? 'active' : 'inactive'}
+                  className="text-xs h-7 px-3"
                 >
                   Split View
                 </TabsTrigger>
@@ -88,6 +91,7 @@ const RetailBotInsights = () => {
                   value="full" 
                   onClick={() => setActiveView('full')}
                   data-state={activeView === 'full' ? 'active' : 'inactive'}
+                  className="text-xs h-7 px-3"
                 >
                   Full View
                 </TabsTrigger>
@@ -95,9 +99,9 @@ const RetailBotInsights = () => {
             </div>
           </div>
           
-          <TabsContent value="retailbot" className="h-[calc(100%-44px)] m-0">
+          <TabsContent value="retailbot" className="h-[calc(100%-40px)] m-0">
             {activeView === 'split' ? (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
                 {/* Chat Interface */}
                 <div className="lg:col-span-2">
                   <Card className="h-full">
@@ -121,17 +125,17 @@ const RetailBotInsights = () => {
             )}
           </TabsContent>
           
-          <TabsContent value="insights" className="h-[calc(100%-44px)] m-0">
+          <TabsContent value="insights" className="h-[calc(100%-40px)] m-0">
             <Card className="h-full">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-purple-600" />
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-purple-600" />
                   AI-Generated Insights
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0">
                 <div className="text-center py-8">
-                  <p className="text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     Enhanced AI Insights view coming soon
                   </p>
                 </div>
@@ -139,17 +143,17 @@ const RetailBotInsights = () => {
             </Card>
           </TabsContent>
           
-          <TabsContent value="analytics" className="h-[calc(100%-44px)] m-0">
+          <TabsContent value="analytics" className="h-[calc(100%-40px)] m-0">
             <Card className="h-full">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-blue-600" />
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4 text-blue-600" />
                   AI-Powered Analytics
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0">
                 <div className="text-center py-8">
-                  <p className="text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     Enhanced Analytics view coming soon
                   </p>
                 </div>

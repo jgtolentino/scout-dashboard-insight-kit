@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # Development API service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - DATABASE_URL=sqlite:///analytics.db
+    volumes:
+      - ./backend:/app/backend
+      - ./data:/app/data
+    command: ["flask", "run", "--host=0.0.0.0", "--port=5000", "--reload"]
+    
+  # Development frontend service
+  web:
+    image: node:18-alpine
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - api
+      
+  # Production-like service (combined)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "80:80"
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=sqlite:///analytics.db
+    volumes:
+      - ./data:/app/data
+    profiles:
+      - production
+      
+  # Redis cache (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    profiles:
+      - with-cache
+
+volumes:
+  redis_data:

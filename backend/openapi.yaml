@@ -1,0 +1,307 @@
+openapi: 3.0.0
+info:
+  title: Scout Analytics API
+  version: 1.0.0
+  description: Backend API for Scout Dashboard Insight Kit
+servers:
+  - url: http://localhost:5000
+    description: Development server
+  - url: https://api.scout-analytics.com
+    description: Production server
+paths:
+  /api/health:
+    get:
+      summary: Health check endpoint
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                  service:
+                    type: string
+  
+  /api/transactions:
+    get:
+      summary: Get transaction data
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+  
+  /api/products:
+    get:
+      summary: Get product catalog
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  total:
+                    type: integer
+  
+  /api/regions:
+    get:
+      summary: Get regions data
+      responses:
+        '200':
+          description: List of regions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Region'
+                  total:
+                    type: integer
+  
+  /api/analytics/summary:
+    get:
+      summary: Get analytics summary
+      parameters:
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Analytics summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsSummary'
+  
+  /api/analytics/brand-performance:
+    get:
+      summary: Get brand performance metrics
+      parameters:
+        - name: brand
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Brand performance data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandPerformance'
+  
+  /api/analytics/consumer-insights:
+    get:
+      summary: Get consumer insights
+      parameters:
+        - name: segment
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Consumer insights data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumerInsights'
+
+components:
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+        date:
+          type: string
+          format: date-time
+        store_id:
+          type: string
+        customer_id:
+          type: string
+        total_amount:
+          type: number
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id:
+                type: string
+              quantity:
+                type: integer
+              unit_price:
+                type: number
+    
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        brand:
+          type: string
+        price:
+          type: number
+        sku:
+          type: string
+    
+    Region:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        parent_region:
+          type: string
+        level:
+          type: string
+          enum: [country, region, province, city, barangay]
+    
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+        pages:
+          type: integer
+    
+    AnalyticsSummary:
+      type: object
+      properties:
+        total_revenue:
+          type: number
+        total_transactions:
+          type: integer
+        average_basket_size:
+          type: number
+        top_products:
+          type: array
+          items:
+            type: object
+        revenue_by_region:
+          type: array
+          items:
+            type: object
+    
+    BrandPerformance:
+      type: object
+      properties:
+        brand:
+          type: string
+        metrics:
+          type: object
+          properties:
+            revenue:
+              type: number
+            units_sold:
+              type: integer
+            market_share:
+              type: number
+            growth_rate:
+              type: number
+        trends:
+          type: array
+          items:
+            type: object
+    
+    ConsumerInsights:
+      type: object
+      properties:
+        demographics:
+          type: object
+        purchase_patterns:
+          type: array
+          items:
+            type: object
+        preferences:
+          type: array
+          items:
+            type: object

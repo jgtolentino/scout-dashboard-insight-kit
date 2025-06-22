@@ -77,8 +77,16 @@ const generateCategoryData = () => {
 };
 
 export const handlers = [
-  // Authentication endpoint
+  // Authentication endpoint - multiple patterns to catch all auth requests
   http.post('*/api/auth/login', () => {
+    return HttpResponse.json({
+      success: true,
+      token: 'dev-mock-token-12345',
+      user: { id: 1, email: 'demo@scout.com', name: 'Demo User' }
+    });
+  }),
+  
+  http.post('*/auth/login', () => {
     return HttpResponse.json({
       success: true,
       token: 'dev-mock-token-12345',

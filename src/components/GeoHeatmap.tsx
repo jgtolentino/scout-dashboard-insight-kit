@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useFilterStore } from '@/stores/filterStore';
 import { API_BASE_URL, MAPBOX_ACCESS_TOKEN } from '@/config/api';
+import type { GeographicApiResponse, LocationData } from '@/types/api';
 
 interface GeoHeatmapProps {
   dataUrl?: string;
@@ -24,7 +25,7 @@ export default function GeoHeatmap({ dataUrl, className }: GeoHeatmapProps) {
   const queryString = queryParams.toString();
   const apiUrl = dataUrl || `${API_BASE_URL}/demographics?agg=barangay${queryString ? '&' + queryString : ''}`;
   
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<GeographicApiResponse>({
     queryKey: ['geo-heatmap', apiUrl],
     queryFn: async () => {
       try {
@@ -90,15 +91,15 @@ export default function GeoHeatmap({ dataUrl, className }: GeoHeatmapProps) {
         });
       } else if (data && Array.isArray(data.data) && data.data.length > 0) {
         // If we have array data, convert to GeoJSON
-        const features = data.data.map((location: any) => ({
-          type: 'Feature',
+        const features = data.data.map((location: LocationData) => ({
+          type: 'Feature' as const,
           properties: {
             count: location.count || 1,
             name: location.name || location.region || 'Unknown'
           },
           geometry: {
-            type: 'Point',
-            coordinates: [location.longitude || 121, location.latitude || 14]
+            type: 'Point' as const,
+            coordinates: [location.longitude || 121, location.latitude || 14] as [number, number]
           }
         }));
         

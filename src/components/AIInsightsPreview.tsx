@@ -3,6 +3,7 @@ import React from 'react';
 import useSWR from 'swr';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Brain, TrendingUp, AlertCircle } from 'lucide-react';
+import type { AIInsight, AIInsightsResponse } from '@/types/api';
 
 const fetcher = (url: string) => fetch(url, {
   method: 'POST',
@@ -11,12 +12,12 @@ const fetcher = (url: string) => fetch(url, {
 }).then(r => r.json());
 
 export default function AIInsightsPreview() {
-  const { data, error, isLoading } = useSWR('/api/ai-insights', fetcher, {
+  const { data, error, isLoading } = useSWR<AIInsightsResponse>('/api/ai-insights', fetcher, {
     refreshInterval: 30000, // Refresh every 30 seconds
     revalidateOnFocus: false
   });
   
-  const insights = data?.insights || [
+  const insights: AIInsight[] = data?.insights || [
     {
       id: 1,
       title: 'Peak Sales Hours',
@@ -66,7 +67,7 @@ export default function AIInsightsPreview() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {insights.map((insight: any) => {
+          {insights.map((insight: AIInsight) => {
             const Icon = getIcon(insight.type);
             return (
               <div key={insight.id} className="border-l-4 border-purple-500 pl-4 py-2">

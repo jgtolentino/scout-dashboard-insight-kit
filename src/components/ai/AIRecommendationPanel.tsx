@@ -19,7 +19,7 @@ interface Recommendation {
   description: string;
   confidence: number;
   category: 'pricing' | 'promotion' | 'inventory' | 'ops';
-  filters?: Record<string, any>;
+  filters?: Record<string, string | number | boolean>;
 }
 
 export default function AIRecommendationPanel({
@@ -82,11 +82,11 @@ export default function AIRecommendationPanel({
     }
   };
 
-  const handleApplyAction = (action: any) => {
+  const handleApplyAction = (action: Recommendation) => {
     // Apply filters from the action
     if (action.filters) {
       Object.entries(action.filters).forEach(([key, value]) => {
-        setFilter(key as any, value);
+        setFilter(key as keyof typeof filters, value);
       });
     }
     

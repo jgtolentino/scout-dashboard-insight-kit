@@ -48,8 +48,8 @@ const PhilippinesChoroplethMap: React.FC<PhilippinesChoroplethMapProps> = ({
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
 
   // Prepare GeoJSON with data values
-  const getGeoJSONWithData = () => {
-    const geoJSON = JSON.parse(JSON.stringify(PHILIPPINES_REGIONS));
+  const getGeoJSONWithData = useCallback(() => {
+    const geoJSON = JSON.parse(JSON.stringify(PHILIPPINES_REGIONS_ENHANCED));
     
     // Update values from provided data
     geoJSON.features.forEach((feature: any) => {
@@ -66,7 +66,7 @@ const PhilippinesChoroplethMap: React.FC<PhilippinesChoroplethMapProps> = ({
     });
     
     return geoJSON;
-  };
+  }, [data]);
 
   // Get color based on value
   const getColor = (value: number) => {
@@ -268,7 +268,7 @@ const PhilippinesChoroplethMap: React.FC<PhilippinesChoroplethMapProps> = ({
         map.current = null;
       }
     };
-  }, [data, onRegionClick]);
+  }, [data, onRegionClick, getGeoJSONWithData, hoveredRegion]);
 
   // Update map size when container size changes
   useEffect(() => {

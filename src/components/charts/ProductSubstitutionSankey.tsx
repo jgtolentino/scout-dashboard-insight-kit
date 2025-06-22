@@ -252,7 +252,7 @@ const ProductSubstitutionSankey: React.FC<ProductSubstitutionSankeyProps> = ({
         .text("Substitute Products");
     }
 
-  }, [sankeyData, selectedMetric, height]);
+  }, [sankeyData, selectedMetric, height, sourceColorScale, targetColorScale]);
 
   // Calculate summary statistics
   const summaryStats = useMemo(() => {

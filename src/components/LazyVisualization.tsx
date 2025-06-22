@@ -1,6 +1,13 @@
 import React, { Suspense, lazy } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import type { 
+  ChoroplethMapProps, 
+  TimeSeriesChartProps, 
+  TransactionHeatmapProps, 
+  ProductSubstitutionSankeyProps, 
+  DemographicTreeMapProps 
+} from '@/types/api';
 
 // Lazy load visualization components for better performance
 const EnhancedPhilippinesChoroplethMap = lazy(() => import('./maps/EnhancedPhilippinesChoroplethMap'));
@@ -32,31 +39,31 @@ const VisualizationSkeleton = ({ height = 400, title }: { height?: number; title
 );
 
 // Lazy visualization wrapper components
-export const LazyChoroplethMap = (props: any) => (
+export const LazyChoroplethMap = (props: ChoroplethMapProps) => (
   <Suspense fallback={<VisualizationSkeleton height={props.height || 500} title="Regional Performance Map" />}>
     <EnhancedPhilippinesChoroplethMap {...props} />
   </Suspense>
 );
 
-export const LazyTimeSeriesChart = (props: any) => (
+export const LazyTimeSeriesChart = (props: TimeSeriesChartProps) => (
   <Suspense fallback={<VisualizationSkeleton height={props.height || 400} title="Time Series Analysis" />}>
     <EnhancedTimeSeriesChart {...props} />
   </Suspense>
 );
 
-export const LazyTransactionHeatmap = (props: any) => (
+export const LazyTransactionHeatmap = (props: TransactionHeatmapProps) => (
   <Suspense fallback={<VisualizationSkeleton height={props.height || 400} title="Transaction Heatmap" />}>
     <TransactionHeatmap {...props} />
   </Suspense>
 );
 
-export const LazyProductSubstitutionSankey = (props: any) => (
+export const LazyProductSubstitutionSankey = (props: ProductSubstitutionSankeyProps) => (
   <Suspense fallback={<VisualizationSkeleton height={props.height || 500} title="Product Substitution Flow" />}>
     <ProductSubstitutionSankey {...props} />
   </Suspense>
 );
 
-export const LazyDemographicTreeMap = (props: any) => (
+export const LazyDemographicTreeMap = (props: DemographicTreeMapProps) => (
   <Suspense fallback={<VisualizationSkeleton height={props.height || 600} title="Demographic Tree Map" />}>
     <DemographicTreeMap {...props} />
   </Suspense>

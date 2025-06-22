@@ -1,9 +1,19 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { kv } from '@vercel/kv';
 import OpenAI from 'openai';
+
 const openai = new OpenAI({ apiKey: process.env.AZURE_OPENAI_KEY });
 
-const keyFromFilters = (filters: any) =>
+interface FilterParams {
+  from_date?: string;
+  to_date?: string;
+  category?: string;
+  brand?: string;
+  region?: string;
+  [key: string]: string | undefined;
+}
+
+const keyFromFilters = (filters: FilterParams) =>
   'ai:' + Buffer.from(JSON.stringify(filters)).toString('base64url');
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

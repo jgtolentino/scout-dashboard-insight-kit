@@ -277,7 +277,7 @@ const DemographicTreeMap: React.FC<DemographicTreeMapProps> = ({
         }
       });
 
-  }, [treeMapData, selectedMetric, height, hoveredNode, drilldownPath]);
+  }, [treeMapData, selectedMetric, height, hoveredNode, drilldownPath, colorScale, lightColorScale]);
 
   // Get metric title and icon
   const getMetricInfo = () => {

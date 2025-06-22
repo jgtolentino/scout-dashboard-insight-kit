@@ -22,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { API_BASE_URL } from '@/config/api';
+import { useFilterStore } from '@/stores/filterStore';
 
 interface Message {
   id: string;
@@ -53,6 +55,8 @@ const RetailBotChat = () => {
   const [selectedModel, setSelectedModel] = useState('gpt-4');
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const filters = useFilterStore();
+  const { setFilter } = useFilterStore();
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -74,68 +78,69 @@ const RetailBotChat = () => {
     setInputMessage('');
     setIsLoading(true);
 
-    // Simulate API call delay based on model
-    const delay = selectedModel === 'gpt-4' ? 1200 : 800;
-    
-    setTimeout(() => {
-      const botResponse = generateBotResponse(inputMessage);
+    try {
+      // Call the real API
+      const response = await fetch(`${API_BASE_URL}/retailbot`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: inputMessage,
+          filters,
+          model: selectedModel
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to get response from RetailBot');
+      }
+      
+      const data = await response.json();
+      
+      const botResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'bot',
+        content: `I've analyzed your query "${inputMessage}" and generated ${data.actions?.length || 0} actionable recommendations based on your current filters.`,
+        timestamp: new Date(),
+        actions: data.actions || []
+      };
+      
       setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      console.error('Error getting RetailBot response:', error);
+      
+      // Fallback response on error
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'bot',
+        content: "I'm sorry, I encountered an error processing your request. Please try again later.",
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, delay);
+    }
   };
 
-  const generateBotResponse = (query: string): Message => {
-    const responses = [
-      {
-        content: "Based on your transaction data, I've identified several optimization opportunities. Peak sales occur between 6-8 PM, representing 23% of daily volume. Consider adjusting staffing and inventory during these hours.",
-        actions: [
-          {
-            id: '1',
-            title: 'Optimize Staff Scheduling',
-            description: 'Add 2 additional staff members during 6-8 PM peak hours to handle 23% of daily volume',
-            confidence: 91,
-            category: 'ops' as const,
-            filters: { hour: '18-20' }
-          }
-        ]
-      },
-      {
-        content: "Your beverage category shows strong performance in Metro Manila with 15% higher conversion rates. This presents an excellent expansion opportunity for targeted marketing campaigns.",
-        actions: [
-          {
-            id: '2',
-            title: 'Launch Beverage Campaign',
-            description: 'Target Metro Manila with beverage promotions based on 15% higher conversion rates',
-            confidence: 87,
-            category: 'promotion' as const,
-            filters: { categories: ['Beverages'], regions: ['Metro Manila'] }
-          }
-        ]
-      },
-      {
-        content: "Analysis reveals that customers aged 26-35 have the highest average order value at ₱189, but represent only 31% of transactions. This segment has significant upselling potential.",
-        actions: [
-          {
-            id: '3',
-            title: 'Target Premium Segment',
-            description: 'Create premium product bundles for 26-35 age group with ₱189 average order value',
-            confidence: 84,
-            category: 'pricing' as const,
-            filters: { age_group: '26-35' }
-          }
-        ]
-      }
-    ];
+  const handleApplyAction = (action: ActionItem) => {
+    // Apply filters from the action
+    if (action.filters) {
+      Object.entries(action.filters).forEach(([key, value]) => {
+        setFilter(key as any, value);
+      });
+    }
+  };
 
-    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-    
-    return {
-      id: (Date.now() + 1).toString(),
-      type: 'bot',
-      content: randomResponse.content,
-      timestamp: new Date(),
-      actions: randomResponse.actions
-    };
+  const handleRefresh = () => {
+    if (chatHistory.length > 0) {
+      const lastUserQuery = chatHistory.filter(msg => msg.type === 'user').pop();
+      if (lastUserQuery) {
+        setInputMessage(lastUserQuery.content);
+        handleSendMessage();
+      }
+    }
   };
 
   const getCategoryIcon = (category: string) => {
@@ -165,6 +170,8 @@ const RetailBotChat = () => {
     'Analyze customer behavior patterns'
   ];
 
+  const chatHistory = messages;
+
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
@@ -190,7 +197,7 @@ const RetailBotChat = () => {
             </SelectContent>
           </Select>
           
-          <Button variant="outline" size="sm" disabled={isLoading}>
+          <Button variant="outline" size="sm" disabled={isLoading} onClick={handleRefresh}>
             <RefreshCw className="h-4 w-4" />
           </Button>
         </div>
@@ -199,7 +206,7 @@ const RetailBotChat = () => {
       {/* Chat Messages */}
       <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
         <div className="space-y-4">
-          {messages.map((message) => (
+          {chatHistory.map((message) => (
             <div key={message.id} className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
               {message.type === 'bot' && (
                 <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full text-white flex-shrink-0">
@@ -240,7 +247,7 @@ const RetailBotChat = () => {
                               <p className="text-xs text-muted-foreground mb-2">
                                 {action.description}
                               </p>
-                              <Button size="sm" variant="outline" className="text-xs">
+                              <Button size="sm" variant="outline" className="text-xs" onClick={() => handleApplyAction(action)}>
                                 Apply Action
                               </Button>
                             </div>

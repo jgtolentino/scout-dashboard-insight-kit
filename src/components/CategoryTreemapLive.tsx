@@ -24,16 +24,8 @@ export default function CategoryTreemapLive() {
   // Transform data for visualization
   const categories = data?.data || [];
   
-  // Mock data if API returns empty
-  const mockData = [
-    { category: 'Beverages', count: 1250, share: 28.5, color: '#8884d8' },
-    { category: 'Food & Snacks', count: 1050, share: 24.2, color: '#82ca9d' },
-    { category: 'Personal Care', count: 820, share: 18.7, color: '#ffc658' },
-    { category: 'Household Items', count: 670, share: 15.3, color: '#ff7300' },
-    { category: 'Others', count: 580, share: 13.3, color: '#0088fe' }
-  ];
-  
-  const chartData = categories.length > 0 ? categories : mockData;
+  // Use real data or empty array if API returns empty
+  const chartData = categories.length > 0 ? categories : [];
   
   const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#0088fe', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -148,11 +140,21 @@ export default function CategoryTreemapLive() {
       {viewType === 'pie' && renderPieChart()}
       {viewType === 'bar' && renderBarChart()}
       
-      <div className="mt-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-        <p className="text-sm text-blue-700">
-          <span className="font-bold">Top Category:</span> {chartData[0]?.category} ({chartData[0]?.share.toFixed(1)}% of total)
-        </p>
-      </div>
+      {chartData.length > 0 && (
+        <div className="mt-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+          <p className="text-sm text-blue-700">
+            <span className="font-bold">Top Category:</span> {chartData[0]?.category} ({chartData[0]?.share.toFixed(1)}% of total)
+          </p>
+        </div>
+      )}
+      
+      {chartData.length === 0 && (
+        <div className="mt-4 p-3 bg-amber-50 rounded-lg border-l-4 border-amber-500">
+          <p className="text-sm text-amber-700">
+            No category data available for the current filters.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

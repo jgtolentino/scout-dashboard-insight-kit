@@ -17,7 +17,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
-import type { KpiMetric, RegionalData } from "@/types/api";
+import type { KpiMetric } from "@/types/api";
+import { useQuery } from "@tanstack/react-query";
+import { API_BASE_URL } from "@/config/api";
 
 interface OverviewProps {
   setHeatMapVisible: (visible: boolean) => void;
@@ -32,14 +34,49 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
   const { data: categoryData, isLoading: categoriesLoading } = useCategoryMixData(filters);
   const [showAOVModal, setShowAOVModal] = useState(false);
   
+  // Fetch regional data
+  const { data: regionalData, isLoading: regionsLoading } = useQuery({
+    queryKey: ['regions', filters],
+    queryFn: async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/regions`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch regional data');
+        }
+        const data = await response.json();
+        
+        // Transform API data to expected format
+        return data.data.map((region: any) => ({
+          name: region.name,
+          value: region.revenue || region.count || 0,
+          color: getRegionColor(region.revenue || region.count || 0),
+          percentage: region.growth ? `${region.growth > 0 ? '+' : ''}${region.growth}%` : undefined
+        }));
+      } catch (error) {
+        console.error('Error fetching regional data:', error);
+        return [];
+      }
+    },
+    staleTime: 5 * 60 * 1000 // 5 minutes
+  });
+  
+  // Function to get color based on value
+  function getRegionColor(value: number): string {
+    if (value > 1000000) return '#1e40af'; // dark blue
+    if (value > 750000) return '#3b82f6'; // medium blue
+    if (value > 500000) return '#60a5fa'; // light blue
+    if (value > 250000) return '#93c5fd'; // lighter blue
+    return '#dbeafe'; // very light blue
+  }
+  
   // Calculate metrics from real data
   const calculateMetrics = (): KpiMetric[] => {
     if (transactionsLoading || !transactionData) {
       return [
-        { title: "Total Revenue", value: "₱2.4M", change: "+12.3%", positive: true },
-        { title: "Total Transactions", value: "15,847", change: "+8.2%", positive: true },
-        { title: "Active Customers", value: "8,429", change: "+15.4%", positive: true },
-        { title: "Avg Order Value", value: "₱186", change: "-2.1%", positive: false },
+        { title: "Total Revenue", value: "₱0", change: "0%", positive: true },
+        { title: "Total Transactions", value: "0", change: "0%", positive: true },
+        { title: "Active Customers", value: "0", change: "0%", positive: true },
+        { title: "Avg Order Value", value: "₱0", change: "0%", positive: true },
       ];
     }
     
@@ -77,14 +114,6 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
     ];
   };
 
-  const regionalData: RegionalData[] = [
-    { name: 'NCR', value: 1200000, color: '#1e40af', percentage: '+12.3%' },
-    { name: 'Cebu', value: 680000, color: '#3b82f6', percentage: '+8.7%' },
-    { name: 'Davao', value: 520000, color: '#60a5fa', percentage: '+15.2%' },
-    { name: 'Iloilo', value: 350000, color: '#93c5fd', percentage: '+5.4%' },
-    { name: 'Baguio', value: 200000, color: '#dbeafe', percentage: '-2.1%' },
-  ];
-
   const metrics = calculateMetrics();
 
   const handleKPIClick = (index: number) => {
@@ -104,15 +133,28 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
     }
   };
 
-  // Mock data for AOV distribution
-  const aovDistributionData = [
-    { range: '₱0-50', count: 1245, percentage: 7.8 },
-    { range: '₱51-100', count: 3567, percentage: 22.5 },
-    { range: '₱101-150', count: 4892, percentage: 30.9 },
-    { range: '₱151-200', count: 3124, percentage: 19.7 },
-    { range: '₱201-250', count: 1876, percentage: 11.8 },
-    { range: '₱251+', count: 1143, percentage: 7.3 },
-  ];
+  // Fetch AOV distribution data
+  const { data: aovDistributionData, isLoading: aovLoading } = useQuery({
+    queryKey: ['aov-distribution', filters],
+    queryFn: async () => {
+      try {
+        // This would be a real API call in production
+        // For now, return mock data
+        return [
+          { range: '₱0-50', count: 1245, percentage: 7.8 },
+          { range: '₱51-100', count: 3567, percentage: 22.5 },
+          { range: '₱101-150', count: 4892, percentage: 30.9 },
+          { range: '₱151-200', count: 3124, percentage: 19.7 },
+          { range: '₱201-250', count: 1876, percentage: 11.8 },
+          { range: '₱251+', count: 1143, percentage: 7.3 },
+        ];
+      } catch (error) {
+        console.error('Error fetching AOV distribution:', error);
+        return [];
+      }
+    },
+    staleTime: 5 * 60 * 1000 // 5 minutes
+  });
 
   return (
     <div className="flex flex-col h-full">
@@ -196,7 +238,31 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
           </Card>
 
           {/* Regional Performance Map */}
-          <RegionalPerformanceMap data={regionalData} />
+          {regionsLoading ? (
+            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5 text-blue-600" />
+                  Regional Performance
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="animate-pulse space-y-4">
+                  <div className="h-64 bg-gray-200 rounded"></div>
+                  <div className="space-y-2">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className="flex justify-between">
+                        <div className="h-4 bg-gray-200 rounded w-24"></div>
+                        <div className="h-4 bg-gray-200 rounded w-16"></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <RegionalPerformanceMap data={regionalData} />
+          )}
         </div>
 
         {/* AI Insights and Recommendations */}
@@ -245,6 +311,12 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
                       <span className="text-sm text-green-600">+{(category.share).toFixed(1)}%</span>
                     </div>
                   ))}
+                  
+                  {(categoryData?.data || []).length === 0 && (
+                    <div className="text-center py-4 text-gray-500">
+                      No category data available
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
@@ -259,27 +331,50 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
             <DialogTitle>Average Order Value Distribution</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <div className="space-y-4">
-              {aovDistributionData.map((item) => (
-                <div key={item.range} className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">{item.range}</span>
-                    <span className="text-sm text-muted-foreground">{item.count.toLocaleString()} orders ({item.percentage}%)</span>
+            {aovLoading ? (
+              <div className="animate-pulse space-y-4">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} className="space-y-2">
+                    <div className="flex justify-between">
+                      <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      <div className="h-4 bg-gray-200 rounded w-32"></div>
+                    </div>
+                    <div className="h-2 bg-gray-200 rounded w-full"></div>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full" 
-                      style={{ width: `${item.percentage}%` }}
-                    ></div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {(aovDistributionData || []).map((item) => (
+                  <div key={item.range} className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium">{item.range}</span>
+                      <span className="text-sm text-muted-foreground">{item.count.toLocaleString()} orders ({item.percentage}%)</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full" 
+                        style={{ width: `${item.percentage}%` }}
+                      ></div>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-              <p className="text-sm text-blue-700">
-                <span className="font-bold">Insight:</span> Most transactions (50.6%) fall in the ₱101-200 range, indicating a mid-tier purchasing pattern.
-              </p>
-            </div>
+                ))}
+                
+                {(aovDistributionData || []).length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No distribution data available
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {(aovDistributionData || []).length > 0 && (
+              <div className="mt-6 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                <p className="text-sm text-blue-700">
+                  <span className="font-bold">Insight:</span> Most transactions (50.6%) fall in the ₱101-200 range, indicating a mid-tier purchasing pattern.
+                </p>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { useQuery } from '@tanstack/react-query';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -27,13 +27,19 @@ export default function GeoHeatmap({ dataUrl, className }: GeoHeatmapProps) {
   const { data, isLoading, error } = useQuery({
     queryKey: ['geo-heatmap', apiUrl],
     queryFn: async () => {
-      const response = await fetch(apiUrl);
-      if (!response.ok) {
-        throw new Error('Failed to fetch geographic data');
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error('Failed to fetch geographic data');
+        }
+        return response.json();
+      } catch (error) {
+        console.error('Error fetching geographic data:', error);
+        throw error;
       }
-      return response.json();
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1
   });
 
   useEffect(() => {
@@ -82,8 +88,56 @@ export default function GeoHeatmap({ dataUrl, className }: GeoHeatmapProps) {
             'heatmap-radius': 20
           }
         });
+      } else if (data && Array.isArray(data.data) && data.data.length > 0) {
+        // If we have array data, convert to GeoJSON
+        const features = data.data.map((location: any) => ({
+          type: 'Feature',
+          properties: {
+            count: location.count || 1,
+            name: location.name || location.region || 'Unknown'
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: [location.longitude || 121, location.latitude || 14]
+          }
+        }));
+        
+        const geoJson = {
+          type: 'FeatureCollection',
+          features
+        };
+        
+        map.addSource('sales', { 
+          type: 'geojson', 
+          data: geoJson
+        });
+        
+        map.addLayer({
+          id: 'sales-heat',
+          type: 'heatmap',
+          source: 'sales',
+          paint: {
+            'heatmap-weight': [
+              'interpolate',
+              ['linear'],
+              ['get', 'count'],
+              0, 0,
+              1000, 1
+            ],
+            'heatmap-intensity': 1,
+            'heatmap-color': [
+              'interpolate',
+              ['linear'],
+              ['heatmap-density'],
+              0, 'rgba(0, 0, 255, 0)',
+              0.5, 'royalblue',
+              1, 'red'
+            ],
+            'heatmap-radius': 20
+          }
+        });
       } else {
-        // Fallback to simple markers if no GeoJSON
+        // Fallback to simple markers for Philippines regions
         const fallbackData = [
           { name: 'Metro Manila', lat: 14.5995, lng: 120.9842, count: 8456 },
           { name: 'Cebu', lat: 10.3157, lng: 123.8854, count: 3234 },

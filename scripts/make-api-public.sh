@@ -51,11 +51,11 @@ echo "3️⃣ Managing access restriction rules..."
 
 # List existing rules
 echo "📋 Listing current access restriction rules..."
-EXISTING_RULES=$(az webapp config access-restriction list \
+EXISTING_RULES=$(az webapp config access-restriction show \
   --resource-group $RESOURCE_GROUP \
   --name $APP_NAME \
   --query "ipSecurityRestrictions[].name" \
-  --output tsv)
+  --output tsv 2>/dev/null || echo "")
 
 # Remove existing rules (if any)
 if [ ! -z "$EXISTING_RULES" ]; then

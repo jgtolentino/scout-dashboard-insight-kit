@@ -1,5 +1,13 @@
-// Scout Analytics API adapter
+// Scout Analytics API adapter following Medallion Architecture
+import { MEDALLION_LAYERS, ACCESS_CONFIG, isPublicAccess, validateDataGovernance } from './medallionConfig';
+
 const API_BASE_URL = import.meta.env.VITE_SCOUT_API_URL || 'http://localhost:3002';
+
+// Medallion architecture compliance check
+const governanceCheck = validateDataGovernance();
+if (!governanceCheck.compliant) {
+  console.warn('⚠️ Data governance issues detected:', governanceCheck.issues);
+}
 
 interface ScoutApiClient {
   getAnalytics: (filters?: Record<string, any>) => Promise<any>;

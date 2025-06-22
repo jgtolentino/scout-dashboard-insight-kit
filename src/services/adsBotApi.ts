@@ -1,5 +1,5 @@
-// AdsBot API Integration for Scout Analytics
-// Provides AI-generated insights and chat functionality
+// AdsBot API Integration for Scout Analytics  
+// Provides AI-generated insights and chat functionality using Azure OpenAI
 
 export interface AdsBotInsight {
   id: string;
@@ -36,65 +36,218 @@ export interface AdsBotChatResponse {
 }
 
 class AdsBotApiClient {
-  private baseUrl: string;
-  private apiKey: string;
+  private azureOpenAIEndpoint: string;
+  private azureOpenAIKey: string;
+  private deploymentName: string;
+  private apiVersion: string;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_ADSBOT_API_URL || 'https://adsbot-api.azurewebsites.net';
-    this.apiKey = import.meta.env.VITE_ADSBOT_API_KEY || 'adsbot-demo-key-2024';
+    this.azureOpenAIEndpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT || 'https://tbwa-openai.openai.azure.com';
+    this.azureOpenAIKey = import.meta.env.VITE_AZURE_OPENAI_KEY || '';
+    this.deploymentName = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT || 'gpt-4';
+    this.apiVersion = import.meta.env.VITE_AZURE_OPENAI_API_VERSION || '2024-02-15-preview';
+    
+    if (!this.azureOpenAIKey) {
+      console.warn('⚠️ Azure OpenAI API key not configured. Using mock responses.');
+    }
   }
 
   async getInsights(dataContext?: any): Promise<AdsBotInsight[]> {
+    if (!this.azureOpenAIKey) {
+      console.warn('Azure OpenAI not configured, using mock insights');
+      return this.getMockInsights();
+    }
+
     try {
-      const response = await fetch(`${this.baseUrl}/api/insights`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          context: dataContext || {},
-          timestamp: new Date().toISOString()
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`AdsBot API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data.insights || this.getMockInsights();
+      const prompt = this.buildInsightsPrompt(dataContext);
+      const insights = await this.callAzureOpenAI(prompt, 'insights');
+      return this.parseInsightsResponse(insights);
     } catch (error) {
-      console.warn('AdsBot API unavailable, using mock insights:', error);
+      console.warn('Azure OpenAI API unavailable, using mock insights:', error);
       return this.getMockInsights();
     }
   }
 
   async sendChatMessage(message: string, context?: any): Promise<AdsBotChatResponse> {
-    try {
-      const response = await fetch(`${this.baseUrl}/api/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          message,
-          context: context || {},
-          timestamp: new Date().toISOString()
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`AdsBot API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.warn('AdsBot API unavailable, using mock response:', error);
+    if (!this.azureOpenAIKey) {
+      console.warn('Azure OpenAI not configured, using mock response');
       return this.getMockChatResponse(message);
     }
+
+    try {
+      const prompt = this.buildChatPrompt(message, context);
+      const response = await this.callAzureOpenAI(prompt, 'chat');
+      return this.parseChatResponse(response, message);
+    } catch (error) {
+      console.warn('Azure OpenAI API unavailable, using mock response:', error);
+      return this.getMockChatResponse(message);
+    }
+  }
+
+  private async callAzureOpenAI(prompt: string, type: 'insights' | 'chat'): Promise<string> {
+    const url = `${this.azureOpenAIEndpoint}/openai/deployments/${this.deploymentName}/chat/completions?api-version=${this.apiVersion}`;
+    
+    const systemMessage = type === 'insights' 
+      ? this.getInsightsSystemMessage()
+      : this.getChatSystemMessage();
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': this.azureOpenAIKey,
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: 'system', content: systemMessage },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: type === 'insights' ? 1500 : 800,
+        temperature: 0.7,
+        top_p: 0.9,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Azure OpenAI API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0]?.message?.content || '';
+  }
+
+  private getInsightsSystemMessage(): string {
+    return `You are AdsBot, an AI analytics assistant for Scout Analytics, a retail analytics platform. 
+
+Your role is to analyze retail transaction data and provide actionable business insights. You specialize in:
+- Revenue and performance analysis
+- Customer behavior patterns
+- Product substitution trends
+- Regional performance comparisons
+- Promotional optimization
+- Inventory recommendations
+
+IMPORTANT: Always respond with insights in this JSON format:
+{
+  "insights": [
+    {
+      "id": "unique-id",
+      "type": "trend|anomaly|opportunity|recommendation",
+      "title": "Brief title",
+      "description": "Detailed description",
+      "confidence": 0.85,
+      "impact": "high|medium|low",
+      "actionItems": ["action 1", "action 2"],
+      "dataPoints": [
+        {"metric": "Revenue Growth", "value": "15.2%", "change": "+3.1%"}
+      ]
+    }
+  ]
+}
+
+Focus on actionable insights that retail managers can implement immediately.`;
+  }
+
+  private getChatSystemMessage(): string {
+    return `You are AdsBot, an AI analytics assistant for Scout Analytics, a retail analytics platform.
+
+You help retail managers understand their data through conversational analysis. Provide:
+- Clear, actionable insights
+- Specific recommendations
+- Data-driven explanations
+- Follow-up questions
+
+Keep responses concise but informative. Use retail industry terminology appropriately.
+Always maintain a professional, helpful tone.`;
+  }
+
+  private buildInsightsPrompt(dataContext?: any): string {
+    const contextStr = dataContext ? JSON.stringify(dataContext, null, 2) : 'No specific data context provided';
+    
+    return `Analyze the following retail analytics data and generate 3-4 key insights:
+
+Data Context:
+${contextStr}
+
+Generate insights covering trends, anomalies, opportunities, and recommendations. 
+Focus on actionable items that can drive business value.
+Include confidence scores and impact assessments.
+Provide specific metrics and percentage changes where relevant.`;
+  }
+
+  private buildChatPrompt(message: string, context?: any): string {
+    const contextStr = context ? `\n\nCurrent Data Context:\n${JSON.stringify(context, null, 2)}` : '';
+    
+    return `User Question: ${message}${contextStr}
+
+Provide a helpful response about retail analytics. Include specific suggestions for follow-up questions if appropriate.`;
+  }
+
+  private parseInsightsResponse(response: string): AdsBotInsight[] {
+    try {
+      const parsed = JSON.parse(response);
+      if (parsed.insights && Array.isArray(parsed.insights)) {
+        return parsed.insights.map((insight: any) => ({
+          ...insight,
+          id: insight.id || `insight-${Date.now()}-${Math.random()}`,
+          timestamp: new Date().toISOString()
+        }));
+      }
+    } catch (error) {
+      console.warn('Failed to parse insights response, using fallback');
+    }
+    
+    // Fallback to mock insights if parsing fails
+    return this.getMockInsights();
+  }
+
+  private parseChatResponse(response: string, userMessage: string): AdsBotChatResponse {
+    // Extract suggested questions if present
+    const suggestedQuestions = this.extractSuggestedQuestions(response);
+    
+    return {
+      message: {
+        id: `msg-${Date.now()}`,
+        role: 'assistant',
+        content: response,
+        timestamp: new Date().toISOString(),
+        metadata: {
+          confidence: 0.92,
+          sources: ['azure_openai', 'scout_analytics']
+        }
+      },
+      suggestedQuestions
+    };
+  }
+
+  private extractSuggestedQuestions(response: string): string[] {
+    // Look for common question patterns in the response
+    const questionPatterns = [
+      /Would you like me to (.*?)\?/gi,
+      /You might also want to (.*?)\?/gi,
+      /Consider asking about (.*?)[\.\?]/gi
+    ];
+    
+    const questions: string[] = [];
+    questionPatterns.forEach(pattern => {
+      const matches = response.match(pattern);
+      if (matches) {
+        questions.push(...matches.slice(0, 2)); // Max 2 per pattern
+      }
+    });
+    
+    // Fallback suggestions if none found
+    if (questions.length === 0) {
+      return [
+        'What are the key trends in my data?',
+        'Show me top performing products',
+        'How can I improve regional performance?'
+      ];
+    }
+    
+    return questions.slice(0, 3); // Max 3 total
   }
 
   private getMockInsights(): AdsBotInsight[] {

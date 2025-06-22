@@ -38,6 +38,8 @@ export function GlobalFilterBar() {
     stores,
     categories,
     brands,
+    parentCategory,
+    subCategory,
     setFilter,
     resetFilters,
   } = useFilterStore();
@@ -51,6 +53,8 @@ export function GlobalFilterBar() {
     ...stores,
     ...categories,
     ...brands,
+    parentCategory,
+    subCategory,
   ].filter(Boolean).length;
 
   const removeArrayFilter = (key: 'barangays' | 'stores' | 'categories' | 'brands', value: string) => {
@@ -113,6 +117,26 @@ export function GlobalFilterBar() {
               <X
                 className="h-3 w-3 cursor-pointer"
                 onClick={() => setFilter('to', '')}
+              />
+            </Badge>
+          )}
+          {parentCategory && (
+            <Badge variant="outline" className="flex items-center space-x-1">
+              <Package className="h-3 w-3" />
+              <span>Category: {parentCategory}</span>
+              <X
+                className="h-3 w-3 cursor-pointer"
+                onClick={() => setFilter('parentCategory', null)}
+              />
+            </Badge>
+          )}
+          {subCategory && (
+            <Badge variant="outline" className="flex items-center space-x-1">
+              <Package className="h-3 w-3" />
+              <span>Subcategory: {subCategory}</span>
+              <X
+                className="h-3 w-3 cursor-pointer"
+                onClick={() => setFilter('subCategory', null)}
               />
             </Badge>
           )}

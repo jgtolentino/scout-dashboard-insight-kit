@@ -88,7 +88,7 @@ class ScoutAnalyticsClient implements ScoutApiClient {
 
       return response.json();
     } catch (error) {
-      console.error('Scout Analytics API call failed:', error);
+      console.error('Scout API call failed:', error);
       throw error;
     }
   }

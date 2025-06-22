@@ -1,1 +1,2 @@
+/api/*    https://scout-analytics-dashboard.azurewebsites.net/api/:splat    200
 /*    /index.html   200 

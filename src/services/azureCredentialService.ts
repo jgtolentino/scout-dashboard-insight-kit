@@ -20,16 +20,16 @@ export class AzureCredentialService {
   constructor(config: AzureConfig = {}) {
     // Initialize DefaultAzureCredential - works locally with 'az login' and in Azure with Managed Identity
     this.credential = new DefaultAzureCredential({
-      managedIdentityClientId: config.clientId || process.env.AZURE_CLIENT_ID,
-      tenantId: config.tenantId || process.env.AZURE_TENANT_ID
+      managedIdentityClientId: config.clientId || import.meta.env.VITE_AZURE_CLIENT_ID,
+      tenantId: config.tenantId || import.meta.env.VITE_AZURE_TENANT_ID
     });
 
     this.config = {
-      keyVaultName: config.keyVaultName || process.env.KEY_VAULT_NAME || 'kv-projectscout-prod',
-      tenantId: config.tenantId || process.env.AZURE_TENANT_ID,
-      clientId: config.clientId || process.env.AZURE_CLIENT_ID,
-      sqlServer: config.sqlServer || process.env.AZURE_SQL_SERVER || 'scout-sql-server.database.windows.net',
-      sqlDatabase: config.sqlDatabase || process.env.AZURE_SQL_DATABASE || 'scout_analytics'
+      keyVaultName: config.keyVaultName || import.meta.env.VITE_KEY_VAULT_NAME || 'kv-projectscout-prod',
+      tenantId: config.tenantId || import.meta.env.VITE_AZURE_TENANT_ID,
+      clientId: config.clientId || import.meta.env.VITE_AZURE_CLIENT_ID,
+      sqlServer: config.sqlServer || import.meta.env.VITE_AZURE_SQL_SERVER || 'scout-sql-server.database.windows.net',
+      sqlDatabase: config.sqlDatabase || import.meta.env.VITE_AZURE_SQL_DATABASE || 'scout_analytics'
     };
 
     // Initialize Key Vault client if name is provided
@@ -45,7 +45,7 @@ export class AzureCredentialService {
   async getSecret(secretName: string): Promise<string | undefined> {
     if (!this.secretClient) {
       console.warn('Key Vault client not initialized. Using environment variables as fallback.');
-      return process.env[secretName];
+      return import.meta.env[`VITE_${secretName}`];
     }
 
     try {
@@ -55,7 +55,7 @@ export class AzureCredentialService {
       console.warn(`Failed to get secret '${secretName}' from Key Vault:`, error);
       
       // Fallback to environment variables
-      const envValue = process.env[secretName] || process.env[`VITE_${secretName}`];
+      const envValue = import.meta.env[`VITE_${secretName}`];
       if (envValue) {
         console.log(`Using environment variable fallback for '${secretName}'`);
         return envValue;
@@ -92,18 +92,18 @@ export class AzureCredentialService {
     apiVersion: string;
   }> {
     const endpoint = await this.getSecret('AzureOpenAIEndpoint') || 
-                     await this.getSecret('VITE_AZURE_OPENAI_ENDPOINT') ||
+                     import.meta.env.VITE_AZURE_OPENAI_ENDPOINT ||
                      'https://tbwa-openai.openai.azure.com';
     
     const apiKey = await this.getSecret('AzureOpenAIKey') || 
-                   await this.getSecret('VITE_AZURE_OPENAI_KEY');
+                   import.meta.env.VITE_AZURE_OPENAI_KEY;
     
     const deployment = await this.getSecret('AzureOpenAIDeployment') || 
-                       await this.getSecret('VITE_AZURE_OPENAI_DEPLOYMENT') ||
+                       import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT ||
                        'gpt-4';
     
     const apiVersion = await this.getSecret('AzureOpenAIAPIVersion') || 
-                       await this.getSecret('VITE_AZURE_OPENAI_API_VERSION') ||
+                       import.meta.env.VITE_AZURE_OPENAI_API_VERSION ||
                        '2024-02-15-preview';
 
     return {
@@ -205,17 +205,17 @@ export const azureCredentialService = new AzureCredentialService();
 // Utility function to check if we're running in Azure
 export const isRunningInAzure = (): boolean => {
   return !!(
-    process.env.WEBSITE_SITE_NAME || // Azure App Service
-    process.env.AZURE_CLIENT_ID ||   // Managed Identity
-    process.env.MSI_ENDPOINT        // Azure VM with Managed Identity
+    import.meta.env.VITE_WEBSITE_SITE_NAME || // Azure App Service
+    import.meta.env.VITE_AZURE_CLIENT_ID ||   // Managed Identity
+    import.meta.env.VITE_MSI_ENDPOINT        // Azure VM with Managed Identity
   );
 };
 
 // Utility function to check if Azure CLI is available locally
 export const isAzureCLIAvailable = (): boolean => {
   return !!(
-    process.env.AZURE_CLIENT_ID && 
-    process.env.AZURE_TENANT_ID &&
+    import.meta.env.VITE_AZURE_CLIENT_ID && 
+    import.meta.env.VITE_AZURE_TENANT_ID &&
     !isRunningInAzure()
   );
 };

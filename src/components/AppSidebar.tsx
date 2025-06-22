@@ -23,12 +23,11 @@ import {
 
 const navItems = [
   { path: "/overview", label: "Overview", icon: Home, description: "Executive summary" },
-  { path: "/transaction-trends", label: "Transaction Trends", icon: TrendingUp, description: "Track patterns" },
-  { path: "/product-mix", label: "Product Mix", icon: Package, description: "Product analytics" },
-  { path: "/consumer-behavior", label: "Consumer Behavior", icon: Brain, description: "Behavioral analysis" },
-  { path: "/consumer-profiling", label: "Consumer Profiling", icon: Users, description: "Demographics" },
-  { path: "/retailbot", label: "RetailBot", icon: Brain, description: "AI assistant" },
-  { path: "/ai-chat", label: "AI Chat", icon: MessageSquare, description: "Chat with AI" }
+  { path: "/transaction-trends", label: "Trends", icon: TrendingUp, description: "Transaction patterns" },
+  { path: "/product-mix", label: "Products", icon: Package, description: "Category analytics" },
+  { path: "/consumer-behavior", label: "Behavior", icon: Brain, description: "Customer signals" },
+  { path: "/consumer-profiling", label: "Profiling", icon: Users, description: "Demographics" },
+  { path: "/retailbot", label: "RetailBot", icon: Brain, description: "AI assistant" }
 ];
 
 const AppSidebar = () => {
@@ -48,8 +47,9 @@ const AppSidebar = () => {
           {!isCollapsed && (
             <div className="min-w-0">
               <span className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent truncate block">
-                Scout Analytics
+                Scout
               </span>
+              <span className="text-xs text-muted-foreground">Analytics Dashboard</span>
             </div>
           )}
         </div>
@@ -57,7 +57,7 @@ const AppSidebar = () => {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Analytics Dashboard</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => {

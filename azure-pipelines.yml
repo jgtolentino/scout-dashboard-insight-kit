@@ -1,0 +1,261 @@
+# Azure DevOps Pipeline for Scout Analytics Dashboard
+# Automatically switches API URLs between preview and production builds
+
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+      - feature/*
+      - hotfix/*
+
+pr:
+  branches:
+    include:
+      - '*'  # Run on every PR
+
+variables:
+  # Variable group containing API URLs
+  - group: Scout-API-URLs
+  
+  # Automatically select API URL based on branch
+  # Production: main branch uses production API
+  # Preview: all other branches use preview API
+  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+    - name: VITE_API_URL
+      value: $(API_URL_PROD)
+    - name: DEPLOYMENT_ENVIRONMENT
+      value: 'production'
+  - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+    - name: VITE_API_URL
+      value: $(API_URL_PREVIEW)
+    - name: DEPLOYMENT_ENVIRONMENT
+      value: 'preview'
+
+  # Common build variables
+  - name: NODE_VERSION
+    value: '18.x'
+  - name: AZURE_SUBSCRIPTION
+    value: 'Scout-Analytics-Production'
+
+stages:
+  - stage: Build
+    displayName: '🏗️ Build & Test'
+    jobs:
+      - job: BuildAndTest
+        displayName: 'Build Scout Analytics Dashboard'
+        pool:
+          vmImage: 'ubuntu-latest'
+        
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+            displayName: 'Use Node.js $(NODE_VERSION)'
+
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+              path: ~/.npm
+            displayName: 'Cache npm packages'
+
+          - script: |
+              echo "📦 Installing dependencies..."
+              npm ci
+            displayName: 'Install dependencies'
+
+          - script: |
+              echo "🔍 Running linter..."
+              npm run lint
+            displayName: 'Run ESLint'
+            continueOnError: true
+
+          - script: |
+              echo "🧪 Running tests..."
+              npm run test:run
+            displayName: 'Run unit tests'
+            continueOnError: true
+
+          - script: |
+              echo "⏳ Building for $(DEPLOYMENT_ENVIRONMENT) environment..."
+              echo "🌐 API URL: $(VITE_API_URL)"
+              echo "🔐 Using Azure authentication: true"
+              npm run build
+            displayName: 'Build application'
+            env:
+              VITE_API_URL: $(VITE_API_URL)
+              # Azure authentication variables
+              VITE_AZURE_OPENAI_ENDPOINT: $(AZURE_OPENAI_ENDPOINT)
+              VITE_AZURE_OPENAI_DEPLOYMENT: $(AZURE_OPENAI_DEPLOYMENT)
+              VITE_AZURE_OPENAI_API_VERSION: $(AZURE_OPENAI_API_VERSION)
+              # Note: API keys are retrieved via Managed Identity in production
+              NODE_ENV: 'production'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: 'dist'
+              artifactName: 'scout-analytics-dist'
+              publishLocation: 'Container'
+            displayName: 'Publish build artifacts'
+
+  - stage: DeployPreview
+    displayName: '🚀 Deploy Preview'
+    dependsOn: Build
+    condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: DeployToPreview
+        displayName: 'Deploy to Preview Environment'
+        environment: 'scout-analytics-dashboard-preview'
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadBuildArtifacts@0
+                  inputs:
+                    buildType: 'current'
+                    downloadType: 'single'
+                    artifactName: 'scout-analytics-dist'
+                    downloadPath: '$(System.ArtifactsDirectory)'
+
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: $(AZURE_SUBSCRIPTION)
+                    appType: 'webAppLinux'
+                    appName: 'scout-analytics-dashboard-preview'
+                    package: '$(System.ArtifactsDirectory)/scout-analytics-dist'
+                    runtimeStack: 'NODE|18-lts'
+                  displayName: 'Deploy to Preview App Service'
+
+                - script: |
+                    echo "🎉 Preview deployment complete!"
+                    echo "🌐 Preview URL: https://scout-analytics-dashboard-preview.azurewebsites.net"
+                    echo "📊 API URL: $(VITE_API_URL)"
+                  displayName: 'Preview deployment summary'
+
+  - stage: DeployProduction
+    displayName: '🚀 Deploy Production'
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: DeployToProduction
+        displayName: 'Deploy to Production Environment'
+        environment: 'scout-analytics-dashboard-production'
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadBuildArtifacts@0
+                  inputs:
+                    buildType: 'current'
+                    downloadType: 'single'
+                    artifactName: 'scout-analytics-dist'
+                    downloadPath: '$(System.ArtifactsDirectory)'
+
+                # Run Azure authentication setup
+                - task: AzureCLI@2
+                  inputs:
+                    azureSubscription: $(AZURE_SUBSCRIPTION)
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      echo "🔐 Setting up Managed Identity for production..."
+                      
+                      # Ensure Managed Identity is properly configured
+                      IDENTITY_ID=$(az webapp identity show \
+                        --name scout-analytics-dashboard \
+                        --resource-group scout-dashboard-rg \
+                        --query principalId -o tsv 2>/dev/null || echo "")
+                      
+                      if [ -z "$IDENTITY_ID" ]; then
+                        echo "⚠️ Managed Identity not found. Setting up..."
+                        az webapp identity assign \
+                          --name scout-analytics-dashboard \
+                          --resource-group scout-dashboard-rg
+                      else
+                        echo "✅ Managed Identity configured: $IDENTITY_ID"
+                      fi
+                  displayName: 'Verify Managed Identity'
+
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: $(AZURE_SUBSCRIPTION)
+                    appType: 'webAppLinux'
+                    appName: 'scout-analytics-dashboard'
+                    package: '$(System.ArtifactsDirectory)/scout-analytics-dist'
+                    runtimeStack: 'NODE|18-lts'
+                    appSettings: |
+                      -AZURE_CLIENT_ID $(AZURE_CLIENT_ID)
+                      -AZURE_TENANT_ID $(AZURE_TENANT_ID)
+                      -KEY_VAULT_NAME $(KEY_VAULT_NAME)
+                      -AZURE_SQL_SERVER $(AZURE_SQL_SERVER)
+                      -AZURE_SQL_DATABASE $(AZURE_SQL_DATABASE)
+                  displayName: 'Deploy to Production App Service'
+
+                - script: |
+                    echo "🎉 Production deployment complete!"
+                    echo "🌐 Production URL: https://scout-analytics-dashboard.azurewebsites.net"
+                    echo "📊 API URL: $(VITE_API_URL)"
+                    echo "🔐 Authentication: Azure Managed Identity"
+                  displayName: 'Production deployment summary'
+
+  - stage: E2ETests
+    displayName: '🧪 End-to-End Tests'
+    dependsOn: 
+      - DeployPreview
+      - DeployProduction
+    condition: succeededOrFailed()
+    jobs:
+      - job: PlaywrightTests
+        displayName: 'Run Playwright E2E Tests'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+            displayName: 'Use Node.js $(NODE_VERSION)'
+
+          - script: |
+              npm ci
+              npx playwright install --with-deps
+            displayName: 'Install Playwright'
+
+          - script: |
+              # Determine test URL based on deployment
+              if [ "$(Build.SourceBranch)" = "refs/heads/main" ]; then
+                export TEST_URL="https://scout-analytics-dashboard.azurewebsites.net"
+                echo "🎯 Testing production: $TEST_URL"
+              else
+                export TEST_URL="https://scout-analytics-dashboard-preview.azurewebsites.net"
+                echo "🎯 Testing preview: $TEST_URL"
+              fi
+              
+              npm run test:e2e
+            displayName: 'Run E2E tests'
+            env:
+              CI: true
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: 'test-results/junit.xml'
+              mergeTestResults: true
+            displayName: 'Publish test results'
+            condition: succeededOrFailed()
+
+# Security and compliance
+resources:
+  repositories:
+    - repository: self
+      clean: true
+
+# Pipeline permissions
+permissions:
+  contents: read
+  deployments: write

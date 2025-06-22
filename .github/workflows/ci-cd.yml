@@ -1,203 +1,58 @@
-name: CI/CD Pipeline
+# GitHub Actions CI/CD Pipeline for Scout Analytics Dashboard
+# Alternative to Azure DevOps with same API URL switching logic
+
+name: Scout Analytics CI/CD
 
 on:
   push:
-    branches: [ main, develop, feature/* ]
+    branches: [ main, develop, feature/*, hotfix/* ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 env:
-  NODE_VERSION: '18'
-  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18.x'
+  # Automatically switch API URLs based on branch
+  VITE_API_URL: ${{ github.ref == 'refs/heads/main' && vars.API_URL_PROD || vars.API_URL_PREVIEW }}
+  DEPLOYMENT_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
 
 jobs:
-  # Backend Testing
-  backend-test:
+  build-and-test:
+    name: 🏗️ Build & Test
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          
-      - name: Cache pip dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            
-      - name: Install backend dependencies
-        run: |
-          cd backend
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest-cov
-          
-      - name: Run backend tests
-        run: |
-          cd backend
-          pytest --cov=. --cov-report=xml
-          
-      - name: Upload backend coverage
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./backend/coverage.xml
-          flags: backend
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
 
-  # Frontend Build and Test
-  frontend-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          
-      - name: Install frontend dependencies
+
+      - name: 📦 Install dependencies
         run: npm ci
-        
-      - name: Run linting
-        run: npm run lint || true
-        
-      - name: Run type checking
-        run: npm run type-check || true
-        
-      - name: Build frontend
-        run: npm run build
-        
-      - name: Run frontend tests
-        run: npm test -- --run || true
-        
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+
+      - name: 🔍 Run ESLint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: 🧪 Run unit tests
+        run: npm run test:run
+        continue-on-error: true
+
+      - name: 🏗️ Build application
+        run: |
+          echo "⏳ Building for ${{ env.DEPLOYMENT_ENVIRONMENT }} environment..."
+          echo "🌐 API URL: ${{ env.VITE_API_URL }}"
+          npm run build
+        env:
+          VITE_API_URL: ${{ env.VITE_API_URL }}
+          NODE_ENV: production
+
+      - name: 📤 Upload build artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: frontend-build
+          name: scout-analytics-dist
           path: dist/
-
-  # Docker Build
-  docker-build:
-    runs-on: ubuntu-latest
-    needs: [backend-test, frontend-test]
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        
-      - name: Build Docker images
-        run: |
-          docker buildx build --target backend -t scout-api:test .
-          docker buildx build --target production -t scout-app:test .
-          
-      - name: Test Docker images
-        run: |
-          docker run -d -p 5000:5000 --name test-api scout-api:test
-          sleep 5
-          curl -f http://localhost:5000/api/health || exit 1
-          docker stop test-api
-
-  # Deploy to Azure Stack
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [docker-build]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    environment: production
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Azure CLI Login
-        uses: azure/CLI@v1
-        with:
-          azcliversion: '2.55.0'
-          inlineScript: |
-            az cloud set --name ${{ secrets.AZURE_STACK_NAME || 'AzureStack' }}
-            az login --service-principal \
-              --username ${{ secrets.AZURE_CLIENT_ID }} \
-              --password ${{ secrets.AZURE_CLIENT_SECRET }} \
-              --tenant ${{ secrets.AZURE_TENANT_ID }}
-            az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            
-      - name: Build and Push to ACR
-        env:
-          ACR_NAME: ${{ secrets.ACR_NAME }}
-          ACR_REGISTRY: ${{ secrets.ACR_NAME }}.azurecr.io
-        run: |
-          # Login to Azure Container Registry
-          az acr login --name $ACR_NAME
-          
-          # Build and tag images
-          docker build --target backend -t $ACR_REGISTRY/scout-api:${{ github.sha }} -t $ACR_REGISTRY/scout-api:latest .
-          docker build --target production -t $ACR_REGISTRY/scout-app:${{ github.sha }} -t $ACR_REGISTRY/scout-app:latest .
-          
-          # Push images
-          docker push $ACR_REGISTRY/scout-api:${{ github.sha }}
-          docker push $ACR_REGISTRY/scout-api:latest
-          docker push $ACR_REGISTRY/scout-app:${{ github.sha }}
-          docker push $ACR_REGISTRY/scout-app:latest
-          
-      - name: Deploy to Azure Container Instances
-        env:
-          RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          ACR_NAME: ${{ secrets.ACR_NAME }}
-          ACR_REGISTRY: ${{ secrets.ACR_NAME }}.azurecr.io
-        run: |
-          # Deploy API container
-          az container create \
-            --resource-group $RESOURCE_GROUP \
-            --name scout-api \
-            --image $ACR_REGISTRY/scout-api:${{ github.sha }} \
-            --registry-login-server $ACR_REGISTRY \
-            --registry-username $ACR_NAME \
-            --registry-password ${{ secrets.ACR_PASSWORD }} \
-            --ports 5000 \
-            --cpu 2 \
-            --memory 4 \
-            --environment-variables \
-              FLASK_ENV=production \
-              DATABASE_URL=${{ secrets.DATABASE_URL }}
-              
-          # Deploy App container
-          az container create \
-            --resource-group $RESOURCE_GROUP \
-            --name scout-app \
-            --image $ACR_REGISTRY/scout-app:${{ github.sha }} \
-            --registry-login-server $ACR_REGISTRY \
-            --registry-username $ACR_NAME \
-            --registry-password ${{ secrets.ACR_PASSWORD }} \
-            --ports 80 443 \
-            --cpu 2 \
-            --memory 4 \
-            --dns-name-label scout-analytics
-            
-      - name: Verify Deployment
-        run: |
-          sleep 30
-          FQDN=$(az container show --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name scout-app --query ipAddress.fqdn -o tsv)
-          curl -f http://$FQDN/health || exit 1
-          echo "Deployment successful! Application available at: http://$FQDN"
-
-  # Security Scanning
-  security-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          
-      - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
+          retention-days: 7

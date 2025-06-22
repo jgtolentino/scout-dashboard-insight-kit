@@ -9,6 +9,7 @@ import AppSidebar from "./components/AppSidebar";
 import Overview from "./pages/Overview";
 import TransactionTrends from "./pages/TransactionTrends";
 import ProductMix from "./pages/ProductMix";
+import ProductSubstitution from "./pages/ProductSubstitution";
 import ConsumerBehavior from "./pages/ConsumerBehavior";
 import ConsumerProfiling from "./pages/ConsumerProfiling";
 import RetailBotInsights from "./pages/RetailBotInsights";
@@ -39,6 +40,7 @@ const App = () => {
                     <Route path="/overview" element={<Overview setHeatMapVisible={setHeatMapVisible} />} />
                     <Route path="/transaction-trends" element={<TransactionTrends />} />
                     <Route path="/product-mix" element={<ProductMix />} />
+                    <Route path="/product-substitution" element={<ProductSubstitution />} />
                     <Route path="/consumer-behavior" element={<ConsumerBehavior />} />
                     <Route path="/consumer-profiling" element={<ConsumerProfiling />} />
                     <Route path="/retailbot" element={<RetailBotInsights />} />

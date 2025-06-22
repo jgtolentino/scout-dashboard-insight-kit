@@ -1,206 +1,335 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Clock, BarChart3, MapPin } from "lucide-react";
+import { TrendingUp, Clock, BarChart3, MapPin, Activity, Calendar } from "lucide-react";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
 import BreadcrumbNav from "@/components/BreadcrumbNav";
 import TimeIntelligenceBar from "@/components/time/TimeIntelligenceBar";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useFilterStore } from "@/stores/filterStore";
+import { useTransactionData } from "@/hooks/useTransactionData";
+import EnhancedTimeSeriesChart from "@/components/charts/EnhancedTimeSeriesChart";
+import TransactionHeatmap from "@/components/charts/TransactionHeatmap";
 
 const TransactionTrends = () => {
-  // Hourly transaction volume data
-  const hourlyData = [
-    { hour: '6:00', transactions: 245, amount: 38420 },
-    { hour: '7:00', transactions: 312, amount: 48672 },
-    { hour: '8:00', transactions: 428, amount: 66768 },
-    { hour: '9:00', transactions: 567, amount: 88452 },
-    { hour: '10:00', transactions: 634, amount: 98904 },
-    { hour: '11:00', transactions: 789, amount: 123084 },
-    { hour: '12:00', transactions: 892, amount: 139152 },
-    { hour: '13:00', transactions: 945, amount: 147420 },
-    { hour: '14:00', transactions: 823, amount: 128388 },
-    { hour: '15:00', transactions: 756, amount: 117936 },
-    { hour: '16:00', transactions: 689, amount: 107484 },
-    { hour: '17:00', transactions: 612, amount: 95472 },
-    { hour: '18:00', transactions: 834, amount: 130104 },
-    { hour: '19:00', transactions: 923, amount: 143988 },
-    { hour: '20:00', transactions: 756, amount: 117936 },
-    { hour: '21:00', transactions: 567, amount: 88452 },
-    { hour: '22:00', transactions: 345, amount: 53820 },
-  ];
+  const filters = useFilterStore();
+  const { data: transactionData, isLoading } = useTransactionData(filters);
+  const [selectedView, setSelectedView] = useState<'overview' | 'hourly' | 'patterns'>('overview');
 
-  // Regional data
-  const regionalData = [
-    { region: 'Metro Manila', transactions: 8456, percentage: '46.3' },
-    { region: 'Cebu', transactions: 3234, percentage: '17.7' },
-    { region: 'Davao', transactions: 2891, percentage: '15.8' },
-    { region: 'Iloilo', transactions: 1876, percentage: '10.3' },
-    { region: 'Others', transactions: 1790, percentage: '9.9' }
-  ];
+  // Transform transaction data for visualizations
+  const chartData = useMemo(() => {
+    if (!transactionData?.data) return [];
 
-  // Peak hours analysis
-  const peakHoursData = [
-    { period: 'Morning Peak (8-10 AM)', transactions: 2847 },
-    { period: 'Lunch Peak (12-2 PM)', transactions: 3456 },
-    { period: 'Evening Peak (6-8 PM)', transactions: 4123 }
-  ];
+    // Group transactions by date and calculate metrics
+    const groupedData: { [date: string]: any } = {};
+
+    transactionData.data.forEach((transaction: any) => {
+      const date = transaction.date || transaction.timestamp;
+      const dateKey = new Date(date).toISOString().split('T')[0];
+      
+      if (!groupedData[dateKey]) {
+        groupedData[dateKey] = {
+          date: dateKey,
+          timestamp: new Date(date).getTime(),
+          revenue: 0,
+          transactions: 0,
+          hour: new Date(date).getHours(),
+          dayOfWeek: new Date(date).getDay(),
+          isWeekend: [0, 6].includes(new Date(date).getDay())
+        };
+      }
+
+      groupedData[dateKey].revenue += transaction.amount || transaction.revenue || 0;
+      groupedData[dateKey].transactions += 1;
+    });
+
+    // Calculate average order value and format for charts
+    return Object.values(groupedData).map((day: any) => ({
+      ...day,
+      avgOrderValue: day.transactions > 0 ? day.revenue / day.transactions : 0,
+      date: new Date(day.date).toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric' 
+      })
+    })).sort((a, b) => a.timestamp - b.timestamp);
+  }, [transactionData]);
+
+  // Transform data for heatmap
+  const heatmapData = useMemo(() => {
+    if (!transactionData?.data) return [];
+
+    return transactionData.data.map((transaction: any) => {
+      const date = new Date(transaction.date || transaction.timestamp);
+      return {
+        date: date.toISOString().split('T')[0],
+        hour: date.getHours(),
+        dayOfWeek: date.getDay(),
+        value: transaction.amount || transaction.revenue || 0,
+        transactions: 1,
+        revenue: transaction.amount || transaction.revenue || 0,
+        isWeekend: [0, 6].includes(date.getDay())
+      };
+    });
+  }, [transactionData]);
+
+  // Calculate summary statistics
+  const summaryStats = useMemo(() => {
+    if (chartData.length === 0) {
+      return {
+        totalRevenue: 0,
+        totalTransactions: 0,
+        avgOrderValue: 0,
+        peakDay: 'N/A',
+        peakHour: 'N/A',
+        weekendRatio: 0
+      };
+    }
+
+    const totalRevenue = chartData.reduce((sum, day) => sum + day.revenue, 0);
+    const totalTransactions = chartData.reduce((sum, day) => sum + day.transactions, 0);
+    const avgOrderValue = totalRevenue / totalTransactions || 0;
+
+    // Find peak day
+    const peakDay = chartData.reduce((max, day) => 
+      day.revenue > max.revenue ? day : max
+    );
+
+    // Calculate weekend transaction ratio
+    const weekendTransactions = chartData
+      .filter(day => day.isWeekend)
+      .reduce((sum, day) => sum + day.transactions, 0);
+    const weekendRatio = totalTransactions > 0 ? (weekendTransactions / totalTransactions) * 100 : 0;
+
+    // Find peak hour from heatmap data
+    const hourlyTotals: { [hour: number]: number } = {};
+    heatmapData.forEach(point => {
+      hourlyTotals[point.hour] = (hourlyTotals[point.hour] || 0) + point.revenue;
+    });
+    const peakHour = Object.entries(hourlyTotals).reduce((max, [hour, revenue]) => 
+      revenue > max.revenue ? { hour: parseInt(hour), revenue } : max,
+      { hour: 0, revenue: 0 }
+    );
+
+    return {
+      totalRevenue,
+      totalTransactions,
+      avgOrderValue,
+      peakDay: peakDay.date,
+      peakHour: `${peakHour.hour}:00`,
+      weekendRatio
+    };
+  }, [chartData, heatmapData]);
 
   return (
-    <div className="flex flex-col h-full">
-      <header className="flex items-center gap-4 border-b px-6 py-4 bg-background">
-        <SidebarTrigger />
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl text-white">
-            <TrendingUp className="h-6 w-6" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Transaction Trends
-            </h1>
-            <p className="text-gray-600 mt-1">Temporal and regional transaction dynamics</p>
+    <div className="space-y-6 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <SidebarTrigger className="lg:hidden" />
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-6 w-6 text-blue-600" />
+            <h1 className="text-2xl font-bold text-gray-900">Transaction Trends</h1>
           </div>
         </div>
-        <div className="ml-auto">
-          <BreadcrumbNav />
-        </div>
-      </header>
+      </div>
 
-      <div className="flex-1 p-6 space-y-6 bg-gradient-to-br from-slate-50 to-blue-50 overflow-auto">
-        {/* Time Intelligence Bar */}
-        <TimeIntelligenceBar />
-        
-        {/* Global Filter Bar */}
-        <GlobalFilterBar />
+      {/* Breadcrumb */}
+      <BreadcrumbNav />
 
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Total Transactions</p>
-                  <p className="text-2xl font-bold text-gray-900">18,247</p>
-                  <p className="text-sm text-green-600">+8.2% vs last month</p>
-                </div>
-                <BarChart3 className="h-8 w-8 text-gray-400" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Avg Transaction Value</p>
-                  <p className="text-2xl font-bold text-gray-900">₱156.03</p>
-                  <p className="text-sm text-green-600">+3.1% vs last month</p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-gray-400" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Peak Hours</p>
-                  <p className="text-2xl font-bold text-gray-900">6-8 PM</p>
-                  <p className="text-sm text-green-600">23% of daily volume</p>
-                </div>
-                <Clock className="h-8 w-8 text-gray-400" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Top Location</p>
-                  <p className="text-2xl font-bold text-gray-900">Metro Manila</p>
-                  <p className="text-sm text-green-600">46.3% of transactions</p>
-                </div>
-                <MapPin className="h-8 w-8 text-gray-400" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Time Intelligence Bar */}
+      <TimeIntelligenceBar />
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Hourly Transaction Volume</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={hourlyData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="hour" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [value, 'Transactions']} />
-                    <Area 
-                      type="monotone" 
-                      dataKey="transactions" 
-                      stroke="#8884d8" 
-                      fill="#8884d8"
-                      fillOpacity={0.3}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Filters */}
+      <GlobalFilterBar />
 
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Regional Distribution</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={regionalData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="region" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [value, 'Transactions']} />
-                    <Bar 
-                      dataKey="transactions" 
-                      fill="#82ca9d"
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      {/* View Selection */}
+      <div className="flex gap-2">
+        <Button
+          variant={selectedView === 'overview' ? 'default' : 'outline'}
+          onClick={() => setSelectedView('overview')}
+          className="flex items-center gap-2"
+        >
+          <BarChart3 className="h-4 w-4" />
+          Overview
+        </Button>
+        <Button
+          variant={selectedView === 'hourly' ? 'default' : 'outline'}
+          onClick={() => setSelectedView('hourly')}
+          className="flex items-center gap-2"
+        >
+          <Clock className="h-4 w-4" />
+          Hourly Patterns
+        </Button>
+        <Button
+          variant={selectedView === 'patterns' ? 'default' : 'outline'}
+          onClick={() => setSelectedView('patterns')}
+          className="flex items-center gap-2"
+        >
+          <Calendar className="h-4 w-4" />
+          Trend Analysis
+        </Button>
+      </div>
 
-        {/* Peak Hours Analysis */}
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle>Peak Hours Analysis</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {peakHoursData.map((peak) => (
-                <div key={peak.period} className="bg-muted/20 p-4 rounded-lg">
-                  <h3 className="font-medium text-lg mb-2">{peak.period}</h3>
-                  <p className="text-2xl font-bold">{peak.transactions.toLocaleString()}</p>
-                  <p className="text-sm text-muted-foreground">transactions</p>
-                  <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full" 
-                      style={{ width: `${(peak.transactions / 5000) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
+      {/* Summary Statistics */}
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-blue-600" />
+              <div>
+                <p className="text-sm text-gray-600">Total Revenue</p>
+                <p className="text-lg font-semibold">₱{summaryStats.totalRevenue.toLocaleString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Activity className="h-4 w-4 text-green-600" />
+              <div>
+                <p className="text-sm text-gray-600">Transactions</p>
+                <p className="text-lg font-semibold">{summaryStats.totalTransactions.toLocaleString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-orange-600" />
+              <div>
+                <p className="text-sm text-gray-600">Avg Order Value</p>
+                <p className="text-lg font-semibold">₱{summaryStats.avgOrderValue.toLocaleString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-purple-600" />
+              <div>
+                <p className="text-sm text-gray-600">Peak Day</p>
+                <p className="text-lg font-semibold">{summaryStats.peakDay}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-red-600" />
+              <div>
+                <p className="text-sm text-gray-600">Peak Hour</p>
+                <p className="text-lg font-semibold">{summaryStats.peakHour}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-indigo-600" />
+              <div>
+                <p className="text-sm text-gray-600">Weekend %</p>
+                <p className="text-lg font-semibold">{summaryStats.weekendRatio.toFixed(1)}%</p>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Main Content */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="animate-pulse space-y-4">
+                <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+                <div className="h-64 bg-gray-200 rounded"></div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        <Tabs value={selectedView} className="space-y-6">
+          <TabsContent value="overview" className="space-y-6">
+            {/* Enhanced Time Series Chart */}
+            <EnhancedTimeSeriesChart
+              data={chartData}
+              height={500}
+              showBrush={true}
+              showWeekendToggle={true}
+            />
+          </TabsContent>
+
+          <TabsContent value="hourly" className="space-y-6">
+            {/* Transaction Heatmap */}
+            <TransactionHeatmap
+              data={heatmapData}
+              metric="transactions"
+            />
+          </TabsContent>
+
+          <TabsContent value="patterns" className="space-y-6">
+            {/* Combined View */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <EnhancedTimeSeriesChart
+                data={chartData}
+                height={400}
+                showBrush={false}
+                showWeekendToggle={true}
+              />
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-blue-600" />
+                    Pattern Insights
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-blue-50 rounded-lg">
+                      <h4 className="font-semibold text-blue-900 mb-2">Peak Performance</h4>
+                      <p className="text-sm text-blue-800">
+                        Highest revenue on {summaryStats.peakDay} with peak hour at {summaryStats.peakHour}
+                      </p>
+                    </div>
+                    
+                    <div className="p-4 bg-green-50 rounded-lg">
+                      <h4 className="font-semibold text-green-900 mb-2">Weekend Activity</h4>
+                      <p className="text-sm text-green-800">
+                        {summaryStats.weekendRatio.toFixed(1)}% of transactions occur on weekends
+                      </p>
+                    </div>
+                    
+                    <div className="p-4 bg-orange-50 rounded-lg">
+                      <h4 className="font-semibold text-orange-900 mb-2">Order Value Trends</h4>
+                      <p className="text-sm text-orange-800">
+                        Average order value: ₱{summaryStats.avgOrderValue.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Heatmap for Pattern Analysis */}
+            <TransactionHeatmap
+              data={heatmapData}
+              metric="revenue"
+            />
+          </TabsContent>
+        </Tabs>
+      )}
     </div>
   );
 };

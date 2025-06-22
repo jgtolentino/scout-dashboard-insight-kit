@@ -6,7 +6,8 @@ import {
   Users, 
   Brain,
   Home,
-  MessageSquare
+  MessageSquare,
+  ArrowRight
 } from "lucide-react";
 import {
   Sidebar,
@@ -25,6 +26,7 @@ const navItems = [
   { path: "/overview", label: "Overview", icon: Home, description: "Executive summary" },
   { path: "/transaction-trends", label: "Transaction Trends", icon: TrendingUp, description: "Track patterns" },
   { path: "/product-mix", label: "Product Mix", icon: Package, description: "Product analytics" },
+  { path: "/product-substitution", label: "Product Substitution", icon: ArrowRight, description: "Substitution flows" },
   { path: "/consumer-behavior", label: "Consumer Behavior", icon: Brain, description: "Behavioral analysis" },
   { path: "/consumer-profiling", label: "Consumer Profiling", icon: Users, description: "Demographics" },
   { path: "/retailbot", label: "RetailBot", icon: Brain, description: "AI assistant" },

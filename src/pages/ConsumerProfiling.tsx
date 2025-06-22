@@ -1,13 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Users, UserCheck, TrendingUp, MapPin } from "lucide-react";
+import { Users, UserCheck, TrendingUp, MapPin, TreePine } from "lucide-react";
 import GeoHeatmap from "@/components/GeoHeatmap";
 import { GlobalFilterBar } from "@/components/GlobalFilterBar";
 import BreadcrumbNav from "@/components/BreadcrumbNav";
 import TimeIntelligenceBar from "@/components/time/TimeIntelligenceBar";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import DemographicTreeMap from "@/components/charts/DemographicTreeMap";
+import { useDemographicTreeMapData } from "@/hooks/useDemographicTreeMapData";
+import { useFilterStore } from "@/stores/filterStore";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ConsumerProfiling = () => {
+  const filters = useFilterStore();
+  
+  // Fetch demographic tree map data using real Scout Analytics API
+  const { data: demographicData, isLoading: demographicLoading } = useDemographicTreeMapData(filters);
+
   const metrics = [
     { title: "Total Profiles", value: "15,847", change: "+12.3%", icon: Users, positive: true },
     { title: "Active Profiles", value: "8,429", change: "+8.2%", icon: UserCheck, positive: true },
@@ -80,68 +89,111 @@ const ConsumerProfiling = () => {
           })}
         </div>
 
-        {/* Demographics Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Gender Distribution</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={genderData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      paddingAngle={5}
-                      dataKey="value"
-                      label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {genderData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => `${value}%`} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+        {/* Advanced Demographics TreeMap - Fourth Priority Implementation */}
+        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TreePine className="h-5 w-5 text-blue-600" />
+              Advanced Demographic Analysis
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {demographicLoading ? (
+              <div className="animate-pulse space-y-4">
+                <div className="h-96 bg-gray-200 rounded"></div>
+                <div className="grid grid-cols-4 gap-4">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-24"></div>
+                      <div className="h-6 bg-gray-200 rounded w-16"></div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            ) : (
+              <DemographicTreeMap
+                data={demographicData?.data || []}
+                height={600}
+                metric="value"
+                className="w-full"
+              />
+            )}
+          </CardContent>
+        </Card>
 
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Age Distribution</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={ageData}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {ageData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => `${value}%`} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Traditional Demographics Charts */}
+        <Tabs defaultValue="gender" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="gender">Gender Distribution</TabsTrigger>
+            <TabsTrigger value="age">Age Distribution</TabsTrigger>
+          </TabsList>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <TabsContent value="gender" className="mt-0 col-span-full">
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle>Gender Distribution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={genderData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          paddingAngle={5}
+                          dataKey="value"
+                          label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {genderData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => `${value}%`} />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="age" className="mt-0 col-span-full">
+              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle>Age Distribution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={ageData}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                          label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {ageData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => `${value}%`} />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </div>
+        </Tabs>
 
         {/* Geographic Heatmap */}
         <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">

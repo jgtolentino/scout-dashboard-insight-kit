@@ -12,6 +12,13 @@ class ScoutAnalyticsClient implements ScoutApiClient {
   async authenticate(): Promise<string> {
     if (this.token) return this.token;
 
+    // Skip authentication in development when using MSW
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('⚠️  Scout API authentication disabled in development mode (using MSW)');
+      this.token = 'dev-mock-token-12345';
+      return this.token;
+    }
+
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',

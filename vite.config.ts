@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => ({
       }
     }
   },
-  define: { 'process.emitWarning': '() => {}' },
+  // Remove problematic define that causes build errors
   plugins: [
     react(),
     mode === 'development' && componentTagger(),

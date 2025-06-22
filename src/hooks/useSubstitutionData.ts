@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { scoutApiClient } from '@/config/scoutApi';
+import { scoutApi } from '@/config/scoutApi';
 
 interface SubstitutionDataPoint {
   source: string;
@@ -24,7 +24,7 @@ export const useSubstitutionData = (filters: SubstitutionFilters = {}) => {
     queryFn: async (): Promise<{ data: SubstitutionDataPoint[]; summary: any }> => {
       try {
         // Use Scout Analytics API for real data
-        const response = await scoutApiClient.getAnalytics(filters);
+        const response = await scoutApi.getAnalytics(filters);
         
         // Transform the response data to substitution format
         // This assumes the API returns transaction data that we can analyze for substitution patterns

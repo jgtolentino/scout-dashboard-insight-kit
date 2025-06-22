@@ -14,6 +14,9 @@ import { useVolumeData } from "@/hooks/useVolumeData";
 import { useCategoryMixData } from "@/hooks/useCategoryMixData";
 import { useFilterStore } from "@/stores/filterStore";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
 import type { KpiMetric, RegionalData } from "@/types/api";
 
 interface OverviewProps {
@@ -21,10 +24,13 @@ interface OverviewProps {
 }
 
 const Overview = ({ setHeatMapVisible }: OverviewProps) => {
+  const navigate = useNavigate();
   const filters = useFilterStore();
+  const { setFilter, getQueryString } = useFilterStore();
   const { data: transactionData, isLoading: transactionsLoading } = useTransactionData(filters);
   const { data: volumeData, isLoading: volumeLoading } = useVolumeData(filters);
   const { data: categoryData, isLoading: categoriesLoading } = useCategoryMixData(filters);
+  const [showAOVModal, setShowAOVModal] = useState(false);
   
   // Calculate metrics from real data
   const calculateMetrics = (): KpiMetric[] => {
@@ -81,6 +87,33 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
 
   const metrics = calculateMetrics();
 
+  const handleKPIClick = (index: number) => {
+    switch(index) {
+      case 0: // Total Revenue
+        navigate(`/transaction-trends?${getQueryString()}`);
+        break;
+      case 1: // Total Transactions
+        navigate(`/transaction-trends?${getQueryString()}`);
+        break;
+      case 2: // Active Customers
+        navigate(`/consumer-profiling?${getQueryString()}`);
+        break;
+      case 3: // Avg Order Value
+        setShowAOVModal(true);
+        break;
+    }
+  };
+
+  // Mock data for AOV distribution
+  const aovDistributionData = [
+    { range: '₱0-50', count: 1245, percentage: 7.8 },
+    { range: '₱51-100', count: 3567, percentage: 22.5 },
+    { range: '₱101-150', count: 4892, percentage: 30.9 },
+    { range: '₱151-200', count: 3124, percentage: 19.7 },
+    { range: '₱201-250', count: 1876, percentage: 11.8 },
+    { range: '₱251+', count: 1143, percentage: 7.3 },
+  ];
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -125,7 +158,11 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
             const icons = [DollarSign, ShoppingCart, Users, TrendingUp];
             const Icon = icons[index];
             return (
-              <Card key={index} className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+              <Card 
+                key={index} 
+                className="bg-white/70 backdrop-blur-sm border-0 shadow-lg cursor-pointer hover:shadow-xl transition-all"
+                onClick={() => handleKPIClick(index)}
+              >
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -196,7 +233,14 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
               ) : (
                 <div className="space-y-3">
                   {(categoryData?.data || []).slice(0, 4).map((category, index) => (
-                    <div key={index} className="flex justify-between items-center">
+                    <div 
+                      key={index} 
+                      className="flex justify-between items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
+                      onClick={() => {
+                        setFilter('categories', [category.category]);
+                        navigate(`/product-mix?${getQueryString()}`);
+                      }}
+                    >
                       <span className="text-sm">{category.category}</span>
                       <span className="text-sm text-green-600">+{(category.share).toFixed(1)}%</span>
                     </div>
@@ -207,6 +251,38 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
           </Card>
         </div>
       </div>
+
+      {/* Average Order Value Distribution Modal */}
+      <Dialog open={showAOVModal} onOpenChange={setShowAOVModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Average Order Value Distribution</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="space-y-4">
+              {aovDistributionData.map((item) => (
+                <div key={item.range} className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">{item.range}</span>
+                    <span className="text-sm text-muted-foreground">{item.count.toLocaleString()} orders ({item.percentage}%)</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full" 
+                      style={{ width: `${item.percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+              <p className="text-sm text-blue-700">
+                <span className="font-bold">Insight:</span> Most transactions (50.6%) fall in the ₱101-200 range, indicating a mid-tier purchasing pattern.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

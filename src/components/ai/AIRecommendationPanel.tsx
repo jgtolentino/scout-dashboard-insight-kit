@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Brain, TrendingUp, Package, DollarSign, Settings, ArrowRight } from 'lucide-react';
 import { useFilterStore } from '@/stores/filterStore';
-import { useRetailBot } from '@/hooks/useRetailBot';
+import { useNavigate } from 'react-router-dom';
 
 interface AIRecommendationPanelProps {
   title?: string;
@@ -16,6 +16,8 @@ export default function AIRecommendationPanel({
   query = "Generate recommendations based on current data"
 }: AIRecommendationPanelProps) {
   const filters = useFilterStore();
+  const navigate = useNavigate();
+  const { setFilter, getQueryString } = useFilterStore();
   
   // Mock data for recommendations
   const recommendations = [
@@ -64,6 +66,31 @@ export default function AIRecommendationPanel({
       default: return 'bg-gray-500';
     }
   };
+
+  const handleApplyAction = (action: any) => {
+    // Apply filters from the action
+    if (action.filters) {
+      Object.entries(action.filters).forEach(([key, value]) => {
+        setFilter(key as any, value);
+      });
+    }
+    
+    // Navigate to appropriate page based on action category
+    switch (action.category) {
+      case 'pricing':
+      case 'promotion':
+        navigate(`/product-mix?${getQueryString()}`);
+        break;
+      case 'inventory':
+        navigate(`/product-mix?${getQueryString()}`);
+        break;
+      case 'ops':
+        navigate(`/transaction-trends?${getQueryString()}`);
+        break;
+      default:
+        navigate(`/?${getQueryString()}`);
+    }
+  };
   
   return (
     <Card className="h-full">
@@ -93,7 +120,12 @@ export default function AIRecommendationPanel({
                     <p className="text-sm text-muted-foreground mb-3">
                       {action.description}
                     </p>
-                    <Button variant="outline" size="sm" className="text-xs">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-xs"
+                      onClick={() => handleApplyAction(action)}
+                    >
                       Apply Action <ArrowRight className="h-3 w-3 ml-1" />
                     </Button>
                   </div>

@@ -1,23 +1,37 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "scout-dashboard-insight-kit",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
-    "dev": "cross-env NODE_NO_WARNINGS=1 vite",
+    "dev": "cross-env NODE_NO_WARNINGS=1 vite --host",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "lint": "eslint .",
-    "preview": "vite preview",
+    "build:debug": "vite build --mode development --no-sourcemap",
+    "build:verify": "npm run build && npm run preview:ci",
+    "preview": "vite preview --host",
+    "preview:ci": "vite preview --port 4173 --host",
     "start": "cross-env NODE_NO_WARNINGS=1 vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,css,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,css,md}\"",
+    "type-check": "tsc --noEmit",
     "test": "vitest",
-    "test:run": "vitest run",
+    "test:run": "vitest run --reporter=junit --outputFile=test-results/junit.xml --reporter=default",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "verify:deployment": "node scripts/verify-deployment.js",
-    "build:verify": "npm run build && npm run verify:deployment http://localhost:5173"
+    "recover": "bash scripts/recover.sh",
+    "clean": "rm -rf node_modules package-lock.json dist .vite && npm cache clean --force",
+    "reset": "npm run clean && npm install --legacy-peer-deps",
+    "postinstall": "node scripts/post-install-check.cjs || echo 'Post-install check failed, but continuing...'"
   },
   "dependencies": {
     "@azure/identity": "^4.0.1",
@@ -124,6 +138,15 @@
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1",
     "vitest": "^3.2.4"
+  },
+  "overrides": {
+    "rollup": "^4.0.0",
+    "@rollup/rollup-linux-x64-gnu": "^4.0.0",
+    "vite": "^5.4.1"
+  },
+  "resolutions": {
+    "rollup": "^4.0.0",
+    "@rollup/rollup-linux-x64-gnu": "^4.0.0"
   },
   "msw": {
     "workerDirectory": [

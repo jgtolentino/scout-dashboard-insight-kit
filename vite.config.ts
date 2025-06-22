@@ -1,23 +1,31 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import path from 'path'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import path from "path";
+import { componentTagger } from "lovable-tagger";
 
-export default defineConfig({
-  plugins: [react()],
+// https://vitejs.dev/config/
+export default defineConfig(({ mode }) => ({
+  server: {
+    host: "::",
+    port: 8080,
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_URL || 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  },
+  plugins: [
+    react(),
+    mode === 'development' && componentTagger(),
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      // Redirect any analytics imports to our empty stub
-      'analytics.client-CWr-exsP.js': '/src/stubs/emptyAnalytics.js',
-      'github-DEL0KHVL.js': '/src/stubs/emptyAnalytics.js',
+      // Redirect generated analytics & GitHub clients to empty stubs
+      "analytics.client-CWr-exsP.js": path.resolve(__dirname, "./src/stubs/emptyAnalytics.js"),
+      "github-DEL0KHVL.js": path.resolve(__dirname, "./src/stubs/emptyAnalytics.js"),
     },
   },
-  server: {
-    host: true,
-    port: 5173,
-  },
-  define: {
-    // Suppress VM contextify warnings
-    'process.env.NODE_NO_WARNINGS': '"1"'
-  }
-})
+}));

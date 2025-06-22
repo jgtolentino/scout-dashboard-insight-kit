@@ -6,7 +6,6 @@ import ParetoChartLive from "@/components/ParetoChartLive";
 import SubstitutionFlowChart from "@/components/SubstitutionFlowChart";
 import BreadcrumbNav from "@/components/BreadcrumbNav";
 import TimeIntelligenceBar from "@/components/time/TimeIntelligenceBar";
-import AIAgent from "@/components/ai/AIAgent";
 
 const ProductMix = () => {
   const metrics = [
@@ -68,101 +67,83 @@ const ProductMix = () => {
           })}
         </div>
 
-        {/* Charts and AI Assistant */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            {/* Live Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Pareto Chart */}
-              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-green-600" />
-                    Product Performance (Pareto)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ParetoChartLive />
-                </CardContent>
-              </Card>
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Pareto Chart */}
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-green-600" />
+                Product Performance (Pareto)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ParetoChartLive />
+            </CardContent>
+          </Card>
 
-              {/* Substitution Flow Chart */}
-              <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-green-600" />
-                    Brand Substitution Flow
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <SubstitutionFlowChart />
-                </CardContent>
-              </Card>
-            </div>
-            
-            {/* Product Insights */}
-            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>Product Performance Insights</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-green-100 rounded-full">
-                      <TrendingUp className="h-4 w-4 text-green-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm">Top Performing Category: Beverages</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Beverages account for 28.5% of total revenue with 15% growth month-over-month.
-                        Coca-Cola products lead with 42% of category sales.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-blue-100 rounded-full">
-                      <Package className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm">Product Bundling Opportunity</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Customers who purchase snacks are 67% more likely to also buy beverages.
-                        Consider creating bundle promotions to increase average order value.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-orange-100 rounded-full">
-                      <DollarSign className="h-4 w-4 text-orange-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm">Price Elasticity Analysis</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Personal care products show low price elasticity (-0.3), indicating opportunity
-                        for premium pricing without significant volume impact.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* AI Product Analyst */}
-          <div className="lg:col-span-1">
-            <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg h-full">
-              <CardContent className="p-0 h-full">
-                <AIAgent 
-                  initialPrompt="I'm your Product Mix Analyst. I can help you understand product performance, category trends, and substitution patterns. What would you like to know about your product mix?"
-                  title="Product Analyst AI"
-                  description="Specialized in product analytics"
-                />
-              </CardContent>
-            </Card>
-          </div>
+          {/* Substitution Flow Chart */}
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-green-600" />
+                Brand Substitution Flow
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SubstitutionFlowChart />
+            </CardContent>
+          </Card>
         </div>
+        
+        {/* Product Insights */}
+        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle>Product Performance Insights</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-green-100 rounded-full">
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-sm">Top Performing Category: Beverages</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Beverages account for 28.5% of total revenue with 15% growth month-over-month.
+                    Coca-Cola products lead with 42% of category sales.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-blue-100 rounded-full">
+                  <Package className="h-4 w-4 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-sm">Product Bundling Opportunity</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Customers who purchase snacks are 67% more likely to also buy beverages.
+                    Consider creating bundle promotions to increase average order value.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-orange-100 rounded-full">
+                  <DollarSign className="h-4 w-4 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-sm">Price Elasticity Analysis</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Personal care products show low price elasticity (-0.3), indicating opportunity
+                    for premium pricing without significant volume impact.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

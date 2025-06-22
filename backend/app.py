@@ -5,6 +5,9 @@ import os
 import sqlite3
 from contextlib import contextmanager
 
+# Import route blueprints
+from routes.categories import categories_bp
+
 app = Flask(__name__)
 CORS(app)
 
@@ -19,6 +22,9 @@ def get_db_connection():
         yield conn
     finally:
         conn.close()
+
+# Register blueprints
+app.register_blueprint(categories_bp, url_prefix='/api')
 
 # Health check endpoint
 @app.route('/api/health', methods=['GET'])
@@ -36,6 +42,8 @@ def get_transactions():
     per_page = request.args.get('per_page', 50, type=int)
     date_from = request.args.get('date_from')
     date_to = request.args.get('date_to')
+    parent_category = request.args.get('parent_category')
+    sub_category = request.args.get('sub_category')
     
     offset = (page - 1) * per_page
     
@@ -51,6 +59,14 @@ def get_transactions():
         if date_to:
             where_conditions.append("t.date <= ?")
             params.append(date_to)
+        
+        if parent_category:
+            where_conditions.append("p.parent_category_id = ?")
+            params.append(parent_category)
+        
+        if sub_category:
+            where_conditions.append("p.category_id = ?")
+            params.append(sub_category)
         
         where_clause = "WHERE " + " AND ".join(where_conditions) if where_conditions else ""
         

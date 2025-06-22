@@ -16,6 +16,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import CategoryCascade from './CategoryCascade';
 
 const barangayOptions = [
   'Makati CBD', 'BGC', 'Ortigas', 'Quezon City', 'Manila', 'Pasig', 'Mandaluyong'
@@ -23,10 +24,6 @@ const barangayOptions = [
 
 const storeOptions = [
   '7-Eleven Makati', 'SM Supermarket BGC', 'Robinsons Ortigas', 'Mercury Drug QC'
-];
-
-const categoryOptions = [
-  'Beverages', 'Food & Snacks', 'Personal Care', 'Household Items', 'Others'
 ];
 
 const brandOptions = [
@@ -165,6 +162,31 @@ export function GlobalFilterBar() {
       <CollapsibleContent>
         <div className="px-4 pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-muted/20 rounded-lg p-4 m-4">
           <div className="space-y-2">
+            <label className="text-sm font-medium">Date Range</label>
+            <div className="flex gap-2">
+              <Input
+                type="date"
+                value={from}
+                onChange={(e) => setFilter('from', e.target.value)}
+                placeholder="From"
+                className="w-full"
+              />
+              <Input
+                type="date"
+                value={to}
+                onChange={(e) => setFilter('to', e.target.value)}
+                placeholder="To"
+                className="w-full"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Category</label>
+            <CategoryCascade />
+          </div>
+
+          <div className="space-y-2">
             <label className="text-sm font-medium">Barangay</label>
             <Select
               onValueChange={(value) => {
@@ -200,28 +222,6 @@ export function GlobalFilterBar() {
               </SelectTrigger>
               <SelectContent>
                 {storeOptions.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Category</label>
-            <Select
-              onValueChange={(value) => {
-                if (!categories.includes(value)) {
-                  setFilter('categories', [...categories, value]);
-                }
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categoryOptions.map((option) => (
                   <SelectItem key={option} value={option}>
                     {option}
                   </SelectItem>

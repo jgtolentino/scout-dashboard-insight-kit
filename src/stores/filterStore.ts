@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -9,6 +8,8 @@ export interface FilterState {
   stores: string[];
   categories: string[];
   brands: string[];
+  parentCategory: string | null;
+  subCategory: string | null;
   hour?: string;
   gender?: string;
 }
@@ -16,6 +17,7 @@ export interface FilterState {
 interface FilterActions {
   setFilter: (key: keyof FilterState, value: any) => void;
   resetFilters: () => void;
+  resetSubCategory: () => void;
   getQueryString: () => string;
   setFromQueryString: (queryString: string) => void;
 }
@@ -29,6 +31,8 @@ const defaultFilters: FilterState = {
   stores: [],
   categories: [],
   brands: [],
+  parentCategory: null,
+  subCategory: null,
 };
 
 export const useFilterStore = create<FilterStore>()(
@@ -58,6 +62,8 @@ export const useFilterStore = create<FilterStore>()(
         window.history.replaceState({}, '', url.toString());
       },
       
+      resetSubCategory: () => set(state => ({ subCategory: null })),
+      
       getQueryString: () => {
         const state = get();
         const params = new URLSearchParams();
@@ -70,6 +76,8 @@ export const useFilterStore = create<FilterStore>()(
         if (state.brands.length > 0) params.set('brands', state.brands.join(','));
         if (state.hour) params.set('hour', state.hour);
         if (state.gender) params.set('gender', state.gender);
+        if (state.parentCategory) params.set('parentCategory', state.parentCategory);
+        if (state.subCategory) params.set('subCategory', state.subCategory);
         
         return params.toString();
       },
@@ -86,6 +94,8 @@ export const useFilterStore = create<FilterStore>()(
           brands: params.get('brands')?.split(',').filter(Boolean) || [],
           hour: params.get('hour') || undefined,
           gender: params.get('gender') || undefined,
+          parentCategory: params.get('parentCategory') || null,
+          subCategory: params.get('subCategory') || null,
         });
       },
     }),
@@ -100,6 +110,8 @@ export const useFilterStore = create<FilterStore>()(
         brands: state.brands,
         hour: state.hour,
         gender: state.gender,
+        parentCategory: state.parentCategory,
+        subCategory: state.subCategory,
       }),
     }
   )

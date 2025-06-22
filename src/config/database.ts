@@ -14,8 +14,8 @@ export interface DatabaseConfig {
 
 // Parse connection string or use individual parameters
 export function getDatabaseConfig(): DatabaseConfig {
-  const connectionString = import.meta.env.VITE_DATABASE_URL || process.env.DATABASE_URL;
-  const dbType = (import.meta.env.VITE_DB_TYPE || process.env.DB_TYPE || 'postgres') as 'postgres' | 'mysql';
+  const connectionString = import.meta.env.VITE_DATABASE_URL || import.meta.env.DATABASE_URL;
+  const dbType = (import.meta.env.VITE_DB_TYPE || import.meta.env.DB_TYPE || 'postgres') as 'postgres' | 'mysql';
 
   if (connectionString) {
     return {
@@ -28,11 +28,11 @@ export function getDatabaseConfig(): DatabaseConfig {
   // Fallback to individual environment variables
   return {
     type: dbType,
-    host: import.meta.env.VITE_DB_HOST || process.env.DB_HOST || 'localhost',
-    port: parseInt(import.meta.env.VITE_DB_PORT || process.env.DB_PORT || (dbType === 'postgres' ? '5432' : '3306')),
-    user: import.meta.env.VITE_DB_USER || process.env.DB_USER,
-    password: import.meta.env.VITE_DB_PASSWORD || process.env.DB_PASSWORD,
-    database: import.meta.env.VITE_DB_NAME || process.env.DB_NAME,
+    host: import.meta.env.VITE_DB_HOST || import.meta.env.DB_HOST || 'localhost',
+    port: parseInt(import.meta.env.VITE_DB_PORT || import.meta.env.DB_PORT || (dbType === 'postgres' ? '5432' : '3306')),
+    user: import.meta.env.VITE_DB_USER || import.meta.env.DB_USER,
+    password: import.meta.env.VITE_DB_PASSWORD || import.meta.env.DB_PASSWORD,
+    database: import.meta.env.VITE_DB_NAME || import.meta.env.DB_NAME,
     ssl: import.meta.env.PROD ? { rejectUnauthorized: false } : false
   };
 }

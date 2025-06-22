@@ -1,0 +1,125 @@
+# Page snapshot
+
+```yaml
+- region "Notifications (F8)":
+  - list
+- img
+- text: Attention Required 2 Anomalies
+- img
+- text: 26s
+- button "Refresh":
+  - img
+  - text: Refresh
+- button "Close":
+  - img
+  - text: Close
+- img
+- text: Scout Analytics Analytics Dashboard
+- list:
+  - listitem:
+    - link "Overview Executive summary":
+      - /url: /overview
+      - img
+      - text: Overview Executive summary
+  - listitem:
+    - link "Transaction Trends Track patterns":
+      - /url: /transaction-trends
+      - img
+      - text: Transaction Trends Track patterns
+  - listitem:
+    - link "Product Mix Product analytics":
+      - /url: /product-mix
+      - img
+      - text: Product Mix Product analytics
+  - listitem:
+    - link "Product Substitution Substitution flows":
+      - /url: /product-substitution
+      - img
+      - text: Product Substitution Substitution flows
+  - listitem:
+    - link "Consumer Behavior Behavioral analysis":
+      - /url: /consumer-behavior
+      - img
+      - text: Consumer Behavior Behavioral analysis
+  - listitem:
+    - link "Consumer Profiling Demographics":
+      - /url: /consumer-profiling
+      - img
+      - text: Consumer Profiling Demographics
+  - listitem:
+    - link "RetailBot AI assistant":
+      - /url: /retailbot
+      - img
+      - text: RetailBot AI assistant
+  - listitem:
+    - link "AI Chat Chat with AI":
+      - /url: /ai-chat
+      - img
+      - text: AI Chat Chat with AI
+- main:
+  - button "Toggle Sidebar":
+    - img
+    - text: Toggle Sidebar
+  - img
+  - heading "Scout Analytics Overview" [level=1]
+  - paragraph: Real-time insights into your retail analytics
+  - button "Heat Map":
+    - img
+    - text: Heat Map
+  - navigation "breadcrumb":
+    - list:
+      - listitem:
+        - link "Dashboard":
+          - /url: /overview
+          - img
+          - text: Dashboard
+      - listitem:
+        - link "Overview" [disabled]
+  - button [disabled]:
+    - img
+  - button "Today"
+  - button "Week"
+  - button "Month"
+  - button "Quarter"
+  - button "Year"
+  - button [disabled]:
+    - img
+  - button "Select dates":
+    - img
+    - text: Select dates
+  - button "Filters":
+    - img
+    - text: Filters
+  - paragraph: Total Revenue
+  - paragraph: ₱0
+  - paragraph: 0% vs last month
+  - img
+  - paragraph: Total Transactions
+  - paragraph: "0"
+  - paragraph: 0% vs last month
+  - img
+  - paragraph: Active Customers
+  - paragraph: "0"
+  - paragraph: 0% vs last month
+  - img
+  - paragraph: Avg Order Value
+  - paragraph: ₱0
+  - paragraph: 0% vs last month
+  - img
+  - heading "Category Mix Distribution" [level=3]:
+    - img
+    - text: Category Mix Distribution
+  - heading "Regional Performance Map" [level=3]:
+    - img
+    - text: Regional Performance Map
+  - tablist:
+    - tab "AI Insights" [selected]
+    - tab "Recommendations"
+  - tabpanel "AI Insights":
+    - heading "AI Insights" [level=3]:
+      - img
+      - text: AI Insights
+      - button [disabled]:
+        - img
+  - heading "Top Categories" [level=3]
+```

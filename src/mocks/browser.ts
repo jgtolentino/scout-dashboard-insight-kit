@@ -5,7 +5,7 @@ import { handlers } from './handlers';
 export const worker = setupWorker(...handlers);
 
 // Start the worker and provide helpful development feedback
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.MODE === 'development') {
   worker.start({
     onUnhandledRequest: 'warn',
     serviceWorker: {

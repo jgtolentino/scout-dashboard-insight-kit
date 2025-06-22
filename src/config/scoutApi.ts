@@ -1,5 +1,5 @@
 // Scout Analytics API adapter
-import { API_BASE_URL } from './api';
+const API_BASE_URL = import.meta.env.VITE_SCOUT_API_URL || 'http://localhost:3002';
 
 interface ScoutApiClient {
   getAnalytics: (filters?: Record<string, any>) => Promise<any>;
@@ -13,7 +13,7 @@ class ScoutAnalyticsClient implements ScoutApiClient {
     if (this.token) return this.token;
 
     // Skip authentication in development when using MSW
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       console.warn('⚠️  Scout API authentication disabled in development mode (using MSW)');
       this.token = 'dev-mock-token-12345';
       return this.token;

@@ -4,7 +4,7 @@ import './index.css'
 
 // Enable MSW in development for API mocking
 async function enableMocking() {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.MODE === 'development') {
     const { worker } = await import('./mocks/browser');
     return worker.start();
   }

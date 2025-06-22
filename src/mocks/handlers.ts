@@ -78,7 +78,7 @@ const generateCategoryData = () => {
 
 export const handlers = [
   // Authentication endpoint
-  http.post(`${process.env.VITE_API_BASE_URL || 'http://localhost:3002'}/auth/login`, () => {
+  http.post('*/api/auth/login', () => {
     return HttpResponse.json({
       success: true,
       token: 'dev-mock-token-12345',
@@ -87,7 +87,7 @@ export const handlers = [
   }),
 
   // Main Scout Analytics endpoint
-  http.get(`${process.env.VITE_API_BASE_URL || 'http://localhost:3002'}/scout/analytics`, ({ request }) => {
+  http.get('*/scout/analytics', ({ request }) => {
     const url = new URL(request.url);
     const limit = parseInt(url.searchParams.get('limit') || '100');
     
@@ -144,7 +144,7 @@ export const handlers = [
   }),
 
   // Transactions endpoint
-  http.get(`${process.env.VITE_API_BASE_URL || 'http://localhost:3002'}/api/transactions`, ({ request }) => {
+  http.get('*/api/transactions', ({ request }) => {
     const url = new URL(request.url);
     const limit = parseInt(url.searchParams.get('limit') || '100');
     const transactions = generateTransactions(limit);
@@ -161,7 +161,7 @@ export const handlers = [
   }),
 
   // Volume data endpoint
-  http.get(`${process.env.VITE_API_BASE_URL || 'http://localhost:3002'}/api/volume`, () => {
+  http.get('*/api/volume', () => {
     return HttpResponse.json({
       data: Array.from({ length: 30 }, (_, i) => ({
         date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -172,14 +172,14 @@ export const handlers = [
   }),
 
   // Category mix endpoint
-  http.get(`${process.env.VITE_API_BASE_URL || 'http://localhost:3002'}/api/category-mix`, () => {
+  http.get('*/api/category-mix', () => {
     return HttpResponse.json({
       data: generateCategoryData()
     });
   }),
 
   // Regional performance endpoint
-  http.get(`${process.env.VITE_API_BASE_URL || 'http://localhost:3002'}/api/regional-performance`, () => {
+  http.get('*/api/regional-performance', () => {
     return HttpResponse.json({
       data: generateRegionalData()
     });

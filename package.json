@@ -90,8 +90,6 @@
     "vite": "^5.4.1"
   },
   "msw": {
-    "workerDirectory": [
-      "public"
-    ]
+    "workerDirectory": "public"
   }
 }

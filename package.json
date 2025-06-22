@@ -18,6 +18,8 @@
     "test:e2e:headed": "playwright test --headed"
   },
   "dependencies": {
+    "@azure/identity": "^4.0.1",
+    "@azure/keyvault-secrets": "^4.8.0",
     "@faker-js/faker": "^9.8.0",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",

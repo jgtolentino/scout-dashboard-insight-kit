@@ -1,5 +1,8 @@
 // AdsBot API Integration for Scout Analytics  
 // Provides AI-generated insights and chat functionality using Azure OpenAI
+// Uses DefaultAzureCredential for seamless authentication
+
+import { azureCredentialService } from './azureCredentialService';
 
 export interface AdsBotInsight {
   id: string;
@@ -36,23 +39,51 @@ export interface AdsBotChatResponse {
 }
 
 class AdsBotApiClient {
-  private azureOpenAIEndpoint: string;
-  private azureOpenAIKey: string;
-  private deploymentName: string;
-  private apiVersion: string;
+  private azureOpenAIEndpoint: string = '';
+  private azureOpenAIKey: string = '';
+  private deploymentName: string = '';
+  private apiVersion: string = '';
+  private configInitialized: boolean = false;
 
   constructor() {
-    this.azureOpenAIEndpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT || 'https://tbwa-openai.openai.azure.com';
-    this.azureOpenAIKey = import.meta.env.VITE_AZURE_OPENAI_KEY || '';
-    this.deploymentName = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT || 'gpt-4';
-    this.apiVersion = import.meta.env.VITE_AZURE_OPENAI_API_VERSION || '2024-02-15-preview';
-    
-    if (!this.azureOpenAIKey) {
-      console.warn('⚠️ Azure OpenAI API key not configured. Using mock responses.');
+    // Configuration will be loaded asynchronously
+    this.initializeConfig();
+  }
+
+  private async initializeConfig() {
+    try {
+      const config = await azureCredentialService.getAzureOpenAIConfig();
+      this.azureOpenAIEndpoint = config.endpoint;
+      this.azureOpenAIKey = config.apiKey || '';
+      this.deploymentName = config.deployment;
+      this.apiVersion = config.apiVersion;
+      this.configInitialized = true;
+      
+      if (!this.azureOpenAIKey) {
+        console.warn('⚠️ Azure OpenAI API key not configured. Using mock responses.');
+      } else {
+        console.log('✅ Azure OpenAI configuration loaded successfully');
+      }
+    } catch (error) {
+      console.warn('⚠️ Failed to load Azure OpenAI configuration:', error);
+      // Fallback to environment variables
+      this.azureOpenAIEndpoint = import.meta.env.VITE_AZURE_OPENAI_ENDPOINT || 'https://tbwa-openai.openai.azure.com';
+      this.azureOpenAIKey = import.meta.env.VITE_AZURE_OPENAI_KEY || '';
+      this.deploymentName = import.meta.env.VITE_AZURE_OPENAI_DEPLOYMENT || 'gpt-4';
+      this.apiVersion = import.meta.env.VITE_AZURE_OPENAI_API_VERSION || '2024-02-15-preview';
+      this.configInitialized = true;
+    }
+  }
+
+  private async ensureConfigInitialized() {
+    if (!this.configInitialized) {
+      await this.initializeConfig();
     }
   }
 
   async getInsights(dataContext?: any): Promise<AdsBotInsight[]> {
+    await this.ensureConfigInitialized();
+    
     if (!this.azureOpenAIKey) {
       console.warn('Azure OpenAI not configured, using mock insights');
       return this.getMockInsights();
@@ -69,6 +100,8 @@ class AdsBotApiClient {
   }
 
   async sendChatMessage(message: string, context?: any): Promise<AdsBotChatResponse> {
+    await this.ensureConfigInitialized();
+    
     if (!this.azureOpenAIKey) {
       console.warn('Azure OpenAI not configured, using mock response');
       return this.getMockChatResponse(message);

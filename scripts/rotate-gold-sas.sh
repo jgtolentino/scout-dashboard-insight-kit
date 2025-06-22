@@ -31,7 +31,7 @@ echo ""
 
 # Update environment files
 if [ -f ".env.production" ]; then
-    sed -i.bak "s/GOLD_SAS_TOKEN=.*/GOLD_SAS_TOKEN=$NEW_SAS/" .env.production
+    sed -i.bak "s/VITE_GOLD_SAS_TOKEN=.*/VITE_GOLD_SAS_TOKEN=$NEW_SAS/" .env.production
     echo "✅ Updated .env.production"
 fi
 

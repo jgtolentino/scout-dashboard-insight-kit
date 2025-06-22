@@ -135,11 +135,11 @@ export const GOLD_DATA_ASSETS: DataAsset[] = [
 // Access configuration
 export const ACCESS_CONFIG = {
   // Gold layer SAS token (rotate weekly)
-  goldSasToken: process.env.GOLD_SAS_TOKEN || '',
+  goldSasToken: import.meta.env.VITE_GOLD_SAS_TOKEN || '',
   
   // Delta Sharing endpoint
-  deltaSharingEndpoint: process.env.DELTA_SHARING_ENDPOINT || 'http://localhost:8080',
-  deltaSharingToken: process.env.DELTA_SHARING_TOKEN || 'scout-analytics-public-token-2024',
+  deltaSharingEndpoint: import.meta.env.VITE_DELTA_SHARING_ENDPOINT || 'http://localhost:8080',
+  deltaSharingToken: import.meta.env.VITE_DELTA_SHARING_TOKEN || 'scout-analytics-public-token-2024',
   
   // API endpoints that expose Gold data
   publicApiEndpoints: [

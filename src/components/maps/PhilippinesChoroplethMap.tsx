@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MAPBOX_ACCESS_TOKEN } from '@/config/api';
-import * as turf from '@turf/turf';
+import { scaleLinear } from 'd3-scale';
 
 // Set Mapbox access token
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -54,14 +54,15 @@ const PHILIPPINES_REGIONS = {
   ]
 };
 
-interface RegionData {
+interface RegionalData {
   name: string;
   value: number;
   color?: string;
+  percentage?: string;
 }
 
 interface PhilippinesChoroplethMapProps {
-  data: RegionData[];
+  data: RegionalData[];
   className?: string;
   height?: number;
   width?: number;
@@ -90,6 +91,9 @@ const PhilippinesChoroplethMap: React.FC<PhilippinesChoroplethMapProps> = ({
         feature.properties.value = regionData.value;
         if (regionData.color) {
           feature.properties.color = regionData.color;
+        }
+        if (regionData.percentage) {
+          feature.properties.percentage = regionData.percentage;
         }
       }
     });
@@ -215,9 +219,15 @@ const PhilippinesChoroplethMap: React.FC<PhilippinesChoroplethMapProps> = ({
               
               // Show popup
               const regionValue = e.features[0].properties.value;
+              const regionPercentage = e.features[0].properties.percentage;
+              
               new mapboxgl.Popup()
                 .setLngLat(e.lngLat)
-                .setHTML(`<strong>${regionName}</strong><br>₱${regionValue.toLocaleString()}`)
+                .setHTML(`
+                  <strong>${regionName}</strong><br>
+                  ₱${regionValue.toLocaleString()}<br>
+                  ${regionPercentage ? regionPercentage : ''}
+                `)
                 .addTo(map.current);
             }
           });

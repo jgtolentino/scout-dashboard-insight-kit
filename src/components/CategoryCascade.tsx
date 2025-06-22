@@ -4,9 +4,7 @@ import { useFilterStore } from '@/stores/filterStore';
 import { API_BASE_URL } from '@/config/api';
 
 export default function CategoryCascade() {
-  const { categories, setFilter } = useFilterStore();
-  const [parentCategory, setParentCategory] = useState<string | null>(null);
-  const [subCategory, setSubCategory] = useState<string | null>(null);
+  const { parentCategory, subCategory, setFilter, resetSubCategory } = useFilterStore();
   const [parentOptions, setParentOptions] = useState<CategoryOption[]>([
     { id: null, name: 'All Categories' }
   ]);
@@ -111,31 +109,13 @@ export default function CategoryCascade() {
     fetchChildCategories();
   }, [parentCategory]);
 
-  // Update global filter when selections change
-  useEffect(() => {
-    // If parent is null, clear categories filter
-    if (parentCategory === null) {
-      setFilter('categories', []);
-      return;
-    }
-
-    // If subcategory is selected, use that
-    if (subCategory !== null) {
-      setFilter('categories', [subCategory]);
-      return;
-    }
-
-    // Otherwise use parent category
-    setFilter('categories', [parentCategory]);
-  }, [parentCategory, subCategory, setFilter]);
-
   const handleParentChange = (value: string | null) => {
-    setParentCategory(value);
-    setSubCategory(null); // Reset subcategory when parent changes
+    setFilter('parentCategory', value);
+    resetSubCategory();
   };
 
   const handleChildChange = (value: string | null) => {
-    setSubCategory(value);
+    setFilter('subCategory', value);
   };
 
   return (

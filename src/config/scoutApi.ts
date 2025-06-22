@@ -12,6 +12,13 @@ class ScoutAnalyticsClient implements ScoutApiClient {
   async authenticate(): Promise<string> {
     if (this.token) return this.token;
 
+    // Bypass authentication in development if flag is set
+    if (import.meta.env.VITE_DISABLE_AUTH === 'true') {
+      console.warn('⚠️ Auth disabled in development mode');
+      this.token = 'dev-token';
+      return this.token;
+    }
+
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',

@@ -7,7 +7,7 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { useState } from "react";
 import AppSidebar from "./components/AppSidebar";
 import Overview from "./pages/Overview";
-import Index from "./pages/Index";
+import TransactionTrends from "./pages/TransactionTrends";
 import ProductMix from "./pages/ProductMix";
 import ConsumerBehavior from "./pages/ConsumerBehavior";
 import ConsumerProfiling from "./pages/ConsumerProfiling";
@@ -37,7 +37,7 @@ const App = () => {
                   <Routes>
                     <Route path="/" element={<Navigate to="/overview" replace />} />
                     <Route path="/overview" element={<Overview setHeatMapVisible={setHeatMapVisible} />} />
-                    <Route path="/transaction-trends" element={<Index />} />
+                    <Route path="/transaction-trends" element={<TransactionTrends />} />
                     <Route path="/product-mix" element={<ProductMix />} />
                     <Route path="/consumer-behavior" element={<ConsumerBehavior />} />
                     <Route path="/consumer-profiling" element={<ConsumerProfiling />} />

@@ -5,12 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User, Sparkles, RefreshCw } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import BreadcrumbNav from "@/components/BreadcrumbNav";
+import BreadcrumbNav from "@/components/navigation/BreadcrumbNav";
 import ReactMarkdown from 'react-markdown';
 import { useAIChat } from "@/hooks/useAIChat";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AIDataAnalyzer } from "@/components/ai/AIDataAnalyzer";
-import RetailBotChat from "@/components/ai/RetailBotChat";
 
 interface Message {
   id: string;
@@ -106,151 +103,121 @@ const AIChat = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-6 bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden">
-        <Tabs defaultValue="general">
-          <TabsList className="mb-6">
-            <TabsTrigger value="general">General AI Chat</TabsTrigger>
-            <TabsTrigger value="retailbot">RetailBot</TabsTrigger>
-            <TabsTrigger value="data-analyzer">Data Analyzer</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="general" className="h-[calc(100%-48px)]">
-            <Card className="h-full flex flex-col bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Bot className="h-5 w-5 text-primary" />
-                    <span>AI Assistant</span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setMessages([messages[0]])}
-                    disabled={messages.length <= 1}
-                  >
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Reset Chat
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col p-0">
-                {/* Chat History */}
-                <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>
-                  <div className="space-y-6">
-                    {messages.map((message) => (
-                      <div key={message.id} className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        {message.role === 'assistant' && (
-                          <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-white flex-shrink-0">
-                            <Bot className="h-4 w-4" />
-                          </div>
-                        )}
-                        
-                        <div className={`max-w-[80%] p-4 rounded-lg ${
-                          message.role === 'user' 
-                            ? 'bg-primary text-primary-foreground' 
-                            : 'bg-muted'
-                        }`}>
-                          <div className="prose prose-sm dark:prose-invert">
-                            <ReactMarkdown>{message.content}</ReactMarkdown>
-                          </div>
-                          <p className="text-xs opacity-70 mt-2">
-                            {message.timestamp.toLocaleTimeString()}
-                          </p>
-                        </div>
-
-                        {message.role === 'user' && (
-                          <div className="p-2 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full text-white flex-shrink-0">
-                            <User className="h-4 w-4" />
-                          </div>
-                        )}
+        <Card className="h-full flex flex-col bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bot className="h-5 w-5 text-primary" />
+                <span>AI Assistant</span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setMessages([messages[0]])}
+                disabled={messages.length <= 1}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Reset Chat
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col p-0">
+            {/* Chat History */}
+            <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>
+              <div className="space-y-6">
+                {messages.map((message) => (
+                  <div key={message.id} className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    {message.role === 'assistant' && (
+                      <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-white flex-shrink-0">
+                        <Bot className="h-4 w-4" />
                       </div>
-                    ))}
+                    )}
                     
-                    {isLoading && (
-                      <div className="flex justify-start">
-                        <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-white flex-shrink-0">
-                          <Bot className="h-4 w-4" />
-                        </div>
-                        <div className="bg-muted p-4 rounded-lg ml-3">
-                          <div className="flex items-center space-x-2">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                            <span className="text-sm">Thinking...</span>
-                          </div>
-                        </div>
+                    <div className={`max-w-[80%] p-4 rounded-lg ${
+                      message.role === 'user' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-muted'
+                    }`}>
+                      <div className="prose prose-sm dark:prose-invert">
+                        <ReactMarkdown>{message.content}</ReactMarkdown>
+                      </div>
+                      <p className="text-xs opacity-70 mt-2">
+                        {message.timestamp.toLocaleTimeString()}
+                      </p>
+                    </div>
+
+                    {message.role === 'user' && (
+                      <div className="p-2 bg-gradient-to-r from-gray-500 to-gray-600 rounded-full text-white flex-shrink-0">
+                        <User className="h-4 w-4" />
                       </div>
                     )}
                   </div>
-                </ScrollArea>
-
-                {/* Suggested Questions */}
-                {messages.length === 1 && (
-                  <div className="px-6 py-4 border-t bg-muted/20">
-                    <p className="text-sm text-muted-foreground mb-3">Try asking:</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {suggestedQuestions.map((question, index) => (
-                        <Button
-                          key={index}
-                          variant="outline"
-                          size="sm"
-                          className="text-left justify-start h-auto p-3 text-xs"
-                          onClick={() => setInputMessage(question)}
-                        >
-                          {question}
-                        </Button>
-                      ))}
+                ))}
+                
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-white flex-shrink-0">
+                      <Bot className="h-4 w-4" />
+                    </div>
+                    <div className="bg-muted p-4 rounded-lg ml-3">
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                        <span className="text-sm">Thinking...</span>
+                      </div>
                     </div>
                   </div>
                 )}
+              </div>
+            </ScrollArea>
 
-                {/* Input Area */}
-                <div className="p-6 border-t bg-white/50">
-                  <div className="flex gap-3">
-                    <Textarea
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      placeholder="Ask me about your data insights..."
-                      className="flex-1 min-h-[80px]"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSendMessage();
-                        }
-                      }}
-                      disabled={isLoading}
-                    />
-                    <Button 
-                      onClick={handleSendMessage}
-                      disabled={!inputMessage.trim() || isLoading}
-                      className="self-end"
+            {/* Suggested Questions */}
+            {messages.length === 1 && (
+              <div className="px-6 py-4 border-t bg-muted/20">
+                <p className="text-sm text-muted-foreground mb-3">Try asking:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {suggestedQuestions.map((question, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="sm"
+                      className="text-left justify-start h-auto p-3 text-xs"
+                      onClick={() => setInputMessage(question)}
                     >
-                      <Send className="h-4 w-4 mr-2" />
-                      Send
+                      {question}
                     </Button>
-                  </div>
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="retailbot" className="h-[calc(100%-48px)]">
-            <Card className="h-full bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-              <CardContent className="p-0 h-full">
-                <RetailBotChat />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="data-analyzer" className="h-[calc(100%-48px)]">
-            <Card className="h-full bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-              <CardContent className="p-6 h-full">
-                <AIDataAnalyzer 
-                  title="SQL Data Analyzer" 
-                  description="Convert natural language to SQL queries"
-                  initialPrompt="Write a SQL query to find the top 5 products by revenue in the last 30 days"
+              </div>
+            )}
+
+            {/* Input Area */}
+            <div className="p-6 border-t bg-white/50">
+              <div className="flex gap-3">
+                <Textarea
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  placeholder="Ask me about your data insights..."
+                  className="flex-1 min-h-[80px]"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
+                  disabled={isLoading}
                 />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                <Button 
+                  onClick={handleSendMessage}
+                  disabled={!inputMessage.trim() || isLoading}
+                  className="self-end"
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  Send
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

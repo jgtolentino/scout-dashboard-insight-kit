@@ -16,6 +16,7 @@ const routeLabels: Record<string, string> = {
   "/consumer-behavior": "Consumer Behavior & Preference Signals",
   "/consumer-profiling": "Consumer Profiling",
   "/retailbot": "RetailBot & AI Insights",
+  "/ai-chat": "AI Chat Assistant",
 };
 
 export default function BreadcrumbNav() {

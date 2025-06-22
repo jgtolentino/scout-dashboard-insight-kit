@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { BarChart3, Users, ShoppingCart, DollarSign, TrendingUp, Package, Eye } from "lucide-react";
+import { BarChart3, Users, ShoppingCart, DollarSign, TrendingUp, Package } from "lucide-react";
 import CategoryTreemapLive from "@/components/CategoryTreemapLive";
 import EnhancedPhilippinesChoroplethMap from "@/components/maps/EnhancedPhilippinesChoroplethMap";
 import { useRegionalPerformanceData } from "@/hooks/useRegionalPerformanceData";
@@ -129,35 +129,26 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <header className="flex items-center gap-4 border-b px-6 py-4 bg-background">
-        <SidebarTrigger />
+      <header className="flex items-center justify-between border-b px-6 py-4 bg-background">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-white">
-            <BarChart3 className="h-6 w-6" />
+          <SidebarTrigger />
+          <div className="p-2.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-white">
+            <BarChart3 className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-xl font-bold text-gray-900">
               Scout Analytics Overview
             </h1>
-            <p className="text-gray-600 mt-1">Real-time insights into your retail analytics</p>
+            <p className="text-xs text-muted-foreground">Real-time insights into your retail analytics</p>
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-4">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="flex items-center gap-2"
-            onClick={() => setHeatMapVisible(prev => !prev)}
-          >
-            <Eye className="h-4 w-4" />
-            <span>Heat Map</span>
-          </Button>
+        <div className="flex items-center gap-2">
           <BreadcrumbNav />
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 space-y-6 bg-gradient-to-br from-slate-50 to-blue-50 overflow-auto">
+      <div className="flex-1 p-4 space-y-4 bg-gradient-to-br from-slate-50 to-blue-50 overflow-auto">
         {/* Time Intelligence Bar */}
         <TimeIntelligenceBar />
         
@@ -165,26 +156,26 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
         <GlobalFilterBar />
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {metrics.map((metric, index) => {
             const icons = [DollarSign, ShoppingCart, Users, TrendingUp];
             const Icon = icons[index];
             return (
               <Card 
                 key={index} 
-                className="bg-white/70 backdrop-blur-sm border-0 shadow-lg cursor-pointer hover:shadow-xl transition-all"
+                className="bg-white/70 backdrop-blur-sm border-0 shadow-sm cursor-pointer hover:shadow-md transition-all"
                 onClick={() => handleKPIClick(index)}
               >
-                <CardContent className="p-6">
+                <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">{metric.title}</p>
-                      <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
-                      <p className={`text-sm ${metric.positive ? 'text-green-600' : 'text-red-600'}`}>
+                      <p className="text-xs text-muted-foreground">{metric.title}</p>
+                      <p className="text-lg font-bold text-gray-900">{metric.value}</p>
+                      <p className={`text-xs ${metric.positive ? 'text-green-600' : 'text-red-600'}`}>
                         {metric.change} vs last month
                       </p>
                     </div>
-                    <Icon className="h-8 w-8 text-gray-400" />
+                    <Icon className="h-6 w-6 text-muted-foreground/70" />
                   </div>
                 </CardContent>
               </Card>
@@ -193,29 +184,29 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Category Mix Treemap */}
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="h-5 w-5 text-blue-600" />
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Package className="h-4 w-4 text-blue-600" />
                 Category Mix Distribution
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 pt-0">
               <CategoryTreemapLive />
             </CardContent>
           </Card>
 
           {/* Enhanced Regional Performance Map */}
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="h-5 w-5 text-blue-600" />
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Package className="h-4 w-4 text-blue-600" />
                 Regional Performance Map
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 pt-0">
               {regionsLoading ? (
                 <div className="animate-pulse space-y-4">
                   <div className="h-96 bg-gray-200 rounded"></div>
@@ -231,12 +222,12 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
               ) : (
                 <EnhancedPhilippinesChoroplethMap
                   data={regionalData}
-                  height={500}
+                  height={300}
                   colorScale="revenue"
                   metric={regionalPerformanceData?.metric || 'Revenue'}
                   onRegionClick={(region) => {
                     setFilter('region', region);
-                    navigate('/analytics');
+                    navigate('/regional-analytics');
                   }}
                   onRegionHover={(region) => {
                     console.log('Hovering over region:', region);
@@ -250,11 +241,11 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
         </div>
 
         {/* AI Insights and Recommendations */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Tabs defaultValue="insights">
-            <TabsList className="mb-4">
-              <TabsTrigger value="insights">AI Insights</TabsTrigger>
-              <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+            <TabsList className="mb-2">
+              <TabsTrigger value="insights" className="text-xs">AI Insights</TabsTrigger>
+              <TabsTrigger value="recommendations" className="text-xs">Recommendations</TabsTrigger>
             </TabsList>
             
             <TabsContent value="insights" className="mt-0">
@@ -266,11 +257,11 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
             </TabsContent>
           </Tabs>
 
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Top Categories</CardTitle>
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm font-medium">Top Categories</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 pt-0">
               {categoriesLoading ? (
                 <div className="animate-pulse space-y-3">
                   {[1, 2, 3, 4].map(i => (

@@ -47,25 +47,25 @@ const TransactionTrends = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex items-center gap-4 border-b px-6 py-4 bg-background">
-        <SidebarTrigger />
+      <header className="flex items-center justify-between border-b px-6 py-4 bg-background">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl text-white">
-            <TrendingUp className="h-6 w-6" />
+          <SidebarTrigger />
+          <div className="p-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg text-white">
+            <TrendingUp className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-xl font-bold text-gray-900">
               Transaction Trends
             </h1>
-            <p className="text-gray-600 mt-1">Temporal and regional transaction dynamics</p>
+            <p className="text-xs text-muted-foreground">Temporal and regional transaction dynamics</p>
           </div>
         </div>
-        <div className="ml-auto">
+        <div>
           <BreadcrumbNav />
         </div>
       </header>
 
-      <div className="flex-1 p-6 space-y-6 bg-gradient-to-br from-slate-50 to-blue-50 overflow-auto">
+      <div className="flex-1 p-4 space-y-4 bg-gradient-to-br from-slate-50 to-blue-50 overflow-auto">
         {/* Time Intelligence Bar */}
         <TimeIntelligenceBar />
         
@@ -73,67 +73,67 @@ const TransactionTrends = () => {
         <GlobalFilterBar />
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+            <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Transactions</p>
-                  <p className="text-2xl font-bold text-gray-900">18,247</p>
-                  <p className="text-sm text-green-600">+8.2% vs last month</p>
+                  <p className="text-xs text-muted-foreground">Total Transactions</p>
+                  <p className="text-lg font-bold text-gray-900">18,247</p>
+                  <p className="text-xs text-green-600">+8.2% vs last month</p>
                 </div>
-                <BarChart3 className="h-8 w-8 text-gray-400" />
+                <BarChart3 className="h-6 w-6 text-muted-foreground/70" />
               </div>
             </CardContent>
           </Card>
           
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-6">
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+            <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Avg Transaction Value</p>
-                  <p className="text-2xl font-bold text-gray-900">₱156.03</p>
-                  <p className="text-sm text-green-600">+3.1% vs last month</p>
+                  <p className="text-xs text-muted-foreground">Avg Transaction Value</p>
+                  <p className="text-lg font-bold text-gray-900">₱156.03</p>
+                  <p className="text-xs text-green-600">+3.1% vs last month</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-gray-400" />
+                <TrendingUp className="h-6 w-6 text-muted-foreground/70" />
               </div>
             </CardContent>
           </Card>
           
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-6">
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+            <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Peak Hours</p>
-                  <p className="text-2xl font-bold text-gray-900">6-8 PM</p>
-                  <p className="text-sm text-green-600">23% of daily volume</p>
+                  <p className="text-xs text-muted-foreground">Peak Hours</p>
+                  <p className="text-lg font-bold text-gray-900">6-8 PM</p>
+                  <p className="text-xs text-green-600">23% of daily volume</p>
                 </div>
-                <Clock className="h-8 w-8 text-gray-400" />
+                <Clock className="h-6 w-6 text-muted-foreground/70" />
               </div>
             </CardContent>
           </Card>
           
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-6">
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+            <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Top Location</p>
-                  <p className="text-2xl font-bold text-gray-900">Metro Manila</p>
-                  <p className="text-sm text-green-600">46.3% of transactions</p>
+                  <p className="text-xs text-muted-foreground">Top Location</p>
+                  <p className="text-lg font-bold text-gray-900">Metro Manila</p>
+                  <p className="text-xs text-green-600">46.3% of transactions</p>
                 </div>
-                <MapPin className="h-8 w-8 text-gray-400" />
+                <MapPin className="h-6 w-6 text-muted-foreground/70" />
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Hourly Transaction Volume</CardTitle>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm font-medium">Hourly Transaction Volume</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 pt-0">
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={hourlyData}>
@@ -154,11 +154,11 @@ const TransactionTrends = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Regional Distribution</CardTitle>
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm font-medium">Regional Distribution</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 pt-0">
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={regionalData}>
@@ -178,18 +178,18 @@ const TransactionTrends = () => {
         </div>
 
         {/* Peak Hours Analysis */}
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle>Peak Hours Analysis</CardTitle>
+        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm font-medium">Peak Hours Analysis</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <CardContent className="p-4 pt-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {peakHoursData.map((peak) => (
-                <div key={peak.period} className="bg-muted/20 p-4 rounded-lg">
-                  <h3 className="font-medium text-lg mb-2">{peak.period}</h3>
-                  <p className="text-2xl font-bold">{peak.transactions.toLocaleString()}</p>
-                  <p className="text-sm text-muted-foreground">transactions</p>
-                  <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
+                <div key={peak.period} className="bg-muted/20 p-3 rounded-lg">
+                  <h3 className="font-medium text-sm mb-1">{peak.period}</h3>
+                  <p className="text-lg font-bold">{peak.transactions.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">transactions</p>
+                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                     <div 
                       className="bg-blue-600 h-2 rounded-full" 
                       style={{ width: `${(peak.transactions / 5000) * 100}%` }}

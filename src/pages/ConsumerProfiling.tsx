@@ -32,25 +32,25 @@ const ConsumerProfiling = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex items-center gap-4 border-b px-6 py-4 bg-background">
-        <SidebarTrigger />
+      <header className="flex items-center justify-between border-b px-6 py-4 bg-background">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-r from-orange-500 to-red-600 rounded-xl text-white">
-            <Users className="h-6 w-6" />
+          <SidebarTrigger />
+          <div className="p-2.5 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg text-white">
+            <Users className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-xl font-bold text-gray-900">
               Consumer Profiling
             </h1>
-            <p className="text-gray-600 mt-1">Customer demographics and profiling</p>
+            <p className="text-xs text-muted-foreground">Customer demographics and profiling</p>
           </div>
         </div>
-        <div className="ml-auto">
+        <div>
           <BreadcrumbNav />
         </div>
       </header>
 
-      <div className="flex-1 p-6 space-y-6 bg-gradient-to-br from-slate-50 to-blue-50 overflow-auto">
+      <div className="flex-1 p-4 space-y-4 bg-gradient-to-br from-slate-50 to-blue-50 overflow-auto">
         {/* Time Intelligence Bar */}
         <TimeIntelligenceBar />
         
@@ -58,21 +58,21 @@ const ConsumerProfiling = () => {
         <GlobalFilterBar />
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {metrics.map((metric, index) => {
             const Icon = metric.icon;
             return (
-              <Card key={index} className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-                <CardContent className="p-6">
+              <Card key={index} className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+                <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">{metric.title}</p>
-                      <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
-                      <p className={`text-sm ${metric.positive ? 'text-green-600' : 'text-red-600'}`}>
+                      <p className="text-xs text-muted-foreground">{metric.title}</p>
+                      <p className="text-lg font-bold text-gray-900">{metric.value}</p>
+                      <p className={`text-xs ${metric.positive ? 'text-green-600' : 'text-red-600'}`}>
                         {metric.change} vs last month
                       </p>
                     </div>
-                    <Icon className="h-8 w-8 text-gray-400" />
+                    <Icon className="h-6 w-6 text-muted-foreground/70" />
                   </div>
                 </CardContent>
               </Card>
@@ -81,12 +81,12 @@ const ConsumerProfiling = () => {
         </div>
 
         {/* Demographics Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Gender Distribution</CardTitle>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm font-medium">Gender Distribution</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 pt-0">
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -113,11 +113,11 @@ const ConsumerProfiling = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Age Distribution</CardTitle>
+          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm font-medium">Age Distribution</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 pt-0">
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -144,15 +144,15 @@ const ConsumerProfiling = () => {
         </div>
 
         {/* Geographic Heatmap */}
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-orange-600" />
+        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-sm">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-orange-600" />
               Geographic Distribution
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="h-96">
+          <CardContent className="p-4 pt-0">
+            <div className="h-80">
               <GeoHeatmap dataUrl="/api/demographics?agg=barangay" className="w-full h-full rounded" />
             </div>
           </CardContent>

@@ -31,7 +31,7 @@ const RegionalPerformanceMap: React.FC<RegionalPerformanceMapProps> = ({
   const filters = useFilterStore();
   
   // Fetch regional data if not provided
-  const { data: fetchedData, isLoading } = useQuery({
+  const { data: fetchedData, isLoading, error } = useQuery({
     queryKey: ['regional-performance', filters],
     queryFn: async () => {
       try {
@@ -79,7 +79,7 @@ const RegionalPerformanceMap: React.FC<RegionalPerformanceMapProps> = ({
 
   if (isLoading && !initialData) {
     return (
-      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5 text-blue-600" />
@@ -103,8 +103,29 @@ const RegionalPerformanceMap: React.FC<RegionalPerformanceMapProps> = ({
     );
   }
 
+  if (error && !initialData) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-blue-600" />
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px] flex items-center justify-center flex-col space-y-4">
+            <p className="text-muted-foreground">Unable to load regional data</p>
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+    <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">

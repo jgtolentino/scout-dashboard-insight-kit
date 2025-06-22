@@ -3,12 +3,13 @@ export interface KpiMetric {
   value: string;
   change: string;
   positive: boolean;
+  icon?: React.ElementType;
 }
 
 export interface RegionalData {
   name: string;
   value: number;
-  color: string;
+  color?: string;
   percentage?: string;
 }
 

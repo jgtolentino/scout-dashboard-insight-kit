@@ -134,8 +134,8 @@ const RetailBotChat = () => {
   };
 
   const handleRefresh = () => {
-    if (chatHistory.length > 0) {
-      const lastUserQuery = chatHistory.filter(msg => msg.type === 'user').pop();
+    if (messages.length > 1) {
+      const lastUserQuery = messages.filter(msg => msg.type === 'user').pop();
       if (lastUserQuery) {
         setInputMessage(lastUserQuery.content);
         handleSendMessage();
@@ -169,8 +169,6 @@ const RetailBotChat = () => {
     'Which regions have the highest growth?',
     'Analyze customer behavior patterns'
   ];
-
-  const chatHistory = messages;
 
   return (
     <div className="h-full flex flex-col">
@@ -206,7 +204,7 @@ const RetailBotChat = () => {
       {/* Chat Messages */}
       <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
         <div className="space-y-4">
-          {chatHistory.map((message) => (
+          {messages.map((message) => (
             <div key={message.id} className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
               {message.type === 'bot' && (
                 <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full text-white flex-shrink-0">

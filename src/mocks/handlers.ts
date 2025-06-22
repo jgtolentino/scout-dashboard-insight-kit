@@ -193,6 +193,11 @@ export const handlers = [
     });
   }),
 
+  // Project endpoints
+  http.get('/api/project/:id', () => {
+    return HttpResponse.json({ id: 'demo-project', name: 'Scout Analytics' });
+  }),
+
   // Catch-all for unhandled requests
   http.get('*', ({ request }) => {
     console.warn(`Unhandled ${request.method} request to ${request.url}`);

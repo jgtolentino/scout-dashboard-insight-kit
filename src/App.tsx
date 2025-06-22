@@ -15,6 +15,7 @@ import ConsumerProfiling from "./pages/ConsumerProfiling";
 import RetailBotInsights from "./pages/RetailBotInsights";
 import RegionalAnalytics from "./pages/RegionalAnalytics";
 import AIChat from "./pages/AIChat";
+import AzureStoragePage from "./pages/AzureStoragePage";
 import NotFound from "./pages/NotFound";
 import HeatMapOverlay from "./components/heatmap/HeatMapOverlay";
 import OperationsMonitor from "./components/monitor/OperationsMonitor";
@@ -47,6 +48,7 @@ const App = () => {
                     <Route path="/retailbot" element={<RetailBotInsights />} />
                     <Route path="/ai-chat" element={<AIChat />} />
                     <Route path="/regional-analytics" element={<RegionalAnalytics />} />
+                    <Route path="/azure-storage" element={<AzureStoragePage />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </SidebarInset>

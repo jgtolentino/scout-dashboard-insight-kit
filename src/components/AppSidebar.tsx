@@ -7,7 +7,8 @@ import {
   Brain,
   Home,
   MessageSquare,
-  ArrowRight
+  ArrowRight,
+  Cloud
 } from "lucide-react";
 import {
   Sidebar,
@@ -30,7 +31,8 @@ const navItems = [
   { path: "/consumer-behavior", label: "Consumer Behavior", icon: Brain, description: "Behavioral analysis" },
   { path: "/consumer-profiling", label: "Consumer Profiling", icon: Users, description: "Demographics" },
   { path: "/retailbot", label: "RetailBot", icon: Brain, description: "AI assistant" },
-  { path: "/ai-chat", label: "AI Chat", icon: MessageSquare, description: "Chat with AdsBot" }
+  { path: "/ai-chat", label: "AI Chat", icon: MessageSquare, description: "Chat with AdsBot" },
+  { path: "/azure-storage", label: "Azure Storage", icon: Cloud, description: "Storage demo" }
 ];
 
 const AppSidebar = () => {

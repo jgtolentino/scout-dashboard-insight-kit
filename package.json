@@ -22,6 +22,8 @@
   "dependencies": {
     "@azure/identity": "^4.0.1",
     "@azure/keyvault-secrets": "^4.8.0",
+    "@azure/storage-blob": "^12.27.0",
+    "@azure/storage-file-datalake": "^12.26.0",
     "@faker-js/faker": "^9.8.0",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -106,6 +108,7 @@
     "@vitejs/plugin-react": "^4.5.2",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
+    "blitz": "^2.2.2",
     "cross-env": "^7.0.3",
     "eslint": "^9.9.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",

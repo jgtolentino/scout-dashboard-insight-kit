@@ -81,7 +81,7 @@ const EnhancedRetailBot = () => {
     {
       id: '1',
       type: 'bot',
-      content: 'Hello! I\'m RetailBot, your AI assistant for Scout Analytics. I can help you analyze transaction data, identify trends, and provide actionable recommendations. What would you like to explore today?',
+      content: 'Hello! I\'m RetailBot, your comprehensive AI assistant for Scout Analytics. I can help you analyze transaction data, identify trends, optimize inventory, improve pricing strategies, and provide actionable recommendations. What would you like to explore today?',
       timestamp: new Date()
     }
   ]);

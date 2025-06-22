@@ -8,7 +8,7 @@ import TimeIntelligenceBar from "@/components/time/TimeIntelligenceBar";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import AIAgent from "@/components/ai/AIAgent";
 
-const Index = () => {
+const TransactionTrends = () => {
   // Hourly transaction volume data
   const hourlyData = [
     { hour: '6:00', transactions: 245, amount: 38420 },
@@ -224,4 +224,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default TransactionTrends;

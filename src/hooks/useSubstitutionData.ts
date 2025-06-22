@@ -23,177 +23,32 @@ export const useSubstitutionData = (filters: SubstitutionFilters = {}) => {
     queryKey: ['substitution-data', filters],
     queryFn: async (): Promise<{ data: SubstitutionDataPoint[]; summary: any }> => {
       try {
-        // In a real implementation, this would fetch from the Scout Analytics API
-        // For now, we'll return realistic mock data based on FMCG retail patterns
+        // Use Scout Analytics API for real data
+        const response = await scoutApiClient.getAnalytics(filters);
         
-        const mockSubstitutionData: SubstitutionDataPoint[] = [
-          // Beverages substitutions
-          {
-            source: "Coca-Cola Regular",
-            target: "Pepsi Cola",
-            value: 2450,
-            frequency: 1820,
-            revenue: 156750,
-            substitutionRate: 12.8
-          },
-          {
-            source: "Coca-Cola Regular",
-            target: "Coca-Cola Zero",
-            value: 1890,
-            frequency: 1340,
-            revenue: 121200,
-            substitutionRate: 9.6
-          },
-          {
-            source: "Pepsi Cola",
-            target: "Coca-Cola Regular",
-            value: 1650,
-            frequency: 1120,
-            revenue: 105600,
-            substitutionRate: 8.4
-          },
-          {
-            source: "Sprite",
-            target: "7-Up",
-            value: 980,
-            frequency: 720,
-            revenue: 62720,
-            substitutionRate: 6.2
-          },
-          {
-            source: "Red Bull",
-            target: "Monster Energy",
-            value: 1320,
-            frequency: 890,
-            revenue: 184800,
-            substitutionRate: 15.4
-          },
-          
-          // Snacks substitutions
-          {
-            source: "Lay's Chips",
-            target: "Pringles",
-            value: 1740,
-            frequency: 1280,
-            revenue: 139200,
-            substitutionRate: 11.3
-          },
-          {
-            source: "Oreo Cookies",
-            target: "Chips Ahoy",
-            value: 1560,
-            frequency: 1140,
-            revenue: 124800,
-            substitutionRate: 10.1
-          },
-          {
-            source: "Kit Kat",
-            target: "Snickers",
-            value: 1230,
-            frequency: 920,
-            revenue: 98400,
-            substitutionRate: 8.9
-          },
-          
-          // Personal Care substitutions
-          {
-            source: "Head & Shoulders",
-            target: "Pantene",
-            value: 2100,
-            frequency: 1450,
-            revenue: 315000,
-            substitutionRate: 14.2
-          },
-          {
-            source: "Colgate Toothpaste",
-            target: "Oral-B",
-            value: 1680,
-            frequency: 1200,
-            revenue: 201600,
-            substitutionRate: 12.6
-          },
-          {
-            source: "Dove Soap",
-            target: "Palmolive",
-            value: 1420,
-            frequency: 1050,
-            revenue: 142000,
-            substitutionRate: 9.8
-          },
-          
-          // Household items substitutions
-          {
-            source: "Tide Detergent",
-            target: "Ariel",
-            value: 1890,
-            frequency: 1320,
-            revenue: 226800,
-            substitutionRate: 13.7
-          },
-          {
-            source: "Downy Fabric Softener",
-            target: "Surf",
-            value: 1340,
-            frequency: 980,
-            revenue: 160800,
-            substitutionRate: 10.4
-          },
-          
-          // Food staples substitutions
-          {
-            source: "Maggi Noodles",
-            target: "Lucky Me",
-            value: 3200,
-            frequency: 2350,
-            revenue: 224000,
-            substitutionRate: 18.9
-          },
-          {
-            source: "Del Monte Corned Beef",
-            target: "Argentina Corned Beef",
-            value: 1560,
-            frequency: 1120,
-            revenue: 187200,
-            substitutionRate: 11.8
-          },
-          {
-            source: "Nestle Coffee",
-            target: "Nescafe 3-in-1",
-            value: 2240,
-            frequency: 1680,
-            revenue: 179200,
-            substitutionRate: 15.3
-          }
-        ];
-
-        // Apply filters if provided
-        let filteredData = mockSubstitutionData;
-
-        // Filter by categories (simplified - in real implementation would use proper category mapping)
-        if (filters.categories && filters.categories.length > 0) {
-          filteredData = filteredData.filter(item => {
-            const category = getCategoryFromProduct(item.source);
-            return filters.categories!.includes(category);
-          });
-        }
-
+        // Transform the response data to substitution format
+        // This assumes the API returns transaction data that we can analyze for substitution patterns
+        const substitutionData = transformToSubstitutionData(response);
+        
         // Calculate summary statistics
         const summary = {
-          totalSubstitutions: filteredData.reduce((sum, item) => sum + item.frequency, 0),
-          totalRevenue: filteredData.reduce((sum, item) => sum + item.revenue, 0),
-          avgSubstitutionRate: filteredData.reduce((sum, item) => sum + item.substitutionRate, 0) / filteredData.length,
-          topSubstitution: filteredData.reduce((max, item) => 
-            item.frequency > max.frequency ? item : max, 
-            filteredData[0]
-          ),
+          totalSubstitutions: substitutionData.reduce((sum, item) => sum + item.frequency, 0),
+          totalRevenue: substitutionData.reduce((sum, item) => sum + item.revenue, 0),
+          avgSubstitutionRate: substitutionData.length > 0 ? 
+            substitutionData.reduce((sum, item) => sum + item.substitutionRate, 0) / substitutionData.length : 0,
+          topSubstitution: substitutionData.length > 0 ? 
+            substitutionData.reduce((max, item) => 
+              item.frequency > max.frequency ? item : max, 
+              substitutionData[0]
+            ) : null,
           uniqueProducts: new Set([
-            ...filteredData.map(item => item.source),
-            ...filteredData.map(item => item.target)
+            ...substitutionData.map(item => item.source),
+            ...substitutionData.map(item => item.target)
           ]).size
         };
 
         return {
-          data: filteredData,
+          data: substitutionData,
           summary
         };
       } catch (error) {
@@ -204,6 +59,109 @@ export const useSubstitutionData = (filters: SubstitutionFilters = {}) => {
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 10 * 60 * 1000, // 10 minutes
   });
+};
+
+// Transform Scout Analytics data to substitution patterns
+const transformToSubstitutionData = (apiResponse: any): SubstitutionDataPoint[] => {
+  try {
+    // Get transaction data from the API response
+    const transactions = apiResponse?.transactions?.data || [];
+    
+    if (transactions.length === 0) {
+      return [];
+    }
+
+    // Analyze transaction patterns to detect substitutions
+    // This is a simplified algorithm - in practice, you'd use more sophisticated methods
+    const productPairs: { [key: string]: { 
+      frequency: number, 
+      revenue: number, 
+      totalValue: number 
+    } } = {};
+    
+    // Group transactions by customer and time window to find substitution patterns
+    const customerTransactions: { [customerId: string]: any[] } = {};
+    
+    transactions.forEach((transaction: any) => {
+      const customerId = transaction.customer_id;
+      if (!customerTransactions[customerId]) {
+        customerTransactions[customerId] = [];
+      }
+      customerTransactions[customerId].push(transaction);
+    });
+
+    // Analyze each customer's transaction patterns
+    Object.values(customerTransactions).forEach((customerTxns: any[]) => {
+      // Sort by date to find temporal patterns
+      customerTxns.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      
+      // Look for products that were purchased in sequence (potential substitutions)
+      for (let i = 0; i < customerTxns.length - 1; i++) {
+        const currentTxn = customerTxns[i];
+        const nextTxn = customerTxns[i + 1];
+        
+        // Check if transactions are within a reasonable time window (e.g., 30 days)
+        const timeDiff = new Date(nextTxn.date).getTime() - new Date(currentTxn.date).getTime();
+        const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+        
+        if (daysDiff <= 30 && daysDiff > 0) {
+          const sourceProduct = getProductName(currentTxn);
+          const targetProduct = getProductName(nextTxn);
+          
+          if (sourceProduct && targetProduct && sourceProduct !== targetProduct) {
+            // Check if products are in similar categories (more likely to be substitutions)
+            const sourceCategory = getCategoryFromProduct(sourceProduct);
+            const targetCategory = getCategoryFromProduct(targetProduct);
+            
+            if (sourceCategory === targetCategory) {
+              const pairKey = `${sourceProduct} → ${targetProduct}`;
+              
+              if (!productPairs[pairKey]) {
+                productPairs[pairKey] = { frequency: 0, revenue: 0, totalValue: 0 };
+              }
+              
+              productPairs[pairKey].frequency += 1;
+              productPairs[pairKey].revenue += nextTxn.total_amount || nextTxn.amount || 0;
+              productPairs[pairKey].totalValue += (nextTxn.quantity || 1);
+            }
+          }
+        }
+      }
+    });
+
+    // Convert to SubstitutionDataPoint format
+    const substitutionData: SubstitutionDataPoint[] = Object.entries(productPairs)
+      .filter(([_, data]) => data.frequency >= 2) // Only include pairs with at least 2 occurrences
+      .map(([pairKey, data]) => {
+        const [source, target] = pairKey.split(' → ');
+        const substitutionRate = Math.min((data.frequency / transactions.length) * 100 * 20, 25); // Scaled rate
+        
+        return {
+          source,
+          target,
+          value: data.totalValue,
+          frequency: data.frequency,
+          revenue: data.revenue,
+          substitutionRate
+        };
+      })
+      .sort((a, b) => b.frequency - a.frequency)
+      .slice(0, 20); // Top 20 substitution pairs
+
+    return substitutionData;
+  } catch (error) {
+    console.error('Error transforming substitution data:', error);
+    return [];
+  }
+};
+
+// Extract product name from transaction
+const getProductName = (transaction: any): string | null => {
+  return transaction.product_name || 
+         transaction.product || 
+         transaction.item_name || 
+         transaction.description || 
+         null;
 };
 
 // Helper function to categorize products (simplified)

@@ -103,26 +103,49 @@ const Overview = ({ setHeatMapVisible }: OverviewProps) => {
     }
   };
 
-  // Fetch AOV distribution data
+  // Fetch AOV distribution data from real transaction data
   const { data: aovDistributionData, isLoading: aovLoading } = useQuery({
     queryKey: ['aov-distribution', filters],
     queryFn: async () => {
       try {
-        // This would be a real API call in production
-        // For now, return mock data
-        return [
-          { range: '₱0-50', count: 1245, percentage: 7.8 },
-          { range: '₱51-100', count: 3567, percentage: 22.5 },
-          { range: '₱101-150', count: 4892, percentage: 30.9 },
-          { range: '₱151-200', count: 3124, percentage: 19.7 },
-          { range: '₱201-250', count: 1876, percentage: 11.8 },
-          { range: '₱251+', count: 1143, percentage: 7.3 },
+        if (!transactionData?.data) return [];
+        
+        const transactions = transactionData.data;
+        const aovRanges = [
+          { range: '₱0-50', min: 0, max: 50, count: 0 },
+          { range: '₱51-100', min: 51, max: 100, count: 0 },
+          { range: '₱101-150', min: 101, max: 150, count: 0 },
+          { range: '₱151-200', min: 151, max: 200, count: 0 },
+          { range: '₱201-250', min: 201, max: 250, count: 0 },
+          { range: '₱251+', min: 251, max: Infinity, count: 0 },
         ];
+
+        // Calculate AOV for each transaction and categorize
+        transactions.forEach((transaction: any) => {
+          const amount = transaction.total_amount || transaction.amount || 0;
+          const quantity = transaction.quantity || 1;
+          const aov = amount / quantity;
+
+          aovRanges.forEach(range => {
+            if (aov >= range.min && aov <= range.max) {
+              range.count++;
+            }
+          });
+        });
+
+        // Calculate percentages
+        const totalTransactions = transactions.length;
+        return aovRanges.map(range => ({
+          range: range.range,
+          count: range.count,
+          percentage: totalTransactions > 0 ? (range.count / totalTransactions) * 100 : 0
+        }));
       } catch (error) {
-        console.error('Error fetching AOV distribution:', error);
+        console.error('Error calculating AOV distribution:', error);
         return [];
       }
     },
+    enabled: !!transactionData?.data,
     staleTime: 5 * 60 * 1000 // 5 minutes
   });
 

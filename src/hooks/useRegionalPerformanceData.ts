@@ -83,8 +83,34 @@ export const useRegionalPerformanceData = (
               value = item.transactions || 0;
               break;
             case 'growth':
-              // Calculate growth rate (mock for now)
-              value = Math.random() * 20 + 5; // 5-25% growth
+              // Calculate actual growth rate from historical data
+              // This would require time-series analysis of the data
+              // For now, calculate based on recent vs older transactions
+              const recentRevenue = item.revenue || item.amount || 0;
+              const transactions = response?.transactions?.data || [];
+              const regionalTransactions = transactions.filter((t: any) => 
+                (t.region === scoutRegion || t.location?.includes(scoutRegion))
+              );
+              
+              if (regionalTransactions.length > 1) {
+                // Sort by date and compare recent vs older periods
+                const sortedTxns = regionalTransactions.sort((a: any, b: any) => 
+                  new Date(b.date || b.timestamp).getTime() - new Date(a.date || a.timestamp).getTime()
+                );
+                
+                const halfPoint = Math.floor(sortedTxns.length / 2);
+                const recentPeriod = sortedTxns.slice(0, halfPoint);
+                const olderPeriod = sortedTxns.slice(halfPoint);
+                
+                const recentAvg = recentPeriod.reduce((sum: number, t: any) => 
+                  sum + (t.total_amount || t.amount || 0), 0) / recentPeriod.length;
+                const olderAvg = olderPeriod.reduce((sum: number, t: any) => 
+                  sum + (t.total_amount || t.amount || 0), 0) / olderPeriod.length;
+                
+                value = olderAvg > 0 ? ((recentAvg - olderAvg) / olderAvg) * 100 : 0;
+              } else {
+                value = 0;
+              }
               break;
           }
           

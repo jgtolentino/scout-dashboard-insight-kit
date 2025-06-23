@@ -1,4 +1,6 @@
 {
+  "buildCommand": "chmod +x scripts/vercel-build.sh && ./scripts/vercel-build.sh",
+  "installCommand": "npm ci --legacy-peer-deps --no-optional || npm install --legacy-peer-deps --force",
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -8,7 +10,16 @@
   "build": {
     "env": {
       "NODE_OPTIONS": "--max_old_space_size=4096",
-      "VITE_API_URL": "https://scout-analytics-api.azurewebsites.net"
+      "VITE_API_URL": "https://scout-analytics-api.azurewebsites.net",
+      "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
+      "NPM_CONFIG_OPTIONAL": "false",
+      "NPM_CONFIG_AUDIT": "false",
+      "NPM_CONFIG_FUND": "false"
+    }
+  },
+  "functions": {
+    "build": {
+      "maxDuration": 300
     }
   }
 }

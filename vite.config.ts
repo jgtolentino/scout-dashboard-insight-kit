@@ -8,6 +8,12 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), '');
   
+  // Platform detection for enterprise deployment strategy
+  const isVercel = mode === 'vercel' || env.VERCEL === '1';
+  const isAzure = mode === 'azure' || env.AZURE_CLIENT_ID;
+  const isDevelopment = mode === 'development';
+  const isProduction = mode === 'production' || isVercel || isAzure;
+  
   return {
     server: {
       host: "::",
@@ -23,8 +29,13 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
-      mode === 'development' && componentTagger(),
+      isDevelopment && componentTagger(),
     ].filter(Boolean),
+    define: {
+      global: 'globalThis',
+      __PLATFORM__: JSON.stringify(isVercel ? 'vercel' : isAzure ? 'azure' : 'development'),
+      __IS_ENTERPRISE__: JSON.stringify(isProduction),
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
@@ -35,34 +46,36 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist',
-      sourcemap: mode === 'development',
-      minify: mode === 'production' ? 'esbuild' : false,
+      sourcemap: !isVercel && isDevelopment, // Disable sourcemaps on Vercel for performance
+      minify: isProduction ? 'terser' : false,
       target: 'es2020',
       rollupOptions: {
+        external: isVercel ? [] : ['@azure/msal-node'], // Azure-specific externals only for non-Vercel
         output: {
-          manualChunks: {
-            vendor: ['react', 'react-dom'],
-            router: ['react-router-dom'],
-            query: ['@tanstack/react-query'],
-            ui: [
-              '@radix-ui/react-select',
-              '@radix-ui/react-dialog',
-              '@radix-ui/react-dropdown-menu',
-              '@radix-ui/react-toast',
-              'lucide-react'
-            ],
-            charts: ['recharts', 'd3', 'd3-scale'],
-            maps: ['mapbox-gl'],
-            azure: [
-              '@azure/storage-blob',
-              '@azure/identity',
-              '@azure/keyvault-secrets'
-            ],
-            utils: ['axios', 'clsx', 'tailwind-merge', 'date-fns'],
+          manualChunks: (id) => {
+            // Enterprise-optimized chunking strategy
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom')) {
+                return 'react-vendor';
+              }
+              if (id.includes('@azure') && !isVercel) {
+                return 'azure-vendor'; // Only create Azure chunk when not on Vercel
+              }
+              if (id.includes('shadcn') || id.includes('@radix-ui')) {
+                return 'ui-vendor';
+              }
+              if (id.includes('recharts') || id.includes('d3')) {
+                return 'charts-vendor';
+              }
+              if (id.includes('mapbox-gl')) {
+                return 'maps-vendor';
+              }
+              return 'vendor';
+            }
           },
         },
       },
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: isVercel ? 500 : 1000, // Stricter limits for Vercel
     },
     optimizeDeps: {
       include: [

@@ -1,22 +1,47 @@
 {
-  "buildCommand": "chmod +x scripts/vercel-build.sh && ./scripts/vercel-build.sh",
+  "version": 2,
+  "framework": "vite",
+  "buildCommand": "npm run build:vercel",
+  "outputDirectory": "dist",
   "installCommand": "npm ci --legacy-peer-deps --no-optional || npm install --legacy-peer-deps --force",
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "https://scout-analytics-api.azurewebsites.net/api/$1"
+  "functions": {
+    "app/api/*.ts": {
+      "runtime": "nodejs18.x"
     }
-  ],
+  },
+  "env": {
+    "VITE_API_URL": "https://prod-api.scout-analytics.com",
+    "VITE_ENVIRONMENT": "vercel-production",
+    "NODE_ENV": "production"
+  },
   "build": {
     "env": {
       "NODE_OPTIONS": "--max_old_space_size=4096",
-      "VITE_API_URL": "https://scout-analytics-api.azurewebsites.net",
+      "DISABLE_ESLINT_PLUGIN": "true",
+      "GENERATE_SOURCEMAP": "false",
+      "SKIP_PREFLIGHT_CHECK": "true",
       "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
       "NPM_CONFIG_OPTIONAL": "false",
       "NPM_CONFIG_AUDIT": "false",
       "NPM_CONFIG_FUND": "false"
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://scout-analytics-api.azurewebsites.net/api/$1"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/health",
+      "dest": "/api/health.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
   "functions": {
     "build": {
       "maxDuration": 300

@@ -1,32 +1,43 @@
 #!/bin/bash
 
-# Vercel Build Script - Handles rollup native module issues
-echo "🚀 Starting Vercel-specific build process..."
+# Enterprise Vercel Build Script - Scout Analytics Platform
+echo "🚀 Starting Enterprise Vercel Build Process..."
+echo "📊 Platform: Vercel | Environment: Production | Mode: Enterprise"
 
-# Set npm configuration for Vercel
+# Set enterprise npm configuration
 npm config set legacy-peer-deps true
 npm config set optional false
 npm config set audit false
 npm config set fund false
+npm config set fetch-retries 5
+npm config set fetch-retry-factor 2
 
-echo "📦 Installing rollup native modules explicitly..."
+echo "📦 Installing cross-platform rollup dependencies..."
 
-# Install rollup with native modules
-npm install rollup@latest --save-dev || echo "Rollup install failed, continuing..."
-npm install @rollup/rollup-linux-x64-gnu@latest --save-dev || echo "Rollup native module install failed, continuing..."
+# Install all platform-specific rollup native modules
+npm install rollup@latest --save-dev || echo "⚠️ Rollup install failed, continuing..."
+npm install @rollup/rollup-linux-x64-gnu@latest --save-dev || echo "⚠️ Linux rollup module install failed, continuing..."
+npm install @rollup/rollup-darwin-x64@latest --save-dev || echo "⚠️ Darwin x64 rollup module install failed, continuing..."
+npm install @rollup/rollup-darwin-arm64@latest --save-dev || echo "⚠️ Darwin ARM64 rollup module install failed, continuing..."
+npm install @rollup/rollup-win32-x64-msvc@latest --save-dev || echo "⚠️ Windows rollup module install failed, continuing..."
 
-# Alternative: Force install if above fails
+# Verify rollup installation
 if ! npm list rollup > /dev/null 2>&1; then
-    echo "🔨 Force installing rollup dependencies..."
+    echo "🔨 Enterprise rollup recovery strategy..."
     npm install --legacy-peer-deps --force
     npm install rollup@latest @rollup/rollup-linux-x64-gnu@latest --save-dev --force
 fi
 
-echo "🏗️ Starting Vite build..."
+echo "🏗️ Starting Enterprise Vite Build (Vercel Mode)..."
 
-# Build with increased memory and better error handling
-export NODE_OPTIONS="--max_old_space_size=4096"
-npm run build || {
+# Enterprise build configuration
+export NODE_OPTIONS="--max_old_space_size=6144"
+export DISABLE_ESLINT_PLUGIN="true"
+export GENERATE_SOURCEMAP="false"
+export NODE_ENV="production"
+
+# Run enterprise Vercel build
+npm run build:vercel || {
     echo "❌ Build failed, trying fallback..."
     
     # Try to rebuild rollup

@@ -46,8 +46,8 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist',
-      sourcemap: !isVercel && isDevelopment, // Disable sourcemaps on Vercel for performance
-      minify: isProduction ? 'terser' : false,
+      sourcemap: false, // Disable sourcemaps for faster builds
+      minify: isProduction ? 'esbuild' : false, // Use esbuild for faster minification
       target: 'es2020',
       rollupOptions: {
         external: isVercel ? [] : ['@azure/msal-node'], // Azure-specific externals only for non-Vercel
@@ -75,7 +75,7 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-      chunkSizeWarningLimit: isVercel ? 500 : 1000, // Stricter limits for Vercel
+      chunkSizeWarningLimit: 2000, // Allow larger chunks for Azure Static Web Apps
     },
     optimizeDeps: {
       include: [

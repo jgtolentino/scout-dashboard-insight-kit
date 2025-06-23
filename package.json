@@ -10,10 +10,12 @@
   "scripts": {
     "dev": "cross-env NODE_NO_WARNINGS=1 vite --host",
     "build": "vite build",
+    "build:fast": "vite build --minify=false --sourcemap=false",
     "build:dev": "vite build --mode development",
     "build:debug": "vite build --mode development --no-sourcemap",
     "build:vercel": "NODE_ENV=production DISABLE_ESLINT_PLUGIN=true vite build --mode vercel",
     "build:azure": "vite build --mode azure",
+    "build:static": "vite build --mode production --minify=esbuild",
     "build:verify": "npm run build && npm run preview:ci",
     "preview": "vite preview --host",
     "preview:ci": "vite preview --port 4173 --host",

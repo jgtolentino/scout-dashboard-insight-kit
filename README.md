@@ -315,4 +315,4 @@ dist/assets/charts-vendor-Efc2SPSk.js    408.00 kB │ gzip: 100.07 kB
 **The codebase is production-ready! Issue is Vercel deployment config, not the code.**
 
 **Built with ❤️ by the Scout Analytics Team**  
-*Fixed using proven scout-prod Netlify patterns*
+*Fixed using proven scout-prod Netlify patterns*# Force redeploy for MIME fix Tue 24 Jun 2025 13:17:18 PST

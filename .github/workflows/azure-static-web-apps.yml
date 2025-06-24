@@ -20,6 +20,10 @@ jobs:
         run: npm ci --legacy-peer-deps
       - name: Build
         run: npm run build
+      - name: Copy Static Web App Configuration
+        run: cp staticwebapp.config.json dist/
+      - name: Verify Configuration
+        run: ls -la dist/staticwebapp.config.json
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:

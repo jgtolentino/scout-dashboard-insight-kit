@@ -1,125 +1,132 @@
-import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
-import { componentTagger } from "lovable-tagger";
+import { defineConfig, loadEnv } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
+import tailwindcss from 'tailwindcss'
+import autoprefixer from 'autoprefixer'
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   // Load env file based on `mode` in the current working directory.
-  const env = loadEnv(mode, process.cwd(), '');
-  
-  // Platform detection for enterprise deployment strategy
-  const isVercel = mode === 'vercel' || env.VERCEL === '1';
-  const isAzure = mode === 'azure' || env.AZURE_CLIENT_ID;
-  const isDevelopment = mode === 'development';
-  const isProduction = mode === 'production' || isVercel || isAzure;
+  const env = loadEnv(mode, process.cwd(), '')
   
   return {
-    base: '/', // ✅ Absolute base path for Azure Static Web Apps
+    plugins: [
+      react()
+    ],
+    
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
+    
+    define: {
+      // Expose env variables to client
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+      __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+    },
+    
+    build: {
+      target: 'es2020',
+      outDir: 'dist',
+      assetsDir: 'assets',
+      sourcemap: mode === 'development',
+      minify: mode === 'production' ? 'esbuild' : false,
+      
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Vendor splitting for better caching
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'charts-vendor': ['recharts', 'd3'],
+            'maps-vendor': ['mapbox-gl'],
+            'azure-vendor': ['@azure/identity', '@azure/storage-blob'],
+            'ai-vendor': ['openai', 'ai'],
+            'ui-vendor': ['@radix-ui/react-select', '@radix-ui/react-dialog', 'lucide-react'],
+            'utils-vendor': ['zustand', 'clsx', 'tailwind-merge', 'date-fns']
+          },
+          // Consistent naming
+          chunkFileNames: 'assets/[name]-[hash].js',
+          entryFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: (assetInfo) => {
+            const info = assetInfo.name?.split('.') || []
+            const ext = info[info.length - 1]
+            if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext || '')) {
+              return `assets/images/[name]-[hash][extname]`
+            }
+            if (/css/i.test(ext || '')) {
+              return `assets/css/[name]-[hash][extname]`
+            }
+            return `assets/[name]-[hash][extname]`
+          }
+        },
+        
+        // External dependencies (don't bundle these)
+        external: mode === 'development' ? [] : [
+          // Add any dependencies you want to load from CDN
+        ]
+      },
+      
+      // Increase chunk size warning limit
+      chunkSizeWarningLimit: 1000,
+      
+      // Enable CSS code splitting
+      cssCodeSplit: true,
+      
+      // Optimize assets
+      assetsInlineLimit: 4096
+    },
+    
     server: {
-      host: "::",
-      port: 8080,
-      fs: { strict: false },
+      port: 3000,
+      host: '0.0.0.0',
+      strictPort: true,
+      
+      // Proxy API calls during development
       proxy: {
         '/api': {
-          target: env.VITE_API_URL || 'http://localhost:5000',
+          target: env.VITE_API_BASE_URL || 'http://localhost:3001',
           changeOrigin: true,
           secure: false,
+          ws: true
         }
       }
     },
-    plugins: [
-      react(),
-      isDevelopment && componentTagger(),
-    ].filter(Boolean),
-    define: {
-      global: 'globalThis',
-      __PLATFORM__: JSON.stringify(isVercel ? 'vercel' : isAzure ? 'azure' : 'development'),
-      __IS_ENTERPRISE__: JSON.stringify(isProduction),
+    
+    preview: {
+      port: 3000,
+      host: '0.0.0.0',
+      strictPort: true
     },
-    resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "./src"),
-        // Redirect generated analytics & GitHub clients to empty stubs
-        "analytics.client-CWr-exsP.js": path.resolve(__dirname, "./src/stubs/emptyAnalytics.js"),
-        "github-DEL0KHVL.js": path.resolve(__dirname, "./src/stubs/emptyAnalytics.js"),
-      },
-    },
-    build: {
-      outDir: 'dist',
-      assetsDir: 'assets', // ✅ Explicit assets directory for Azure
-      emptyOutDir: true, // ✅ Clean dist folder before build
-      sourcemap: false, // Disable sourcemaps for faster builds
-      minify: isProduction ? 'esbuild' : false, // Use esbuild for faster minification
-      target: 'es2020',
-      rollupOptions: {
-        external: isVercel ? [] : ['@azure/msal-node'], // Azure-specific externals only for non-Vercel
-        output: {
-          manualChunks: (id) => {
-            // Enterprise-optimized chunking strategy
-            if (id.includes('node_modules')) {
-              if (id.includes('react') || id.includes('react-dom')) {
-                return 'react-vendor';
-              }
-              if (id.includes('@azure') && !isVercel) {
-                return 'azure-vendor'; // Only create Azure chunk when not on Vercel
-              }
-              if (id.includes('shadcn') || id.includes('@radix-ui')) {
-                return 'ui-vendor';
-              }
-              if (id.includes('recharts') || id.includes('d3')) {
-                return 'charts-vendor';
-              }
-              if (id.includes('mapbox-gl')) {
-                return 'maps-vendor';
-              }
-              return 'vendor';
-            }
-          },
-        },
-      },
-      chunkSizeWarningLimit: 2000, // Allow larger chunks for Azure Static Web Apps
-    },
+    
+    // Optimization
     optimizeDeps: {
       include: [
         'react',
         'react-dom',
-        'react-router-dom',
-        '@tanstack/react-query',
+        'react-router-dom', 
+        'zustand',
         'recharts',
-        'axios',
-        'clsx',
-        'tailwind-merge'
+        'mapbox-gl',
+        'lucide-react'
       ],
-      exclude: ['@rollup/rollup-linux-x64-gnu'],
+      exclude: ['@azure/msal-browser'] // Exclude problematic deps
     },
-    esbuild: {
-      target: 'es2020',
-      logOverride: { 'this-is-undefined-in-esm': 'silent' },
+    
+    // CSS preprocessing
+    css: {
+      devSourcemap: mode === 'development',
+      postcss: {
+        plugins: [
+          tailwindcss,
+          autoprefixer
+        ]
+      }
     },
-    test: {
-      globals: true,
-      environment: 'jsdom',
-      setupFiles: ['./src/test/setup.ts'],
-      coverage: {
-        provider: 'v8',
-        reporter: ['text', 'html', 'lcov'],
-        exclude: [
-          'node_modules/',
-          'dist/',
-          'coverage/',
-          '**/*.test.{ts,tsx}',
-          '**/*.spec.{ts,tsx}',
-        ],
-        thresholds: {
-          global: {
-            branches: 80,
-            functions: 80,
-            lines: 80,
-            statements: 80,
-          },
-        },
-      },
-    },
-  };
-});
+    
+    // Environment variable prefix
+    envPrefix: ['VITE_'],
+    
+    // Logging
+    logLevel: mode === 'development' ? 'info' : 'warn'
+  }
+})

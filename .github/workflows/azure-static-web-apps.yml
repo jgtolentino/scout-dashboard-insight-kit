@@ -5,11 +5,13 @@ on:
     branches:
       - azure-static-deployment
       - main
+      - feature/scout-v3-monorepo-bypass
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - azure-static-deployment
       - main
+      - feature/scout-v3-monorepo-bypass
 
 jobs:
   build_and_deploy_job:
@@ -36,6 +38,9 @@ jobs:
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
           VITE_BUILD_COMPRESS: "false"
+          
+      - name: Copy Azure Static Web App config
+        run: cp staticwebapp.config.json dist/
           
       - name: Build And Deploy
         id: builddeploy

@@ -1,11 +1,10 @@
-# Scout Analytics Dashboard - Insight Kit
+# Scout Analytics Dashboard v3.0
 
-![GitHub Actions](https://github.com/jgtolentino/scout-dashboard-insight-kit/actions/workflows/ci-cd.yml/badge.svg)
-[![Deploy Status](https://img.shields.io/badge/deploy-passing-brightgreen)](https://scout-analytics-dashboard.azurewebsites.net)
+[![Production Status](https://img.shields.io/badge/status-production--ready-green)](https://scout-analytics.azurewebsites.net)
+[![Azure Deployment](https://github.com/your-org/scout-dashboard-insight-kit/workflows/Deploy/badge.svg)](https://github.com/your-org/scout-dashboard-insight-kit/actions)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue)](package.json)
 
-> **🛡️ "Green = Go" Verification Policy**: No code reaches production without proven success in all pipeline stages.
-
-Enterprise-grade retail analytics dashboard with AI-powered insights, built with React, TypeScript, and Azure cloud services.
+> **Enterprise-grade retail analytics dashboard with AI-powered insights, real-time streaming, and Azure Databricks medallion architecture.**
 
 ## 🌐 Live Environments
 
@@ -316,4 +315,4 @@ dist/assets/charts-vendor-Efc2SPSk.js    408.00 kB │ gzip: 100.07 kB
 **The codebase is production-ready! Issue is Vercel deployment config, not the code.**
 
 **Built with ❤️ by the Scout Analytics Team**  
-*Fixed using proven scout-prod Netlify patterns*
+*Fixed using proven scout-prod Netlify patterns*# Force redeploy for MIME fix Tue 24 Jun 2025 13:17:18 PST

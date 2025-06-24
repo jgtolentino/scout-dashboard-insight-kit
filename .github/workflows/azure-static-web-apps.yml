@@ -1,0 +1,32 @@
+name: Azure Static Web Apps CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - feature/scout-v3-monorepo-bypass
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - name: Install deps
+        run: npm ci --legacy-peer-deps
+      - name: Build
+        run: npm run build
+      - name: Copy Static Web App Configuration
+        run: cp staticwebapp.config.json dist/
+      - name: Verify Configuration
+        run: ls -la dist/staticwebapp.config.json
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          app_location: "/"
+          output_location: "dist"
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}

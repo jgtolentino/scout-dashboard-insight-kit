@@ -1,0 +1,60 @@
+# .codexenv.yaml
+version: 1
+name: scout-analytics-dashboard-insight-kit
+description: Production-grade dashboard env for InsightPulseAI
+
+code_execution:
+  container_image: universal
+  preinstalled_packages: true
+  environment_variables:
+    - key: AZURE_SQL_CONN
+      value: "mssql+pymssql://sqladmin:your_password@sqltbwaprojectscoutserver.database.windows.net/SQL-TBWA-ProjectScout-Reporting-Prod"
+    - key: AZURE_OPENAI_ENDPOINT
+      value: "https://ces-openai-20250609.openai.azure.com"
+    - key: AZURE_OPENAI_API_KEY
+      value: "31119320b14e4ff4bccefa768f4adaa8"
+    - key: AZURE_OPENAI_DEPLOYMENT_NAME
+      value: "gpt-4"
+    - key: AZURE_STORAGE_ACCOUNT
+      value: "projectscoutdata"
+    - key: DATABRICKS_WORKSPACE_URL
+      value: "https://adb-2769038304082127.7.azuredatabricks.net"
+    - key: DATABRICKS_WORKSPACE_NAME
+      value: "tbwa-juicer-databricks"
+    - key: VITE_BYPASS_AZURE_AUTH
+      value: "true"
+    - key: VITE_USE_MOCKS
+      value: "true"
+    - key: VITE_API_BASE_URL
+      value: "https://white-cliff-0f5160b0f.2.azurestaticapps.net/api/v1"
+  setup_script: |
+    #!/bin/bash
+    echo "🚀 Initializing Scout Analytics environment..."
+    npm ci --legacy-peer-deps
+    echo "📦 Dependencies installed"
+    npm run build
+    echo "🏗️ Build completed"
+    echo "✅ Scout Analytics ready for development!"
+
+agent_internet_access: true
+
+domain_context:
+  enabled: true
+  include_dependencies: true
+
+allowed_shared_domains:
+  - openai.com
+  - azure.com
+  - azurestaticapps.net
+  - vercel.app
+  - supabase.co
+  - githubusercontent.com
+  - databricks.net
+  - windows.net
+
+allowed_http_methods:
+  - GET
+  - POST
+  - PUT
+  - PATCH
+  - DELETE

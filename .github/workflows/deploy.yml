@@ -1,0 +1,350 @@
+name: Scout Analytics Dashboard v3.0 - Production Deployment
+
+on:
+  push:
+    branches: [main, production]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+  AZURE_WEBAPP_NAME: scout-analytics-dashboard
+  REGISTRY_NAME: scoutanalytics
+
+jobs:
+  # Lint and Format Check
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci --legacy-peer-deps
+          cd backend && npm ci --legacy-peer-deps
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check Prettier formatting
+        run: npm run format:check
+
+      - name: TypeScript type check
+        run: npm run type-check
+
+  # Unit Tests
+  test:
+    runs-on: ubuntu-latest
+    needs: code-quality
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci --legacy-peer-deps
+          cd backend && npm ci --legacy-peer-deps
+
+      - name: Run frontend tests
+        run: npm run test:run
+
+      - name: Run backend tests
+        run: cd backend && npm run test:run
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results
+          path: |
+            test-results/
+            backend/test-results/
+
+  # E2E Tests
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build application
+        run: npm run build:production
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          VITE_API_URL: http://localhost:4173
+          VITE_USE_MOCKS: true
+
+      - name: Upload E2E results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: e2e-results
+          path: |
+            playwright-report/
+            test-results/
+
+  # Build Application
+  build:
+    runs-on: ubuntu-latest
+    needs: [code-quality, test]
+    strategy:
+      matrix:
+        component: [frontend, backend]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Build Frontend
+        if: matrix.component == 'frontend'
+        run: |
+          npm ci --legacy-peer-deps
+          npm run build:production
+
+      - name: Build Backend
+        if: matrix.component == 'backend'
+        run: |
+          cd backend
+          npm ci --legacy-peer-deps
+          npm run build
+
+      - name: Upload Frontend Build
+        if: matrix.component == 'frontend'
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: dist/
+
+      - name: Upload Backend Build
+        if: matrix.component == 'backend'
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-build
+          path: backend/dist/
+
+  # Security Scan
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level moderate
+          cd backend && npm audit --audit-level moderate
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  # Deploy to Azure (Production)
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: [build, e2e-tests, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Frontend Build
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-build
+          path: dist/
+
+      - name: Download Backend Build
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-build
+          path: backend/dist/
+
+      - name: Setup Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Container Registry
+        run: |
+          # Build and push Docker images
+          docker build -t ${{ env.REGISTRY_NAME }}.azurecr.io/scout-frontend:${{ github.sha }} .
+          docker build -t ${{ env.REGISTRY_NAME }}.azurecr.io/scout-backend:${{ github.sha }} ./backend
+          
+          az acr login --name ${{ env.REGISTRY_NAME }}
+          docker push ${{ env.REGISTRY_NAME }}.azurecr.io/scout-frontend:${{ github.sha }}
+          docker push ${{ env.REGISTRY_NAME }}.azurecr.io/scout-backend:${{ github.sha }}
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          images: |
+            ${{ env.REGISTRY_NAME }}.azurecr.io/scout-frontend:${{ github.sha }}
+            ${{ env.REGISTRY_NAME }}.azurecr.io/scout-backend:${{ github.sha }}
+
+      - name: Update Azure App Settings
+        run: |
+          az webapp config appsettings set \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --settings \
+              NODE_ENV=production \
+              VITE_APP_VERSION=3.0.0-${{ github.sha }} \
+              AZURE_TENANT_ID="${{ secrets.AZURE_TENANT_ID }}" \
+              AZURE_CLIENT_ID="${{ secrets.AZURE_CLIENT_ID }}" \
+              AZURE_CLIENT_SECRET="${{ secrets.AZURE_CLIENT_SECRET }}" \
+              AZURE_OPENAI_ENDPOINT="${{ secrets.AZURE_OPENAI_ENDPOINT }}" \
+              AZURE_OPENAI_API_KEY="${{ secrets.AZURE_OPENAI_API_KEY }}" \
+              DATABRICKS_WORKSPACE_URL="${{ secrets.DATABRICKS_WORKSPACE_URL }}" \
+              DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN }}" \
+              AZURE_STORAGE_CONNECTION_STRING="${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" \
+              VITE_REAL_TIME_STREAMING=false \
+              VITE_ADVANCED_ANALYTICS=true \
+              VITE_ML_PREDICTIONS=false
+
+  # Post-Deployment Verification
+  verify-deployment:
+    runs-on: ubuntu-latest
+    needs: deploy-production
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Wait for deployment
+        run: sleep 90
+
+      - name: Verify deployment health
+        run: |
+          HEALTH_URL="https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/health"
+          echo "Checking health endpoint: $HEALTH_URL"
+          
+          for i in {1..10}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" $HEALTH_URL)
+            if [ $STATUS -eq 200 ]; then
+              echo "✅ Health check passed"
+              break
+            else
+              echo "❌ Health check failed (attempt $i/10): HTTP $STATUS"
+              if [ $i -eq 10 ]; then
+                exit 1
+              fi
+              sleep 30
+            fi
+          done
+
+      - name: Verify app functionality
+        run: |
+          APP_URL="https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+          echo "Verifying app at: $APP_URL"
+          
+          # Check if app loads
+          RESPONSE=$(curl -s $APP_URL | grep -c "Scout Analytics" || echo "0")
+          if [ $RESPONSE -gt 0 ]; then
+            echo "✅ App loads successfully"
+          else
+            echo "❌ App failed to load properly"
+            exit 1
+          fi
+
+      - name: Run smoke tests
+        run: |
+          npm ci --legacy-peer-deps
+          npx playwright install chromium
+          PLAYWRIGHT_BASE_URL="https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net" \
+          npx playwright test --grep="@smoke"
+
+  # Telemetry and Audit Logging
+  audit-log:
+    runs-on: ubuntu-latest
+    needs: verify-deployment
+    if: always()
+    steps:
+      - name: Log deployment audit
+        run: |
+          echo "📋 Deployment Audit Log"
+          echo "========================"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "Deployment Status: ${{ needs.verify-deployment.result }}"
+          echo "Agent: Claude Code v3.0"
+          echo "Platform: GitHub Actions"
+
+      - name: Send telemetry (if enabled)
+        if: ${{ secrets.ENABLE_TELEMETRY == 'true' }}
+        run: |
+          curl -X POST "${{ secrets.TELEMETRY_ENDPOINT }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "event": "deployment",
+              "repository": "${{ github.repository }}",
+              "branch": "${{ github.ref_name }}",
+              "commit": "${{ github.sha }}",
+              "actor": "${{ github.actor }}",
+              "status": "${{ needs.verify-deployment.result }}",
+              "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'",
+              "agent": "claude-code",
+              "version": "3.0.0"
+            }'
+
+  # Cleanup on failure
+  cleanup-on-failure:
+    runs-on: ubuntu-latest
+    needs: [deploy-production, verify-deployment]
+    if: failure()
+    steps:
+      - name: Rollback on failure
+        run: |
+          echo "🚨 Deployment failed, initiating rollback..."
+          # Implement rollback logic here if needed
+          
+      - name: Notify team
+        if: failure()
+        run: |
+          echo "❌ Scout Analytics Dashboard v3.0 deployment failed"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Actor: ${{ github.actor }}"

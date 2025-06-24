@@ -1,8 +1,8 @@
-// Hybrid API Service - Real Azure API with Mock Fallback
-// Combines the working patterns from scout-prod with real API integration
+// Scout Analytics Dashboard v3.0 - Production API Service
+// Integrates with MedallionAPI backend and Azure services
 
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_BASE_URL, detectPlatform, getPlatformConfig } from '../config/api';
+import { toast } from 'sonner';
 
 // Types from scout-dashboard-insight-kit
 interface APIResponse<T> {

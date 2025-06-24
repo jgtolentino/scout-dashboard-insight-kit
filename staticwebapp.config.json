@@ -1,19 +1,11 @@
 {
-  "routes": [
-    {
-      "route": "/*",
-      "serve": "/index.html",
-      "statusCode": 200
-    }
-  ],
-  "mimeTypes": {
-    ".js": "application/javascript",
-    ".css": "text/css",
-    ".json": "application/json",
-    ".wasm": "application/wasm"
-  },
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": ["/assets/*", "/api/*"]
+  },
+  "mimeTypes": {
+    ".js": "application/javascript",
+    ".css": "text/css",
+    ".json": "application/json"
   }
 }

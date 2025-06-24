@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production' || isVercel || isAzure;
   
   return {
-    base: './', // ✅ Relative base path for Azure Static Web Apps
+    base: '/', // ✅ Absolute base path for Azure Static Web Apps
     server: {
       host: "::",
       port: 8080,

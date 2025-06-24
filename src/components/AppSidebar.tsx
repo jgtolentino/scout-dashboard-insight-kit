@@ -8,7 +8,8 @@ import {
   Home,
   MessageSquare,
   ArrowRight,
-  Cloud
+  Cloud,
+  MapPin
 } from "lucide-react";
 import {
   Sidebar,
@@ -30,6 +31,7 @@ const navItems = [
   { path: "/product-substitution", label: "Product Substitution", icon: ArrowRight, description: "Substitution flows" },
   { path: "/consumer-behavior", label: "Consumer Behavior", icon: Brain, description: "Behavioral analysis" },
   { path: "/consumer-profiling", label: "Consumer Profiling", icon: Users, description: "Demographics" },
+  { path: "/regional-analytics", label: "Regional Analytics", icon: MapPin, description: "Geographic insights" },
   { path: "/scoutbot", label: "ScoutBot", icon: Brain, description: "AI assistant" },
   { path: "/ai-chat", label: "AI Chat", icon: MessageSquare, description: "Powered by AdsBot" },
   { path: "/azure-storage", label: "Azure Storage", icon: Cloud, description: "Storage demo" }

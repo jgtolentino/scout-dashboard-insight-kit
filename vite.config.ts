@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production' || isVercel || isAzure;
   
   return {
+    base: './', // ✅ Relative base path for Azure Static Web Apps
     server: {
       host: "::",
       port: 8080,
@@ -46,6 +47,8 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist',
+      assetsDir: 'assets', // ✅ Explicit assets directory for Azure
+      emptyOutDir: true, // ✅ Clean dist folder before build
       sourcemap: false, // Disable sourcemaps for faster builds
       minify: isProduction ? 'esbuild' : false, // Use esbuild for faster minification
       target: 'es2020',

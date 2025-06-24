@@ -12,6 +12,9 @@ export interface FilterState {
   subCategory: string | null;
   hour?: string;
   gender?: string;
+  region?: string;
+  city?: string;
+  municipality?: string;
 }
 
 interface FilterActions {
@@ -33,6 +36,9 @@ const defaultFilters: FilterState = {
   brands: [],
   parentCategory: null,
   subCategory: null,
+  region: undefined,
+  city: undefined,
+  municipality: undefined,
 };
 
 export const useFilterStore = create<FilterStore>()(

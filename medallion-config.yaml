@@ -1,0 +1,223 @@
+# Scout Analytics Dashboard v3.0 - Medallion Architecture Configuration
+application:
+  name: scout-analytics-dashboard
+  version: 3.0.0
+  owner: TBWA\SMAP
+  environment: production
+
+# Feature Flags
+feature_flags:
+  real_time_streaming: false
+  advanced_analytics: true
+  ml_predictions: false
+  mock_data: false
+  audit_logs: true
+
+# Azure Infrastructure
+azure:
+  tenant_id: ${AZURE_TENANT_ID}
+  subscription_id: ${AZURE_SUBSCRIPTION_ID}
+  resource_group: scout-analytics-rg
+  
+  # Storage (ADLS2)
+  storage:
+    account_name: ${AZURE_STORAGE_ACCOUNT_NAME}
+    container_name: scout-data
+    datalake_url: ${AZURE_DATALAKE_URL}
+    
+  # Databricks (TBWA Project Scout)
+  databricks:
+    workspace_url: https://adb-2769038304082127.7.azuredatabricks.net
+    cluster_id: ${DATABRICKS_CLUSTER_ID}
+    token: ${DATABRICKS_TOKEN}
+    workspace_name: tbwa-juicer-databricks
+    
+  # OpenAI
+  openai:
+    endpoint: ${AZURE_OPENAI_ENDPOINT}
+    api_key: ${AZURE_OPENAI_API_KEY}
+    api_version: 2024-02-15-preview
+    deployment_name: gpt-4
+    
+  # Key Vault
+  keyvault:
+    name: scout-analytics-kv
+    url: https://scout-analytics-kv.vault.azure.net/
+
+# Data Architecture - Medallion Pattern
+data:
+  medallion:
+    bronze:
+      path: /mnt/scout-data/bronze
+      format: delta
+      retention_days: 365
+      
+    silver:
+      path: /mnt/scout-data/silver
+      format: delta
+      retention_days: 730
+      
+    gold:
+      path: /mnt/scout-data/gold
+      format: delta
+      retention_days: 2555  # 7 years
+      
+  # Data Sources
+  sources:
+    transactions:
+      type: streaming
+      format: json
+      schema_registry: true
+      
+    geography:
+      type: batch
+      format: parquet
+      update_frequency: daily
+      
+    organization:
+      type: batch
+      format: parquet
+      update_frequency: weekly
+
+# API Configuration
+api:
+  base_url: /api/v1
+  medallion_url: /api/medallion
+  
+  # Endpoints
+  endpoints:
+    filters:
+      geography: /filters/geography/options
+      organization: /filters/organization/options
+      counts: /filters/counts
+      
+    analytics:
+      overview: /analytics/overview
+      transactions: /analytics/transactions
+      product_mix: /analytics/product-mix
+      consumer_behavior: /analytics/consumer-behavior
+      
+    ai:
+      chat: /ai/chat
+      insights: /ai/insights
+      stream: /ai/stream
+      
+    medallion:
+      bronze: /medallion/bronze
+      silver: /medallion/silver
+      gold: /medallion/gold
+      stream: /medallion/stream
+      insights: /medallion/insights
+
+# Database Schema
+database:
+  tables:
+    geography:
+      columns:
+        - id: UUID PRIMARY KEY
+        - region: VARCHAR(100) NOT NULL
+        - city: VARCHAR(100) NOT NULL
+        - municipality: VARCHAR(100)
+        - barangay: VARCHAR(100)
+        - location: VARCHAR(150)
+        - coordinates: GEOGRAPHY
+        - created_at: TIMESTAMP DEFAULT NOW()
+      indexes:
+        - idx_geography_region
+        - idx_geography_city
+        - idx_geography_coordinates
+        
+    organization:
+      columns:
+        - id: UUID PRIMARY KEY
+        - holding_company: VARCHAR(100)
+        - client: VARCHAR(100) NOT NULL
+        - category: VARCHAR(100) NOT NULL
+        - brand: VARCHAR(100) NOT NULL
+        - sku: VARCHAR(150) NOT NULL
+        - created_at: TIMESTAMP DEFAULT NOW()
+      indexes:
+        - idx_organization_client
+        - idx_organization_category
+        - idx_organization_brand
+        
+    transactions:
+      columns:
+        - id: UUID PRIMARY KEY
+        - datetime: TIMESTAMP NOT NULL
+        - geography_id: UUID FOREIGN KEY
+        - organization_id: UUID FOREIGN KEY
+        - total_amount: DECIMAL(15,2)
+        - quantity: INTEGER
+        - created_at: TIMESTAMP DEFAULT NOW()
+      indexes:
+        - idx_transactions_datetime
+        - idx_transactions_geography
+        - idx_transactions_organization
+
+# Filter Hierarchies
+filters:
+  geography:
+    hierarchy: [region, city, municipality, barangay, location]
+    max_length:
+      region: 100
+      city: 100
+      municipality: 100
+      barangay: 100
+      location: 150
+      
+  organization:
+    hierarchy: [holding_company, client, category, brand, sku]
+    max_length:
+      holding_company: 100
+      client: 100
+      category: 100
+      brand: 100
+      sku: 150
+      
+  time:
+    hierarchy: [year, quarter, month, week, day, hour]
+    default_range: 30_days
+
+# Authentication & Authorization
+authentication:
+  provider: azure_ad
+  jwt:
+    secret: ${JWT_SECRET}
+    expires_in: 24h
+    
+  roles:
+    admin: full_access
+    analyst: read_write
+    viewer: read_only
+    
+# Performance & Monitoring
+performance:
+  api:
+    rate_limit:
+      window_ms: 60000
+      max_requests: 100
+      
+  database:
+    connection_pool:
+      min: 5
+      max: 20
+      
+  cache:
+    redis_url: ${REDIS_URL}
+    ttl: 300  # 5 minutes
+
+# Monitoring
+monitoring:
+  application_insights:
+    connection_string: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
+    
+  metrics:
+    response_time_p95: 500ms
+    error_rate: 1%
+    uptime: 99.9%
+    
+  telemetry:
+    enabled: true
+    audit_logs: true
+    performance_tracking: true

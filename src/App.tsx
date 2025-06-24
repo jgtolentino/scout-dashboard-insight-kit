@@ -12,7 +12,7 @@ import ProductMix from "./pages/ProductMix";
 import ProductSubstitution from "./pages/ProductSubstitution";
 import ConsumerBehavior from "./pages/ConsumerBehavior";
 import ConsumerProfiling from "./pages/ConsumerProfiling";
-import RetailBotInsights from "./pages/RetailBotInsights";
+import ScoutBotPage from "./pages/ScoutBotPage";
 import RegionalAnalytics from "./pages/RegionalAnalytics";
 import AIChat from "./pages/AIChat";
 import AzureStoragePage from "./pages/AzureStoragePage";
@@ -45,7 +45,7 @@ const App = () => {
                     <Route path="/product-substitution" element={<ProductSubstitution />} />
                     <Route path="/consumer-behavior" element={<ConsumerBehavior />} />
                     <Route path="/consumer-profiling" element={<ConsumerProfiling />} />
-                    <Route path="/retailbot" element={<RetailBotInsights />} />
+                    <Route path="/scoutbot" element={<ScoutBotPage />} />
                     <Route path="/ai-chat" element={<AIChat />} />
                     <Route path="/regional-analytics" element={<RegionalAnalytics />} />
                     <Route path="/azure-storage" element={<AzureStoragePage />} />

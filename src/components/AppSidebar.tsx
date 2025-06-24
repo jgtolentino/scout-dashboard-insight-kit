@@ -30,8 +30,8 @@ const navItems = [
   { path: "/product-substitution", label: "Product Substitution", icon: ArrowRight, description: "Substitution flows" },
   { path: "/consumer-behavior", label: "Consumer Behavior", icon: Brain, description: "Behavioral analysis" },
   { path: "/consumer-profiling", label: "Consumer Profiling", icon: Users, description: "Demographics" },
-  { path: "/retailbot", label: "RetailBot", icon: Brain, description: "AI assistant" },
-  { path: "/ai-chat", label: "AI Chat", icon: MessageSquare, description: "Chat with AdsBot" },
+  { path: "/scoutbot", label: "ScoutBot", icon: Brain, description: "AI assistant" },
+  { path: "/ai-chat", label: "AI Chat", icon: MessageSquare, description: "Powered by AdsBot" },
   { path: "/azure-storage", label: "Azure Storage", icon: Cloud, description: "Storage demo" }
 ];
 

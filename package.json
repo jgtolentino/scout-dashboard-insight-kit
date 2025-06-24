@@ -35,6 +35,15 @@
     "recover": "bash scripts/recover.sh",
     "clean": "rm -rf node_modules package-lock.json dist .vite && npm cache clean --force",
     "reset": "npm run clean && npm install --legacy-peer-deps",
+    "setup:backend": "cd backend && npm install --legacy-peer-deps",
+    "setup:full": "npm install --legacy-peer-deps && npm run setup:backend",
+    "setup:azure": "bash scripts/setup-azure-dev.sh",
+    "setup:databricks": "bash scripts/setup-databricks.sh",
+    "setup:app-registration": "bash scripts/create-app-registration.sh",
+    "setup:dev": "npm run setup:azure && npm run setup:app-registration && npm run setup:databricks && npm run setup:full",
+    "setup:bypass": "cp .env.bypass.template .env.local && echo '✅ Bypass mode enabled! Azure App Registration not required.' && echo '🚀 Run: npm run dev:full'",
+    "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
+    "server": "cd backend && npm run dev",
     "postinstall": "node scripts/post-install-check.cjs || echo 'Post-install check failed, but continuing...'"
   },
   "dependencies": {
@@ -80,6 +89,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "cross-env": "^7.0.3",
+    "concurrently": "^8.2.2",
     "d3": "^7.9.0",
     "d3-sankey": "^0.12.3",
     "d3-scale": "^4.0.2",

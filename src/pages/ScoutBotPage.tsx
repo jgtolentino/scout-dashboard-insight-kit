@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { useFilterStore } from '@/stores/filterStore';
 
-const RetailBotInsights = () => {
+const ScoutBotPage = () => {
   const [activeView, setActiveView] = useState<'full' | 'split'>('split');
   const filters = useFilterStore();
   
@@ -36,9 +36,9 @@ const RetailBotInsights = () => {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900">
-              RetailBot & AI Insights
+              ScoutBot & AI Insights
             </h1>
-            <p className="text-xs text-muted-foreground">AI-powered retail intelligence assistant</p>
+            <p className="text-xs text-muted-foreground">Powered by AdsBot - Azure OpenAI intelligence</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -60,12 +60,12 @@ const RetailBotInsights = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-4 bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden">
-        <Tabs defaultValue="retailbot" className="h-full">
+        <Tabs defaultValue="scoutbot" className="h-full">
           <div className="flex items-center justify-between mb-3">
             <TabsList className="h-8">
-              <TabsTrigger value="retailbot" className="text-xs flex items-center gap-1 h-7 px-3">
+              <TabsTrigger value="scoutbot" className="text-xs flex items-center gap-1 h-7 px-3">
                 <Bot className="h-3 w-3" />
-                RetailBot
+                ScoutBot
               </TabsTrigger>
               <TabsTrigger value="insights" className="text-xs flex items-center gap-1 h-7 px-3">
                 <Brain className="h-3 w-3" />
@@ -99,7 +99,7 @@ const RetailBotInsights = () => {
             </div>
           </div>
           
-          <TabsContent value="retailbot" className="h-[calc(100%-40px)] m-0">
+          <TabsContent value="scoutbot" className="h-[calc(100%-40px)] m-0">
             {activeView === 'split' ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
                 {/* Chat Interface */}
@@ -166,4 +166,4 @@ const RetailBotInsights = () => {
   );
 };
 
-export default RetailBotInsights;
+export default ScoutBotPage;
